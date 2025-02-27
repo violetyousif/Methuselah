@@ -1,4 +1,6 @@
 # Methuselah
+We are still in the very beginning of the project, the version you see does not represent the final product.
+
 How to run locally
 1. Install NodeJS 20
 2. `git clone https://github.com/PPSwap/Methuselah.git`
