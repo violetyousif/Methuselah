@@ -14,22 +14,27 @@ const ChatGPT = (props: ChatGPTProps) => {
 
   return (
     <div className="chat-wrapper">
-      {messages.length === 0 && !currentMessage.current && (
-        <div className="welcome-message">
-          <Text strong style={{ fontSize: '24px', color: '#e0e0e0' }}>
-            Methuselah, Your first AI-driven health advisor
-          </Text>
-          <Text style={{ fontSize: '16px', color: '#9ca3af', marginTop: '8px' }}>
-            If you have questions, ask away!
-          </Text>
-        </div>
-      )}
-      {messages.map((message, index) => (
-        <MessageItem key={index} message={message} />
-      ))}
-      {currentMessage.current && (
-        <MessageItem message={{ content: currentMessage.current, role: ChatRole.Assistant }} />
-      )}
+      {/* Message List (Scrollable) */}
+      <div className="message-list">
+        {messages.length === 0 && !currentMessage.current && (
+          <div className="welcome-message">
+            <Text strong style={{ fontSize: '24px', color: '#e0e0e0' }}>
+              Methuselah, Your first AI-driven health advisor
+            </Text>
+            <Text style={{ fontSize: '16px', color: '#9ca3af', marginTop: '8px' }}>
+              If you have questions, ask away!
+            </Text>
+          </div>
+        )}
+        {messages.map((message, index) => (
+          <MessageItem key={index} message={message} />
+        ))}
+        {currentMessage.current && (
+          <MessageItem message={{ content: currentMessage.current, role: ChatRole.Assistant }} />
+        )}
+      </div>
+
+      {/* Send Bar (Fixed at Bottom) */}
       <SendBar
         loading={loading}
         disabled={disabled}
