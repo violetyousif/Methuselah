@@ -1,5 +1,6 @@
+// src/components/ChatGPT/index.tsx
 import React from 'react'
-import { ChatGPTProps, ChatRole } from './interface'
+import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
 import MessageItem from './MessageItem'
 import SendBar from './SendBar'
 import { useChatGPT } from './useChatGPT'
@@ -9,12 +10,11 @@ import { Typography } from 'antd'
 
 const { Text } = Typography
 
-const ChatGPT = (props: ChatGPTProps) => {
+const ChatGPT = (props: ChatGPTProps & { conversationId: string; walletAddress: string }) => {
   const { loading, disabled, messages, currentMessage, onSend, onClear, onStop } = useChatGPT(props)
 
   return (
     <div className="chat-wrapper">
-      {/* Message List (Scrollable) */}
       <div className="message-list">
         {messages.length === 0 && !currentMessage.current && (
           <div className="welcome-message">
@@ -27,14 +27,15 @@ const ChatGPT = (props: ChatGPTProps) => {
           </div>
         )}
         {messages.map((message, index) => (
-          <MessageItem key={index} message={message} />
+          <MessageItem key={index} message={message as ChatMessage} />
         ))}
         {currentMessage.current && (
-          <MessageItem message={{ content: currentMessage.current, role: ChatRole.Assistant }} />
+          <MessageItem
+            message={{ content: currentMessage.current, role: ChatRole.Assistant }} // Use enum
+          />
         )}
       </div>
 
-      {/* Send Bar (Fixed at Bottom) */}
       <SendBar
         loading={loading}
         disabled={disabled}

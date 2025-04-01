@@ -1,23 +1,39 @@
+// src/pages/index.tsx
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
 const { Sider, Content } = Layout
 import FooterBar from '@/components/FooterBar'
 import styles from './index.module.less'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { message } from 'antd'
+import { getConversations, addConversation, Conversation } from '../models'
 
 const { Text } = Typography
 
+declare global {
+  interface Window {
+    ethereum?: import('ethers').Eip1193Provider
+  }
+}
+
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
-  const [chatHistory, setChatHistory] = useState<string[]>([
-    'Mental Health',
-    'Stress & Anxiety Relief',
-    'Healthier Food Choice',
-    'Sleep Schedule',
-  ])
-  const [selectedChat, setSelectedChat] = useState<string | null>(null)
+  const [chatHistory, setChatHistory] = useState<Conversation[]>([])
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const wallet = walletAddress || 'default-wallet'
+    const convs = getConversations(wallet)
+    if (convs.length === 0) {
+      const newId = addConversation(wallet, 'Chat 1')
+      setChatHistory(getConversations(wallet))
+      setSelectedChatId(newId)
+    } else {
+      setChatHistory(convs)
+      setSelectedChatId(convs[0].conversationId)
+    }
+  }, [walletAddress])
 
   const connectWallet = async () => {
     if (!window.ethereum) {
@@ -36,9 +52,11 @@ export default function Home() {
   }
 
   const handleNewChat = () => {
+    const wallet = walletAddress || 'default-wallet'
     const newChatTitle = `Chat ${chatHistory.length + 1}`
-    setChatHistory([newChatTitle, ...chatHistory])
-    setSelectedChat(newChatTitle)
+    const newId = addConversation(wallet, newChatTitle)
+    setChatHistory(getConversations(wallet))
+    setSelectedChatId(newId)
   }
 
   return (
@@ -53,55 +71,52 @@ export default function Home() {
           top: 0,
           left: 0,
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'column'
         }}
       >
-        {/* New Chat Button */}
         <Button
           type="primary"
           style={{
             marginBottom: '16px',
             backgroundColor: '#4b5563',
             borderColor: '#4b5563',
-            borderRadius: '1rem', // Add rounded corners
+            borderRadius: '1rem'
           }}
           onClick={handleNewChat}
         >
           + New Chat
         </Button>
 
-        {/* Chat History */}
         <div
           className={styles.chatHistory}
           style={{
             flex: 1,
             overflowY: 'auto',
-            height: 'calc(100vh - 230px)',
+            height: 'calc(100vh - 230px)'
           }}
         >
           <Text strong style={{ color: '#e0e0e0', marginBottom: '8px', display: 'block' }}>
             Chat History
           </Text>
-          {chatHistory.map((chat, index) => (
+          {chatHistory.map((chat) => (
             <div
-              key={index}
+              key={chat.conversationId}
               style={{
                 padding: '8px 12px',
                 marginBottom: '8px',
-                backgroundColor: selectedChat === chat ? '#3a3a3a' : 'transparent',
+                backgroundColor: selectedChatId === chat.conversationId ? '#3a3a3a' : 'transparent',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                color: '#d1d5db',
+                color: '#d1d5db'
               }}
-              onClick={() => setSelectedChat(chat)}
+              onClick={() => setSelectedChatId(chat.conversationId)}
             >
               <Avatar size="small" style={{ marginRight: '8px', backgroundColor: '#4b5563' }} />
-              {chat}
+              {chat.summary || chat.title} {/* Use summary if available, else title */}
             </div>
           ))}
         </div>
 
-        {/* User Info and Wallet (Fixed at Bottom) */}
         <div
           style={{
             position: 'absolute',
@@ -111,7 +126,7 @@ export default function Home() {
             padding: '16px',
             backgroundColor: '#2f2f2f',
             borderTop: '1px solid #3a3a3a',
-            borderRadius: '0 0 8px 8px',
+            borderRadius: '0 0 8px 8px'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
@@ -120,9 +135,7 @@ export default function Home() {
               <Text strong style={{ color: '#e0e0e0', display: 'block' }}>
                 John Doe
               </Text>
-              <Text style={{ color: '#9ca3af', fontSize: '12px' }}>
-                johndoe@gmail.com
-              </Text>
+              <Text style={{ color: '#9ca3af', fontSize: '12px' }}>johndoe@gmail.com</Text>
             </div>
           </div>
           <Button
@@ -132,17 +145,28 @@ export default function Home() {
               backgroundColor: '#4b5563',
               borderColor: '#4b5563',
               color: '#e0e0e0',
-              borderRadius: '1rem', // Add rounded corners
+              borderRadius: '1rem'
             }}
           >
-            {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect to your wallet'}
+            {walletAddress
+              ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+              : 'Connect to your wallet'}
           </Button>
         </div>
       </Sider>
 
       <Layout style={{ marginLeft: 250, backgroundColor: '#1e1e1e' }}>
-        <Content className={styles.main} style={{ padding: '24px', display: 'flex', justifyContent: 'center' }}>
-          <ChatGPT fetchPath="/api/chat-completion" />
+        <Content
+          className={styles.main}
+          style={{ padding: '24px', display: 'flex', justifyContent: 'center' }}
+        >
+          {selectedChatId && (
+            <ChatGPT
+              fetchPath="/api/chat-completion"
+              conversationId={selectedChatId}
+              walletAddress={walletAddress || 'default-wallet'}
+            />
+          )}
         </Content>
         <FooterBar />
       </Layout>
