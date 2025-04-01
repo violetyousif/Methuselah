@@ -1,7 +1,9 @@
 import React from 'react'
+
 import MarkdownIt from 'markdown-it'
 import mdHighlight from 'markdown-it-highlightjs'
 import mdKatex from 'markdown-it-katex'
+
 import { ChatMessageItemProps } from './interface'
 
 const md = MarkdownIt({ html: true }).use(mdKatex).use(mdHighlight)
@@ -24,24 +26,13 @@ const MessageItem = (props: ChatMessageItemProps) => {
   const { message } = props
 
   return (
-    <div className={`message-item ${message.role}`}>
-      {message.role === 'user' ? (
-        // User message: Avatar on the right
-        <div className={`meta ${message.role}`}>
-          <div className="message" dangerouslySetInnerHTML={{ __html: md.render(message.content) }} />
-          <div className="avatar">
-            <span className={message.role}></span>
-          </div>
+    <div className="message-item">
+      <div className="meta">
+        <div className="avatar">
+          <span className={message.role}></span>
         </div>
-      ) : (
-        // Assistant message: Avatar on the left
-        <div className={`meta ${message.role}`}>
-          <div className="avatar">
-            <span className={message.role}></span>
-          </div>
-          <div className="message" dangerouslySetInnerHTML={{ __html: md.render(message.content) }} />
-        </div>
-      )}
+        <div className="message" dangerouslySetInnerHTML={{ __html: md.render(message.content) }} />
+      </div>
     </div>
   )
 }

@@ -1,37 +1,11 @@
 .layout {
-  background-color: #1e1e1e;
-}
-
-.main {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: calc(100vh - 64px);
-  background-color: #1e1e1e;
-  padding: 24px;
-}
-
-.chatHistory {
-  // Webkit scrollbar styles (Chrome, Safari, Edge)
-  &::-webkit-scrollbar {
-    width: 8px; // Slimmer scrollbar
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  .main {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    margin: 0.5rem;
   }
-
-  &::-webkit-scrollbar-track {
-    background: #2a2a2a; // Dark track
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #4b5563; // Dark thumb
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #6b7280; // Lighter on hover
-  }
-
-  // Firefox scrollbar styles
-  scrollbar-width: thin;
-  scrollbar-color: #4b5563 #2a2a2a;
 }
