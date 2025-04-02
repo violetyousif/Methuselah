@@ -21,6 +21,7 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
+  const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({}) // Per-item fade triggers
 
   useEffect(() => {
     const wallet = walletAddress || 'default-wallet'
@@ -29,6 +30,7 @@ export default function Home() {
       const newId = addConversation(wallet, 'Chat 1')
       setChatHistory(getConversations(wallet))
       setSelectedChatId(newId)
+      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 })) // Fade new chat
     } else {
       setChatHistory(convs)
       setSelectedChatId(convs[0].conversationId)
@@ -57,7 +59,26 @@ export default function Home() {
     const newId = addConversation(wallet, newChatTitle)
     setChatHistory(getConversations(wallet))
     setSelectedChatId(newId)
+    setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 })) // Fade new chat
   }
+
+  // Watch for summary updates
+  useEffect(() => {
+    const wallet = walletAddress || 'default-wallet'
+    const convs = getConversations(wallet)
+    const updatedConvs = convs.map((conv) => {
+      const prevConv = chatHistory.find((c) => c.conversationId === conv.conversationId)
+      if (prevConv && prevConv.summary !== conv.summary) {
+        // Summary changed, trigger fade for this item
+        setFadeTriggers((prev) => ({
+          ...prev,
+          [conv.conversationId]: (prev[conv.conversationId] || 0) + 1
+        }))
+      }
+      return conv
+    })
+    setChatHistory(updatedConvs)
+  }, [selectedChatId, walletAddress])
 
   return (
     <Layout className={styles.layout} style={{ minHeight: '100vh', backgroundColor: '#1e1e1e' }}>
@@ -101,6 +122,9 @@ export default function Home() {
           {chatHistory.map((chat) => (
             <div
               key={chat.conversationId}
+              className={`${styles.chatItem} ${
+                fadeTriggers[chat.conversationId] > 0 ? styles.fadeIn : ''
+              }`}
               style={{
                 padding: '8px 12px',
                 marginBottom: '8px',
@@ -112,7 +136,7 @@ export default function Home() {
               onClick={() => setSelectedChatId(chat.conversationId)}
             >
               <Avatar size="small" style={{ marginRight: '8px', backgroundColor: '#4b5563' }} />
-              {chat.summary || chat.title} {/* Use summary if available, else title */}
+              {chat.summary || chat.title}
             </div>
           ))}
         </div>

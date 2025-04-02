@@ -1,3 +1,4 @@
+// src/pages/index.module.less
 .layout {
   background-color: #1e1e1e;
 }
@@ -34,4 +35,23 @@
   // Firefox scrollbar styles
   scrollbar-width: thin;
   scrollbar-color: #4b5563 #2a2a2a;
+}
+
+.chatItem {
+  transition: opacity 0.5s ease-in; // Smooth fade transition
+  opacity: 0; // Start invisible
+}
+
+.fadeIn {
+  opacity: 1; // Fade to visible
+  animation: fadeIn 0.5s ease-in; // 0.5s fade-in animation
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
