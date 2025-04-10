@@ -18,6 +18,17 @@ export interface Conversation {
   updatedAt: Date
 }
 
+// Updated interface to include name and email
+export interface UserData {
+  name?: string
+  email?: string
+  age: number
+  weight: number // kg
+  height: number // cm
+  activityLevel: 'sedentary' | 'moderate' | 'active'
+  sleepHours: number
+}
+
 let inMemoryConversations: Record<string, Conversation> = {}
 
 export const getConversations = (walletAddress: string): Conversation[] => {
@@ -87,7 +98,7 @@ export const generateSummary = async (conversationId: string, fetchPath: string)
           {
             role: ChatRole.System,
             content:
-              'Provide a concise, accurate summary of the conversation in a few words, focusing on the main topic discussed.'
+              'Provide a summary of the conversation in a few words, focusing on the main topic discussed, you can exclude the first greeting message by the model.'
           }
         ]
       })
@@ -110,17 +121,10 @@ export const generateSummary = async (conversationId: string, fetchPath: string)
       done = readerDone
     }
 
-    // Log the raw response for debugging
-    console.log(`Raw summary response for ${conversationId}:`, fullSummary)
-
-    // Clean up and trim the summary
     const cleanedSummary = fullSummary.trim().replace(/\n/g, ' ')
     conversation.summary = cleanedSummary || conversation.title
-
-    // Log the final summary
-    console.log(`Final summary for ${conversationId}:`, conversation.summary)
   } catch (error) {
     console.error('Error generating summary:', error)
-    conversation.summary = conversation.title // Fallback to title on error
+    conversation.summary = conversation.title
   }
 }

@@ -8,7 +8,8 @@ import {
   addMessage,
   clearConversation,
   generateSummary,
-  Conversation
+  Conversation,
+  UserData
 } from '../../models'
 
 const scrollDown = throttle(
@@ -48,14 +49,23 @@ export const useChatGPT = (
   const { fetchPath, conversationId, walletAddress } = props
   const [, forceUpdate] = useReducer((x) => !x, false)
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
+  const [healthData, setHealthData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [disabled] = useState<boolean>(false)
 
   const controller = useRef<AbortController | null>(null)
   const currentMessage = useRef<string>('')
 
-  // Sync with in-memory store
   useEffect(() => {
+    const fetchHealthData = async () => {
+      if (walletAddress) {
+        const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+        const data = await response.json()
+        setHealthData(data || null)
+      }
+    }
+    fetchHealthData()
+
     const conv = getConversation(conversationId)
     setCurrentConversation(conv || null)
     if (conv && conv.messages.length === 0) {
@@ -66,7 +76,7 @@ export const useChatGPT = (
       )
       setCurrentConversation(getConversation(conversationId) || null)
     }
-  }, [conversationId])
+  }, [conversationId, walletAddress])
 
   const archiveCurrentMessage = async () => {
     const content = currentMessage.current
@@ -75,8 +85,8 @@ export const useChatGPT = (
     if (content) {
       addMessage(conversationId, ChatRole.Assistant, content)
       setCurrentConversation(getConversation(conversationId) || null)
-      await generateSummary(conversationId, fetchPath) // Generate summary after response
-      setCurrentConversation(getConversation(conversationId) || null) // Update with summary
+      await generateSummary(conversationId, fetchPath)
+      setCurrentConversation(getConversation(conversationId) || null)
       scrollDown()
     }
   }
@@ -107,7 +117,7 @@ export const useChatGPT = (
         done = readerDone
       }
 
-      await archiveCurrentMessage() // Await to ensure summary is generated
+      await archiveCurrentMessage()
     } catch (e) {
       console.error(e)
       setLoading(false)
@@ -117,7 +127,12 @@ export const useChatGPT = (
   const onSend = (message: ChatMessage) => {
     addMessage(conversationId, message.role, message.content)
     setCurrentConversation(getConversation(conversationId) || null)
-    fetchMessage([...(currentConversation?.messages || []), message])
+
+    const healthPrompt = healthData
+      ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
+      : ''
+    const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
+    fetchMessage([...(currentConversation?.messages || []), fullMessage])
   }
 
   const onClear = () => {
@@ -128,7 +143,7 @@ export const useChatGPT = (
   const onStop = async () => {
     if (controller.current) {
       controller.current.abort()
-      await archiveCurrentMessage() // Await to ensure summary is generated
+      await archiveCurrentMessage()
     }
   }
 

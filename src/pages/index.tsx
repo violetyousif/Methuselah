@@ -3,11 +3,12 @@ import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
 const { Sider, Content } = Layout
 import FooterBar from '@/components/FooterBar'
+import Profile from './profile'
 import styles from './index.module.less'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { message } from 'antd'
-import { getConversations, addConversation, Conversation } from '../models'
+import { getConversations, addConversation, Conversation, UserData } from '../models'
 
 const { Text } = Typography
 
@@ -21,16 +22,28 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
-  const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({}) // Per-item fade triggers
+  const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({})
+  const [profileVisible, setProfileVisible] = useState(false)
+  const [userData, setUserData] = useState<UserData | null>(null)
 
+  // Fetch user data on mount or wallet change
   useEffect(() => {
+    const fetchUserData = async () => {
+      if (walletAddress) {
+        const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+        const data = await response.json()
+        setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' })
+      }
+    }
+    fetchUserData()
+
     const wallet = walletAddress || 'default-wallet'
     const convs = getConversations(wallet)
     if (convs.length === 0) {
       const newId = addConversation(wallet, 'Chat 1')
       setChatHistory(getConversations(wallet))
       setSelectedChatId(newId)
-      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 })) // Fade new chat
+      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
     } else {
       setChatHistory(convs)
       setSelectedChatId(convs[0].conversationId)
@@ -59,17 +72,15 @@ export default function Home() {
     const newId = addConversation(wallet, newChatTitle)
     setChatHistory(getConversations(wallet))
     setSelectedChatId(newId)
-    setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 })) // Fade new chat
+    setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
 
-  // Watch for summary updates
   useEffect(() => {
     const wallet = walletAddress || 'default-wallet'
     const convs = getConversations(wallet)
     const updatedConvs = convs.map((conv) => {
       const prevConv = chatHistory.find((c) => c.conversationId === conv.conversationId)
       if (prevConv && prevConv.summary !== conv.summary) {
-        // Summary changed, trigger fade for this item
         setFadeTriggers((prev) => ({
           ...prev,
           [conv.conversationId]: (prev[conv.conversationId] || 0) + 1
@@ -150,16 +161,20 @@ export default function Home() {
             padding: '16px',
             backgroundColor: '#2f2f2f',
             borderTop: '1px solid #3a3a3a',
-            borderRadius: '0 0 8px 8px'
+            borderRadius: '0 0 8px 8px',
+            cursor: 'pointer'
           }}
+          onClick={() => setProfileVisible(true)}
         >
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
             <Avatar size="large" style={{ backgroundColor: '#4b5563', marginRight: '8px' }} />
             <div>
               <Text strong style={{ color: '#e0e0e0', display: 'block' }}>
-                John Doe
+                {userData?.name || 'John Doe'}
               </Text>
-              <Text style={{ color: '#9ca3af', fontSize: '12px' }}>johndoe@gmail.com</Text>
+              <Text style={{ color: '#9ca3af', fontSize: '12px' }}>
+                {userData?.email || 'johndoe@gmail.com'}
+              </Text>
             </div>
           </div>
           <Button
@@ -194,6 +209,20 @@ export default function Home() {
         </Content>
         <FooterBar />
       </Layout>
+
+      <Profile
+        visible={profileVisible}
+        walletAddress={walletAddress}
+        onClose={() => {
+          setProfileVisible(false)
+          // Refetch user data after closing to update name/email
+          if (walletAddress) {
+            fetch(`/api/user-data?walletAddress=${walletAddress}`)
+              .then((res) => res.json())
+              .then((data) => setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' }))
+          }
+        }}
+      />
     </Layout>
   )
 }
