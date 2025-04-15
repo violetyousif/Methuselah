@@ -1,7 +1,5 @@
 import React, { KeyboardEventHandler, useRef } from 'react'
-
 import { ClearOutlined, SendOutlined } from '@ant-design/icons'
-
 import { ChatRole, SendBarProps } from './interface'
 import Show from './Show'
 
@@ -32,7 +30,7 @@ const SendBar = (props: SendBarProps) => {
       inputRef.current!.style.height = 'auto'
       onSend({
         content,
-        role: ChatRole.User
+        role: ChatRole.User,
       })
     }
   }
@@ -61,7 +59,7 @@ const SendBar = (props: SendBarProps) => {
     >
       <div className="send-bar">
         <textarea
-          ref={inputRef!}
+          ref={inputRef}
           className="input"
           disabled={disabled}
           placeholder="Shift + Enter for new line"

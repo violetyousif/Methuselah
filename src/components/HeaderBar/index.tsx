@@ -17,7 +17,7 @@ const HeaderBar: React.FC = () => {
   }, [])
 
   const checkWalletConnection = async () => {
-    if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isTrust) {
+    if (typeof window !== 'undefined' && window.ethereum) {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum)
         const accounts = await provider.listAccounts()
@@ -31,8 +31,8 @@ const HeaderBar: React.FC = () => {
   }
 
   const connectWallet = async () => {
-    if (!window.ethereum || !window.ethereum.isTrust) {
-      message.error('Trust Wallet is not installed or not detected!')
+    if (!window.ethereum) {
+      message.error('MetaMask is not installed!')
       return
     }
 
@@ -40,10 +40,10 @@ const HeaderBar: React.FC = () => {
       const provider = new ethers.BrowserProvider(window.ethereum)
       const accounts = await provider.send('eth_requestAccounts', [])
       setWalletAddress(accounts[0])
-      message.success('Trust Wallet connected successfully!')
+      message.success('Wallet connected successfully!')
     } catch (error) {
-      console.error('Error connecting to Trust Wallet:', error)
-      message.error('Failed to connect to Trust Wallet')
+      console.error('Error connecting wallet:', error)
+      message.error('Failed to connect wallet')
     }
   }
 
@@ -63,7 +63,7 @@ const HeaderBar: React.FC = () => {
             </span>
           ) : (
             <Button type="primary" onClick={connectWallet}>
-              Connect Trust Wallet
+              Connect Wallet
             </Button>
           )}
         </Space>
