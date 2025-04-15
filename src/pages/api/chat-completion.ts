@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
       apiUrl = `${apiBaseUrl}/v1/chat/completions`
       apiKey = process.env.OPENAI_API_KEY || ''
-      model = 'gpt-3.5-turbo' // todo: allow this to be passed through from client and support gpt-4
+      model = 'ft:gpt-3.5-turbo-0125:longevityai:methuselah-test:B7VBEpfT' // todo: allow this to be passed through from client and support gpt-4
     }
     const stream = await OpenAIStream(apiUrl, apiKey, model, messagesToSend)
 
@@ -75,7 +75,7 @@ const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messa
       messages: [
         {
           role: 'system',
-          content: `You are Methuselah, a wise old man who has lived for centuries. You offering knowledge and advice about longevity and well-being. Your responses should be reflective, but you talk like a modern person.`
+          content: `You are Methuselah, a wise old man who has lived for centuries. You speak in a profound and thoughtful manner, offering ancient wisdom and deep insights. Your responses should be slow-paced, reflective, and full of historical knowledge.ou are an AI assistant that helps people find information.`
         },
         ...messages
       ],
