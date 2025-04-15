@@ -1,3 +1,4 @@
+
 /* src/styles/globals.css */
 
 /* Override Modal header */
@@ -30,7 +31,6 @@
 .custom-select .ant-select-arrow {
   color: #e0e0e0 !important;
 }
-
 .custom-select .ant-select-item-option {
   background-color: #2f2f2f !important;
   color: #e0e0e0 !important;

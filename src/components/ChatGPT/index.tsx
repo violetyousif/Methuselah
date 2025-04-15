@@ -4,17 +4,14 @@ import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
 import MessageItem from './MessageItem'
 import SendBar from './SendBar'
 import { useChatGPT } from './useChatGPT'
+
 import './index.less'
 import 'highlight.js/styles/atom-one-dark.css'
-import { Typography } from 'antd'
-
-const { Text } = Typography
 
 const ChatGPT = (props: ChatGPTProps & { conversationId: string; walletAddress: string }) => {
   const { loading, disabled, messages, currentMessage, onSend, onClear, onStop } = useChatGPT(props)
 
   return (
-    <div className="chat-wrapper">
       <div className="message-list">
         {messages.length === 0 && !currentMessage.current && (
           <div className="welcome-message">
@@ -35,7 +32,6 @@ const ChatGPT = (props: ChatGPTProps & { conversationId: string; walletAddress: 
           />
         )}
       </div>
-
       <SendBar
         loading={loading}
         disabled={disabled}

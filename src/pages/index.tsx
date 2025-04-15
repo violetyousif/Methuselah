@@ -1,7 +1,8 @@
 // src/pages/index.tsx
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography } from 'antd'
-const { Sider, Content } = Layout
+import { Layout } from 'antd'
+import { Content } from 'antd/lib/layout/layout'
+
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'
 import styles from './index.module.less'
@@ -10,7 +11,8 @@ import { ethers } from 'ethers'
 import { message } from 'antd'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
 
-const { Text } = Typography
+
+import styles from './index.module.less'
 
 declare global {
   interface Window {
