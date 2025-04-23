@@ -1,0 +1,53 @@
+import json
+import random
+
+preventative_practices = [
+    ("What daily Stoic practice enhances emotional resilience?", "Reflective journaling and daily contemplation of virtues."),
+    ("How do ancient breathing exercises improve cardiovascular health?", "By increasing oxygen intake, enhancing circulation, and reducing blood pressure."),
+    ("What Ayurvedic herbs strengthen immunity?", "Ashwagandha, Tulsi, and Guduchi are particularly beneficial for immunity."),
+    ("How does regular fasting impact longevity according to ancient teachings?", "It promotes metabolic health, detoxification, and cellular regeneration."),
+    ("What dietary recommendations come from Traditional Chinese Medicine (TCM)?", "Balanced diets tailored to seasons, emphasizing harmony between Yin and Yang foods."),
+    ("What role does meditation play in preventing chronic diseases?", "Reduces stress, inflammation, and hormonal imbalances linked to chronic diseases."),
+    ("Which ancient exercise practices prevent aging?", "Yoga, Tai Chi, and Qi Gong maintain flexibility, strength, and cellular health."),
+    ("Describe Ayurvedic preventive care for skin health.", "Oil massages (Abhyanga), herbal pastes, balanced diets, and detox routines."),
+    ("Why is seasonal eating recommended in Ayurveda for health maintenance?", "Aligns the body's rhythms with natural cycles, promoting harmony and health."),
+    ("How did ancient Greek culture approach preventive medicine?", "Focused on moderation, regular exercise, balanced diets, and hygiene practices."),
+    ("What ancient practices strengthen immune function?", "Herbal supplements, dietary regulation, regular fasting, and stress reduction techniques."),
+    ("How can Ayurveda help prevent digestive disorders?", "Through dietary guidelines, herbal supplementation, detox practices (Panchakarma), and mindful eating."),
+    ("Describe ancient holistic approaches for maintaining mental clarity.", "Mindfulness meditation, dietary balance, moderate exercise, and adequate rest."),
+    ("How does ancient wisdom advise maintaining good posture?", "Regular practice of yoga, Tai Chi, and mindful movements to sustain alignment."),
+    ("Which ancient diets promote longevity?", "Mediterranean, Ayurvedic, and traditional Japanese diets emphasizing plant-based foods."),
+    ("What wellness habits from Ayurveda prevent stress?", "Daily routines like meditation, pranayama, and herbal supplements such as Ashwagandha."),
+    ("What Traditional Chinese Medicine practices prevent mental fatigue?", "Qi Gong exercises, herbal treatments, balanced diets, and restful sleep routines."),
+    ("How does Stoicism prevent mental burnout?", "Through acceptance, rational thinking, and focusing on things within personal control."),
+    ("What ancient nutritional practices improve digestion?", "Mindful eating, intermittent fasting, and consumption of fermented foods."),
+    ("How does regular fasting prevent metabolic disorders?", "It improves insulin sensitivity, detoxifies the body, and regulates metabolism."),
+]
+
+treatment_practices = [
+    ("How does Ayurveda treat insomnia?", "Through herbs like Ashwagandha, meditation, and sleep-inducing rituals."),
+    ("What ancient therapies reduce chronic pain?", "Acupuncture, massage, herbal remedies, and dietary adjustments."),
+    ("How is anxiety treated using ancient Stoicism?", "Cognitive reframing, journaling, and understanding controllable vs uncontrollable elements."),
+    ("Describe how Ayurveda treats respiratory issues.", "Herbal steam inhalation, breathing exercises, and specific herbal formulations."),
+    ("What ancient treatments are effective for arthritis?", "Herbal remedies, acupuncture, anti-inflammatory diets, and gentle yoga exercises."),
+    ("How does TCM treat insomnia?", "Acupuncture, herbal formulations, dietary adjustments, and meditative practices."),
+    ("Describe the ancient approach to treating headaches.", "Use of herbal remedies, dietary modifications, mindfulness practices, and acupuncture."),
+    ("What holistic treatments did ancient Greeks use for anxiety?", "Physical exercise, dietary moderation, herbal remedies, and philosophical counseling."),
+    ("How does ancient wisdom suggest treating skin conditions?", "Topical herbal treatments, dietary adjustments, detoxification, and stress management."),
+    ("Describe holistic methods for managing chronic fatigue.", "Dietary modifications, herbal supplementation, restorative yoga, and sleep hygiene practices."),
+    ("What traditional methods relieve digestive pain?", "Herbal teas, probiotics, acupuncture, dietary adjustments, and digestive yoga poses."),
+    ("Explain ancient treatments for emotional imbalance.", "Meditation, journaling, herbal remedies, dietary regulation, and supportive social interaction."),
+    ("What TCM practices are used for treating migraines?", "Acupuncture, herbal formulations, dietary adjustments, and stress-reducing practices."),
+    ("How do ancient cultures treat high blood pressure naturally?", "Herbal medicines, stress management techniques, dietary salt reduction, and regular physical activity."),
+    ("What ancient holistic approaches help with depression?", "Meditation, physical activity, supportive herbal remedies, and community engagement."),
+    ("Explain ancient treatments for insomnia.", "Use of calming herbs, meditation, aromatherapy, and sleep hygiene routines."),
+    ("How are digestive disorders treated with Ayurveda?", "Panchakarma cleansing, personalized diets, herbs like Triphala, and mindful eating."),
+    ("What ancient methods alleviate joint pain?", "Acupuncture, herbal therapies, Ayurvedic massages, and dietary adjustments."),
+    ("How can chronic inflammation be managed holistically?", "Anti-inflammatory diets, meditation, herbal supplements, and moderate exercise."),
+    ("Describe ancient treatments effective for managing diabetes.", "Dietary management, herbal therapies, physical exercises, and stress reduction practices."),
+]
+
+
+combined_data = [{"prompt": q, "completion": a} for q, a in preventative_practices + treatment_practices]
+
+
