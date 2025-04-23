@@ -10,19 +10,21 @@ const { Link } = Typography
 const { Header } = Layout
 
 const HeaderBar: React.FC = () => {
-  const [walletAddress, setWalletAddress] = useState<string | null>(null)
+  const [address, setAddress] = useState<string>('')
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
   useEffect(() => {
     checkWalletConnection()
   }, [])
 
   const checkWalletConnection = async () => {
-    if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isTrust) {
+    if (typeof window !== 'undefined' && window.ethereum) {
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum)
+        const provider = new BrowserProvider(window.ethereum)
         const accounts = await provider.listAccounts()
         if (accounts.length > 0) {
-          setWalletAddress(accounts[0].address)
+          setAddress(accounts[0].address)
+          setIsAuthenticated(true)
         }
       } catch (error) {
         console.error('Error checking wallet connection:', error)
@@ -31,20 +33,65 @@ const HeaderBar: React.FC = () => {
   }
 
   const connectWallet = async () => {
-    if (!window.ethereum || !window.ethereum.isTrust) {
-      message.error('Trust Wallet is not installed or not detected!')
-      return
-    }
-
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum)
+      if (!window.ethereum) {
+        message.error('No crypto wallet found. Please install Metamask!')
+        return
+      }
+
+      const provider = new BrowserProvider(window.ethereum)
       const accounts = await provider.send('eth_requestAccounts', [])
-      setWalletAddress(accounts[0])
-      message.success('Trust Wallet connected successfully!')
-    } catch (error) {
-      console.error('Error connecting to Trust Wallet:', error)
-      message.error('Failed to connect to Trust Wallet')
+      
+      if (!accounts || accounts.length === 0) {
+        message.error('No account found')
+        return
+      }
+
+      const userAddress = accounts[0]
+      setAddress(userAddress)
+
+      // Request the nonce
+      const nonceRes = await fetch(`/api/web3-auth?address=${userAddress}`)
+      if (!nonceRes.ok) {
+        message.error('Failed to get nonce from server')
+        return
+      }
+
+      const { nonce } = await nonceRes.json()
+      if (!nonce) {
+        message.error('No nonce returned by server')
+        return
+      }
+
+      const signer = await provider.getSigner()
+      const signature = await signer.signMessage(nonce)
+
+      // Verify signature
+      const verifyRes = await fetch('/api/web3-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: userAddress, signature }),
+      })
+
+      if (verifyRes.ok) {
+        setIsAuthenticated(true)
+        message.success('Wallet connected and signature verified!')
+      } else {
+        const errData = await verifyRes.json()
+        message.error(`Verification failed: ${errData.error || 'Unknown error'}`)
+        setIsAuthenticated(false)
+      }
+    } catch (err) {
+      console.error(err)
+      message.error('Something went wrong with wallet connection')
+      setIsAuthenticated(false)
     }
+  }
+
+  const disconnectWallet = () => {
+    setAddress('')
+    setIsAuthenticated(false)
+    message.info('Wallet disconnected')
   }
 
   return (
@@ -56,20 +103,28 @@ const HeaderBar: React.FC = () => {
             <h1>MethuSelah</h1>
           </Link>
         </div>
+
         <Space className={styles.right} size={0}>
-          {walletAddress ? (
-            <span className={styles.wallet}>
-              {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-            </span>
+          {isAuthenticated ? (
+            <>
+              <span className={styles.wallet}>
+                Connected as {address.substring(0, 6)}...{address.substring(address.length - 4)}
+              </span>
+              <Button danger onClick={disconnectWallet}>
+                Disconnect
+              </Button>
+            </>
           ) : (
             <Button type="primary" onClick={connectWallet}>
-              Connect Trust Wallet
+              Connect Wallet
             </Button>
           )}
         </Space>
       </Header>
       <div className={styles.vacancy} />
     </>
+  )
+}
   )
 }
 
