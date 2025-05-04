@@ -1,19 +1,23 @@
+// src/components/ChatGPT/useChatGPT.ts
 import { useEffect, useReducer, useRef, useState } from 'react'
-
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
-
 import { ChatGPTProps, ChatMessage, ChatRole } from './interface'
+import {
+  getConversation,
+  addMessage,
+  clearConversation,
+  generateSummary,
+  Conversation,
+  UserData
+} from '../../models'
 
 const scrollDown = throttle(
   () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
   },
   300,
-  {
-    leading: true,
-    trailing: false
-  }
+  { leading: true, trailing: false }
 )
 
 const requestMessage = async (
@@ -23,9 +27,7 @@ const requestMessage = async (
 ) => {
   const response = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify({
-      messages
-    }),
+    body: JSON.stringify({ messages }),
     signal: controller?.signal
   })
 
@@ -41,36 +43,50 @@ const requestMessage = async (
   return data.getReader()
 }
 
-export const useChatGPT = (props: ChatGPTProps) => {
-  const { fetchPath } = props
+export const useChatGPT = (
+  props: ChatGPTProps & { conversationId: string; walletAddress: string }
+) => {
+  const { fetchPath, conversationId, walletAddress } = props
   const [, forceUpdate] = useReducer((x) => !x, false)
-  // const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: ChatRole.Assistant,
-      content: "Greetings, traveler. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom."
-    }
-  ])
-  const [disabled] = useState<boolean>(false)
+  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
+  const [healthData, setHealthData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
+  const [disabled] = useState<boolean>(false)
 
   const controller = useRef<AbortController | null>(null)
   const currentMessage = useRef<string>('')
 
-  const archiveCurrentMessage = () => {
+  useEffect(() => {
+    const fetchHealthData = async () => {
+      if (walletAddress) {
+        const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+        const data = await response.json()
+        setHealthData(data || null)
+      }
+    }
+    fetchHealthData()
+
+    const conv = getConversation(conversationId)
+    setCurrentConversation(conv || null)
+    if (conv && conv.messages.length === 0) {
+      addMessage(
+        conversationId,
+        ChatRole.Assistant,
+        'Greetings, traveler. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.'
+      )
+      setCurrentConversation(getConversation(conversationId) || null)
+    }
+  }, [conversationId, walletAddress])
+
+  const archiveCurrentMessage = async () => {
     const content = currentMessage.current
     currentMessage.current = ''
     setLoading(false)
     if (content) {
-      setMessages((messages) => {
-        return [
-          ...messages,
-          {
-            content,
-            role: ChatRole.Assistant
-          }
-        ]
-      })
+      addMessage(conversationId, ChatRole.Assistant, content)
+      setCurrentConversation(getConversation(conversationId) || null)
+      await generateSummary(conversationId, fetchPath)
+      setCurrentConversation(getConversation(conversationId) || null)
       scrollDown()
     }
   }
@@ -101,29 +117,34 @@ export const useChatGPT = (props: ChatGPTProps) => {
         done = readerDone
       }
 
-      archiveCurrentMessage()
+      await archiveCurrentMessage()
     } catch (e) {
       console.error(e)
       setLoading(false)
-      return
-    }
-  }
-
-  const onStop = () => {
-    if (controller.current) {
-      controller.current.abort()
-      archiveCurrentMessage()
     }
   }
 
   const onSend = (message: ChatMessage) => {
-    const newMessages = [...messages, message]
-    setMessages(newMessages)
-    fetchMessage(newMessages)
+    addMessage(conversationId, message.role, message.content)
+    setCurrentConversation(getConversation(conversationId) || null)
+
+    const healthPrompt = healthData
+      ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
+      : ''
+    const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
+    fetchMessage([...(currentConversation?.messages || []), fullMessage])
   }
 
   const onClear = () => {
-    setMessages([])
+    clearConversation(conversationId)
+    setCurrentConversation(getConversation(conversationId) || null)
+  }
+
+  const onStop = async () => {
+    if (controller.current) {
+      controller.current.abort()
+      await archiveCurrentMessage()
+    }
   }
 
   useEffect(() => {
@@ -133,7 +154,7 @@ export const useChatGPT = (props: ChatGPTProps) => {
   return {
     loading,
     disabled,
-    messages,
+    messages: currentConversation?.messages || [],
     currentMessage,
     onSend,
     onClear,
