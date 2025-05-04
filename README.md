@@ -1,5 +1,7 @@
 # Methuselah
 
+![Methuselah UI](./image.png)
+
 Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress. We welcome contributions and feedback as we shape the future of Methuselah.
 
 ---
