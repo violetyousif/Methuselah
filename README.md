@@ -117,7 +117,6 @@ git push origin feature/YourFeature
 
 5. Open a Pull Request
 
-> Please review the **Contributing Guidelines** (to be added) and adhere to the **Code of Conduct** (to be added).  
 > For questions, join our Discord server or open an issue.
 
 ---
