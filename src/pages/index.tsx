@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { message } from 'antd'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
+import Link from 'next/link';
 
 const { Text } = Typography
 
@@ -192,6 +193,19 @@ export default function Home() {
               : 'Connect to your wallet'}
           </Button>
         </div>
+        
+        <Button
+            style ={{
+              marginTop: '8px',
+              width: '100%',
+              backgroundColor: '#4b5563',
+              borderColor: '#4b5563',
+              color: '#e0e0e0',
+              borderRadius: '1rem'
+            }}
+          >
+            <Link href="/signup">Sign Up</Link>
+        </Button>
       </Sider>
 
       <Layout style={{ marginLeft: 250, backgroundColor: '#1e1e1e' }}>
