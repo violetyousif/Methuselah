@@ -4,6 +4,7 @@ import { Layout, Button, Avatar, Typography } from 'antd'
 const { Sider, Content } = Layout
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'
+import Dashboard from './dashboard' //dashboard modal component
 import styles from './index.module.less'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
@@ -24,6 +25,7 @@ export default function Home() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({})
   const [profileVisible, setProfileVisible] = useState(false)
+  const [dashboardVisible, setDashboardVisible] = useState(false) //dashboard modal logic
   const [userData, setUserData] = useState<UserData | null>(null)
 
   // Fetch user data on mount or wallet change
@@ -177,6 +179,7 @@ export default function Home() {
               </Text>
             </div>
           </div>
+          
           <Button
             onClick={connectWallet}
             style={{
@@ -192,6 +195,21 @@ export default function Home() {
               : 'Connect to your wallet'}
           </Button>
         </div>
+
+        {/* Button for dashboard viewing */}
+          <Button 
+            onClick={() => setDashboardVisible(true)}
+            style ={{
+              marginTop: '8px',
+              width: '100%',
+              backgroundColor: '#4b5563',
+              borderColor: '#4b5563',
+              color: '#e0e0e0',
+              borderRadius: '1rem'
+            }}
+          >
+            Dashboard
+          </Button>
       </Sider>
 
       <Layout style={{ marginLeft: 250, backgroundColor: '#1e1e1e' }}>
@@ -222,6 +240,11 @@ export default function Home() {
               .then((data) => setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' }))
           }
         }}
+      />
+      <Dashboard
+        visible={dashboardVisible}
+        walletAddress={walletAddress}
+        onClose={() => setDashboardVisible(false)}
       />
     </Layout>
   )
