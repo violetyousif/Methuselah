@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Form, Input, Button } from 'antd';
+import Link from 'next/link';
 
 function Signup() {
   const [form] = Form.useForm();
@@ -10,17 +11,19 @@ function Signup() {
     console.log('Signup Data:', values);
   };
 
-  const textColorStyle = { color: '#F1F1EB' };
+  const textColorStyle = { color: '#1D1E2C' };
 
   return (
-    <div style={{backgroundColor: '#1D1E2C', minHeight: '100vh'}}>
+    <div style={{backgroundColor: '#F1F1EB', minHeight: '100vh', padding: '4rem'}}>
     <div style={{
       maxWidth: 400,
       margin: 'auto',
       padding: '2rem',
-      backgroundColor: '#1D1E2C'
+      backgroundColor: '#A0B6AA',
+      borderRadius: '2rem',
+      border: '3px solid'
       }}>
-      <h2 style={{color: '#F1F1EB', textAlign: 'center'}}>Create an Account</h2>
+      <h2 style={{color: '#1D1E2C', textAlign: 'center', fontWeight: 'bold'}}>Create an Account</h2>
       <Form
         form={form}
         name="signup"
@@ -49,7 +52,10 @@ function Signup() {
         <Form.Item
           label={<span style={textColorStyle}>Password</span>}
           name="password"
-          rules={[{ required: true, message: 'Please enter your password' }]}
+          rules={[{ required: true, message: 'Please enter your password' },
+            { min: 8, message: 'Password must be at least 8 characters long' },
+            { pattern: /.*\d.*/, message: 'Password must contain at least one number' }
+          ]}
         >
           <Input.Password />
         </Form.Item>
@@ -77,10 +83,21 @@ function Signup() {
           <Button
           type="primary"
           htmlType="submit"
+          style ={{
+              marginTop: '8px',
+              width: '100%',
+              backgroundColor: '#4b5563',
+              borderColor: '#4b5563',
+              color: '#e0e0e0',
+              borderRadius: '1rem'
+            }}
           >Sign Up
           </Button>
         </Form.Item>
       </Form>
+    <div style={{textAlign: 'center'}}>Already have an account?
+        <Link href="/login"> Log In</Link>
+    </div>
     </div>
     </div>
   );
