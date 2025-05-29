@@ -36,7 +36,7 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 
-
+//
 //Viktor
 //testing for db connection
 const UserSchema = new mongoose.Schema({
