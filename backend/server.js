@@ -1,6 +1,8 @@
 //backend file that contains routes and call to perform database functions
 
-require('dotenv').config({ path: __dirname + '/.env' });
+//Done by Viktor
+
+require('dotenv').config({ path: __dirname + '/.env.local' });
 console.log("Mongo URI:", process.env.MONGODB_URI);
 const express = require('express');
 const mongoose = require('mongoose');
@@ -29,3 +31,53 @@ app.get('/', (req, res) => {
 // Start Server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+//
+//Viktor
+//testing for db connection
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true }
+});
+
+const User = mongoose.model('User', UserSchema, 'Users');
+
+
+
+// test
+app.post('/api/users', async (req, res) => {
+  try {
+
+    console.log('💡 Incoming data:', req.body);
+    const { name, email, password } = req.body;
+
+    const newUser = await User.create({ name, email, password });
+
+    res.status(201).json({ message: 'User successfully created', data: newUser });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create user', details: err.message });
+  }
+});
+
+
+//use for database connection test
+
+/*fetch('http://localhost:8080/api/users', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'Now It Works',
+    email: 'now@real.com',
+    password: 'check123'
+  })
+})
+.then(res => res.json())
+.then(data => console.log('WORKED', data))
+.catch(err => console.error('DID NOT WORK', err));
+ */
+
