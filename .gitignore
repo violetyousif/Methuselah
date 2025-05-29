@@ -42,3 +42,4 @@ backend/.env
 
 #backend dependencies
 backend/node_modules
+backend/.env.example
