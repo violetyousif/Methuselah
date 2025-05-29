@@ -1,3 +1,8 @@
+// Creator: Syed Rabbey
+// Date: 5/26/25
+// Description: Created a popup dashboard page with static charts and pre-written messages for the user. Dashboard component function is declared, an event handler is used to close the modal, 
+// and recharts functions are pulled to render sleep/exercise activity.
+
 import React from 'react'
 import { Modal } from 'antd'
 import {
