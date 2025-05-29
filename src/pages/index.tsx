@@ -1,6 +1,8 @@
 // src/pages/index.tsx
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography } from 'antd'
+import { Layout, Button, Avatar, Typography, } from 'antd'
+import { SettingOutlined } from '@ant-design/icons'
+import Link from 'next/Link' //link internal pages
 const { Sider, Content } = Layout
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'
@@ -108,18 +110,34 @@ export default function Home() {
           flexDirection: 'column'
         }}
       >
-        <Button
-          type="primary"
-          style={{
-            marginBottom: '16px',
-            backgroundColor: '#4b5563',
-            borderColor: '#4b5563',
-            borderRadius: '1rem'
-          }}
-          onClick={handleNewChat}
-        >
-          + New Chat
-        </Button>
+      {/* + New Chat and Settings Button */}
+<div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+  <Button
+    type="primary"
+    style={{
+      flex: 1,
+      backgroundColor: '#4b5563',
+      borderColor: '#4b5563',
+      borderRadius: '1rem'
+    }}
+    onClick={handleNewChat}
+  >
+    + New Chat
+  </Button>
+
+  <Link href="/settings" passHref>
+    <Button
+      icon={<SettingOutlined />}
+      style={{
+        borderRadius: '1rem',
+        backgroundColor: '#374151',
+        borderColor: '#374151',
+        color: '#e5e7eb'
+      }}
+    />
+  </Link>
+</div>
+
 
         <div
           className={styles.chatHistory}

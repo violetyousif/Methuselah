@@ -44,17 +44,17 @@
   background-color: #4b5563 !important;
 }
 
-/* Font size control per user settings */
+/* Font size control for user settings */
 body[data-fontsize='regular'] {
   font-size: 16px;
 }
 
 body[data-fontsize='large'] {
-  font-size: 18px;
+  font-size: 17px;
 }
 
 body[data-fontsize='extra-large'] {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 /* Fade-in animation */
