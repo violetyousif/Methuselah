@@ -43,3 +43,32 @@
 .custom-select .ant-select-item-option-selected {
   background-color: #4b5563 !important;
 }
+
+/* Font size control per user settings */
+body[data-fontsize='regular'] {
+  font-size: 16px;
+}
+
+body[data-fontsize='large'] {
+  font-size: 18px;
+}
+
+body[data-fontsize='extra-large'] {
+  font-size: 20px;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1.5s ease-in-out;
+}
