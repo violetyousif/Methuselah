@@ -28,6 +28,11 @@ app.get('/', (req, res) => {
     res.send('Welcome to the Financial Tracker Backend API!');
   });
 
+const userLogin = require('./routes/userLogin');
+app.use('/api', userLogin);
+
+
+
 // Start Server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -38,17 +43,6 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 //
 //Viktor
-//testing for db connection
-const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
-});
-
-const User = mongoose.model('User', UserSchema, 'Users');
-
-
-
 // test
 app.post('/api/users', async (req, res) => {
   try {
