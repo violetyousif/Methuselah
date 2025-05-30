@@ -1,8 +1,13 @@
+// Name: Mizanur Mizan
+// Description: Created the login page frontend layout and input boxes for email and password
+// Date: 5/27/25
+// Modified by Mizan: 5/29/25
 // pages/login.tsx
 
 import React from 'react';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
+import { ArrowLeftOutlined } from '@ant-design/icons'
 
 function Login() {
   const [form] = Form.useForm();
@@ -23,6 +28,20 @@ function Login() {
       borderRadius: '2rem',
       border: '3px solid'
       }}>
+      <Link href="/">
+          <Button
+            icon={<ArrowLeftOutlined />}
+            style={{
+              marginBottom: '24px',
+              backgroundColor: '#203625',
+              color: 'white',
+              borderColor: '#203625',
+              borderRadius: '9999px'
+            }}
+          >
+            Back
+          </Button>
+        </Link>
       <h2 style={{color: '#1D1E2C', textAlign: 'center', fontWeight: 'bold'}}>Log In</h2>
       <Form
         form={form}

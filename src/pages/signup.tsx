@@ -1,8 +1,13 @@
+// Name: Mizanur Mizan
+// Description: Created the signup page frontend layout and input boxes for name, email, and password
+// Date: 5/26/25
+// Modified by Mizan: 5/29/25
 // pages/signup.tsx
 
 import React from 'react';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
+import { ArrowLeftOutlined } from '@ant-design/icons'
 
 function Signup() {
   const [form] = Form.useForm();
@@ -23,6 +28,20 @@ function Signup() {
       borderRadius: '2rem',
       border: '3px solid'
       }}>
+      <Link href="/">
+          <Button
+            icon={<ArrowLeftOutlined />}
+            style={{
+              marginBottom: '24px',
+              backgroundColor: '#203625',
+              color: 'white',
+              borderColor: '#203625',
+              borderRadius: '9999px'
+            }}
+          >
+            Back
+          </Button>
+        </Link>
       <h2 style={{color: '#1D1E2C', textAlign: 'center', fontWeight: 'bold'}}>Create an Account</h2>
       <Form
         form={form}
@@ -49,12 +68,16 @@ function Signup() {
           <Input />
         </Form.Item>
 
+        {/*Set password input to require at least 8 characters, 1 number, and other constraints */}
         <Form.Item
           label={<span style={textColorStyle}>Password</span>}
           name="password"
           rules={[{ required: true, message: 'Please enter your password' },
             { min: 8, message: 'Password must be at least 8 characters long' },
-            { pattern: /.*\d.*/, message: 'Password must contain at least one number' }
+            { pattern: /.*\d.*/, message: 'Password must contain at least one number' },
+            { pattern: /.*[A-Z].*/, message: 'Password must contain at least one uppercase letter' },
+            { pattern: /.*[@#$%].*/, message: 'Password must contain at least one special character (@, #, $, %)' },
+            { pattern: /^[^\\'"<>`]*$/, message: 'Password cannot contain \\, \', ", <, >, or ` characters' }
           ]}
         >
           <Input.Password />
