@@ -48,9 +48,12 @@ fetch('http://localhost:8080/api/signup', {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (typeof email !== 'string' || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
 
     // Find the user by email in database
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $eq: email } });
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
