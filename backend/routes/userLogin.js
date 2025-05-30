@@ -45,7 +45,8 @@ fetch('http://localhost:8080/api/signup', {
 
 
 // Login route
-router.post('/login', async (req, res) => {
+// TODO: Will revisit this to fix and download validator dependency for error handling/security check --Violet
+/*router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (typeof email !== 'string' || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
@@ -71,6 +72,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+*/
 
 
 //used to test login:
