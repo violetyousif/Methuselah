@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { message } from 'antd'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
+import Link from 'next/link';
 
 const { Text } = Typography
 
@@ -223,6 +224,36 @@ export default function Home() {
           }
         }}
       />
+      {/* Added a login button horizontal to signup button */}
+      <div style={{display: 'flex'}}>
+        <Button
+            style ={{
+              marginTop: '8px',
+              width: '100%',
+              backgroundColor: '#4b5563',
+              borderColor: '#4b5563',
+              color: '#e0e0e0',
+              borderRadius: '1rem',
+              marginRight: 12,
+              border: '1px solid'
+            }}
+          >
+            <Link href="/login">Log In</Link>
+        </Button>
+        <Button
+            style ={{
+              marginTop: '8px',
+              width: '100%',
+              backgroundColor: '#4b5563',
+              borderColor: '#4b5563',
+              color: '#e0e0e0',
+              marginRight: 8,
+              border: '1px solid'
+            }}
+          >
+            <Link href="/signup">Sign Up</Link>
+        </Button>
+        </div>
     </Layout>
   )
 }
