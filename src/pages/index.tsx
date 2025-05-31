@@ -111,7 +111,7 @@ export default function Home() {
           flexDirection: 'column'
         }}
       >
-      {/* + New Chat and Settings Button */}
+{/* + New Chat and Settings Button */}
 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
   <Button
     type="primary"
@@ -126,6 +126,7 @@ export default function Home() {
     + New Chat
   </Button>
 
+  {/* Settings page button */ }
   <Link href="/settings" passHref>
     <Button
       icon={<SettingOutlined />}

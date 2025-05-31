@@ -11,10 +11,11 @@ import enLocale from 'i18n-iso-countries/langs/en.json'
 import moment from 'moment'
 
 const { Option } = Select
-
+//Register and store list of country names
 countries.registerLocale(enLocale)
 const allCountries = Object.values(countries.getNames('en'))
 
+// Settings component with user options for Methuselah
 export default function Settings() {
   const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState('default')
@@ -22,6 +23,7 @@ export default function Settings() {
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState<moment.Moment | null>(null)
 
+  //Updates document body and saves to LOCAL storage for font size change
   useEffect(() => {
     document.body.dataset.fontsize = fontSize
     localStorage.setItem('fontSize', fontSize)
@@ -39,6 +41,7 @@ export default function Settings() {
     message.success('Settings saved!')
   }
 
+  //JSX layout of containers/boxes/etc
   return (
     <div
       className="fade-in"
