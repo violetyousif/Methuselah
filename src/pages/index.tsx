@@ -2,7 +2,7 @@
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
-import Link from 'next/Link' //link internal pages
+//import Link from 'next/Link' //link internal pages
 const { Sider, Content } = Layout
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'

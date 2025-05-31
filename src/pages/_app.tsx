@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import '@/styles/globals.css'
-import 'antd/dist/antd.css'
+//import 'antd/dist/antd.css'
 import type { AppProps } from 'next/app'
 import '../styles/globals.css'
 import { useEffect, useState } from 'react'
