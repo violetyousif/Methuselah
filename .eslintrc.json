@@ -1,3 +1,23 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          "antd/node_modules/*"
+        ],
+        "paths": [
+          {
+            "name": "rc-util/es/warning",
+            "message": "Avoid deep-importing from rc-util directly. Create a local util wrapper instead."
+          },
+          {
+            "name": "rc-util/es/Dom/canUseDom",
+            "message": "This deep import is fragile. Avoid unless absolutely necessary."
+          }
+        ]
+      }
+    ]
+  }
 }
