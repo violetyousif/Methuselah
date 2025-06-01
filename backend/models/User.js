@@ -2,11 +2,14 @@
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName:  { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  dateOfBirth: { type: String },
+  phoneNum:  { type: String },
   country: { type: String },
+  dateOfBirth: { type: String, required: true },
+  agreedToTerms: { type: Boolean, default: false, required: true },
   preferences: {
     theme: { type: String, default: 'default' },
     aiMode: { type: String, default: 'short' },
@@ -15,9 +18,11 @@ const UserSchema = new mongoose.Schema({
     notificationsEnabled: { type: Boolean, default: true },
     language: { type: String, default: 'en' }
   },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  timestamps: true // This adds createdAt and updatedAt automatically
+  //createdAt: { type: Date, default: Date.now },
+  //updatedAt: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', UserSchema, 'Users');
 export default User;
+
