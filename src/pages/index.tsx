@@ -1,4 +1,4 @@
-
+//Modified: Syed Rabbey (5/31/25) - rearranged buttons and color scheme
 // src/pages/index.tsx
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
