@@ -22,7 +22,7 @@ interface DashboardProps {
   onClose: () => void
 }
 
-// Fake weekly data - replace with dynamic later
+// Static weekly data - replace with dynamic later
 const healthData = [
   { day: 'Mon', sleep: 6.5, exercise: 1.0 },
   { day: 'Tue', sleep: 7.0, exercise: 0.5 },
@@ -35,6 +35,7 @@ const healthData = [
 
 const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
   return (
+    //antd modal to display dashboard overlay
     <Modal
       title={<span style={{ color: '#F1F1EB', fontSize: '28px', fontWeight: 600 }}>Your Health Dashboard</span>}
       open={visible}
@@ -71,6 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
           <h3 style={{ color: '#318182', textAlign: 'center', marginBottom: '20px', fontSize: '22px' }}>Your Sleep</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
+              {/* Axis, hoverover, gridlines */}
               <CartesianGrid stroke="#A0B6AA" strokeDasharray="3 3" />
               <XAxis dataKey="day" stroke="#F1F1EB" />
               <YAxis stroke="#F1F1EB" />

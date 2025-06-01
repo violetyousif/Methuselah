@@ -1,11 +1,11 @@
+
 import React, { KeyboardEventHandler, useRef } from 'react'
 import { ClearOutlined, SendOutlined } from '@ant-design/icons'
 import { ChatRole, SendBarProps } from './interface'
 import Show from './Show'
 
-const SendBar = (props: SendBarProps) => {
-  const { loading, disabled, onSend, onClear, onStop } = props
-
+const SendBar = (props: SendBarProps & { inputColor?: string }) => {
+  const { loading, disabled, onSend, onClear, onStop, inputColor = '#9AB7A9' } = props
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const onInputAutoSize = () => {
@@ -57,7 +57,7 @@ const SendBar = (props: SendBarProps) => {
       }
       loading={loading}
     >
-      <div className="send-bar">
+      <div className="send-bar" style={{ background: inputColor, borderRadius: 12, padding: '12px', display: 'flex' }}>
         <textarea
           ref={inputRef}
           className="input"
@@ -65,6 +65,7 @@ const SendBar = (props: SendBarProps) => {
           placeholder="Shift + Enter for new line"
           autoComplete="off"
           rows={1}
+          style={{ flex: 1, border: 'none', borderRadius: 8, padding: '8px' }}
           onKeyDown={onKeydown}
           onInput={onInputAutoSize}
         />
