@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
-const withLess = require('next-with-less');
-const path = require('node:path');
+import withLess from 'next-with-less';
+import path from 'node:path';
 
 const nextConfig = {
   output: 'standalone',
@@ -29,4 +29,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withLess(nextConfig);
+export default withLess(nextConfig);
