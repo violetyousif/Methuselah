@@ -1,19 +1,18 @@
+
 // src/pages/index.tsx
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography, } from 'antd'
-import { SettingOutlined } from '@ant-design/icons'
-//import Link from 'next/Link' //link internal pages
-const { Sider, Content } = Layout
+import { Layout, Button, Avatar, Typography } from 'antd'
+import { MenuOutlined, SettingOutlined } from '@ant-design/icons'
+import Link from 'next/link'
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'
-import Dashboard from './dashboard' //dashboard modal component
-import styles from './index.module.less'
+import Dashboard from './dashboard'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { message } from 'antd'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
-import Link from 'next/link';
 
+const { Sider, Content } = Layout
 const { Text } = Typography
 
 declare global {
@@ -28,10 +27,10 @@ export default function Home() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({})
   const [profileVisible, setProfileVisible] = useState(false)
-  const [dashboardVisible, setDashboardVisible] = useState(false) //dashboard modal logic
+  const [dashboardVisible, setDashboardVisible] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
+  const [collapsed, setCollapsed] = useState(false)
 
-  // Fetch user data on mount or wallet change
   useEffect(() => {
     const fetchUserData = async () => {
       if (walletAddress) {
@@ -80,186 +79,111 @@ export default function Home() {
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
 
-  useEffect(() => {
-    const wallet = walletAddress || 'default-wallet'
-    const convs = getConversations(wallet)
-    const updatedConvs = convs.map((conv) => {
-      const prevConv = chatHistory.find((c) => c.conversationId === conv.conversationId)
-      if (prevConv && prevConv.summary !== conv.summary) {
-        setFadeTriggers((prev) => ({
-          ...prev,
-          [conv.conversationId]: (prev[conv.conversationId] || 0) + 1
-        }))
-      }
-      return conv
-    })
-    setChatHistory(updatedConvs)
-  }, [selectedChatId, walletAddress])
-
   return (
-    <Layout className={styles.layout} style={{ minHeight: '100vh', backgroundColor: '#1e1e1e' }}>
+    <Layout style={{ minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
       <Sider
-        width={250}
+        width={collapsed ? 48 : 250}
         style={{
-          backgroundColor: '#252525',
-          padding: '16px',
-          position: 'fixed',
-          height: '100vh',
-          top: 0,
-          left: 0,
+          backgroundColor: '#9AB7A9',
+          padding: 0,
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 1000
         }}
       >
-{/* + New Chat and Settings Button */}
-<div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-  <Button
-    type="primary"
-    style={{
-      flex: 1,
-      backgroundColor: '#4b5563',
-      borderColor: '#4b5563',
-      borderRadius: '1rem'
-    }}
-    onClick={handleNewChat}
-  >
-    + New Chat
-  </Button>
-
-  {/* Settings page button */ }
-  <Link href="/settings" passHref>
-    <Button
-      icon={<SettingOutlined />}
-      style={{
-        borderRadius: '1rem',
-        backgroundColor: '#374151',
-        borderColor: '#374151',
-        color: '#e5e7eb'
-      }}
-    />
-  </Link>
-</div>
-
-
-        <div
-          className={styles.chatHistory}
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            height: 'calc(100vh - 230px)'
-          }}
-        >
-          <Text strong style={{ color: '#e0e0e0', marginBottom: '8px', display: 'block' }}>
-            Chat History
-          </Text>
-          {chatHistory.map((chat) => (
-            <div
-              key={chat.conversationId}
-              className={`${styles.chatItem} ${
-                fadeTriggers[chat.conversationId] > 0 ? styles.fadeIn : ''
-              }`}
-              style={{
-                padding: '8px 12px',
-                marginBottom: '8px',
-                backgroundColor: selectedChatId === chat.conversationId ? '#3a3a3a' : 'transparent',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                color: '#d1d5db'
-              }}
-              onClick={() => setSelectedChatId(chat.conversationId)}
-            >
-              <Avatar size="small" style={{ marginRight: '8px', backgroundColor: '#4b5563' }} />
-              {chat.summary || chat.title}
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: '16px',
-            backgroundColor: '#2f2f2f',
-            borderTop: '1px solid #3a3a3a',
-            borderRadius: '0 0 8px 8px',
-            cursor: 'pointer'
-          }}
-          onClick={() => setProfileVisible(true)}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-            <Avatar size="large" style={{ backgroundColor: '#4b5563', marginRight: '8px' }} />
-            <div>
-              <Text strong style={{ color: '#e0e0e0', display: 'block' }}>
-                {userData?.name || 'John Doe'}
-              </Text>
-              <Text style={{ color: '#9ca3af', fontSize: '12px' }}>
-                {userData?.email || 'johndoe@gmail.com'}
-              </Text>
-            </div>
+        {collapsed ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '8px' }}>
+            <Button
+              icon={<MenuOutlined />}
+              onClick={() => setCollapsed(false)}
+              style={{ backgroundColor: 'transparent', border: 'none' }}
+            />
           </div>
-          
-          <Button
-            onClick={connectWallet}
-            style={{
-              width: '100%',
-              backgroundColor: '#4b5563',
-              borderColor: '#4b5563',
-              color: '#e0e0e0',
-              borderRadius: '1rem'
-            }}
-          >
-            {walletAddress
-              ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-              : 'Connect to your wallet'}
-          </Button>
-        </div>
+        ) : (
+          <>
+            <div style={{ backgroundColor: '#8AA698', padding: '16px', textAlign: 'center', position: 'relative' }}>
+              <Button
+                icon={<MenuOutlined />}
+                onClick={() => setCollapsed(true)}
+                style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
+              />
+              <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
+                <Avatar size={64} src="/methuselah-avatar.png" style={{ marginTop: 16 }} />
+                <Text strong style={{ display: 'block', marginTop: 8 }}>
+                  {userData?.name || 'Guest'}
+                </Text>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12 }}>
+                <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
+                <Link href="/signup"><Button style={smallBtn}>Register</Button></Link>
+              </div>
+            </div>
 
-        {/* Button for dashboard viewing */}
-          <Button 
-            onClick={() => setDashboardVisible(true)}
-            style ={{
-              marginTop: '8px',
-              width: '100%',
-              backgroundColor: '#4b5563',
-              borderColor: '#4b5563',
-              color: '#e0e0e0',
-              borderRadius: '1rem'
-            }}
-          >
-            Dashboard
-          </Button>
+            <div style={{ padding: '16px' }}>
+              <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+              <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
+              {chatHistory.map((chat) => (
+                <div
+                  key={chat.conversationId}
+                  style={{
+                    padding: '8px 12px',
+                    marginBottom: '8px',
+                    backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    color: '#203625'
+                  }}
+                  onClick={() => setSelectedChatId(chat.conversationId)}
+                >
+                  {chat.summary || chat.title}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ flexGrow: 1 }} /> {/* Pushes the buttons down */}
+
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Link href="/settings"><Button style={buttonStyle}>Settings</Button></Link>
+              <Button onClick={() => setDashboardVisible(true)} style={buttonStyle}>Dashboard</Button>
+              <Button style={buttonStyle}>Feedback</Button>
+            </div>
+          </>
+        )}
       </Sider>
 
-      <Layout style={{ marginLeft: 250, backgroundColor: '#1e1e1e' }}>
-        <Content
-          className={styles.main}
-          style={{ padding: '24px', display: 'flex', justifyContent: 'center' }}
-        >
+      <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: '#FFFFFF' }}>
+        <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%' }}>
           {selectedChatId && (
             <ChatGPT
               fetchPath="/api/chat-completion"
               conversationId={selectedChatId}
               walletAddress={walletAddress || 'default-wallet'}
+              inputBarColor="#9AB7A9"
+              assistantBubbleColor="#9AB7A9"
+              userBubbleColor="#318182"
             />
           )}
         </Content>
-        <FooterBar />
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          textAlign: 'center',
+          padding: '12px 0',
+          color: '#000000'
+        }}>
+          LongevityAI © 2025
+        </div>
       </Layout>
 
       <Profile
         visible={profileVisible}
         walletAddress={walletAddress}
-        onClose={() => {
-          setProfileVisible(false)
-          // Refetch user data after closing to update name/email
-          if (walletAddress) {
-            fetch(`/api/user-data?walletAddress=${walletAddress}`)
-              .then((res) => res.json())
-              .then((data) => setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' }))
-          }
-        }}
+        onClose={() => setProfileVisible(false)}
       />
 
       <Dashboard
@@ -267,39 +191,24 @@ export default function Home() {
         walletAddress={walletAddress}
         onClose={() => setDashboardVisible(false)}
       />
-
-      {/* Added a login button horizontal to signup button */}
-      <div style={{display: 'flex'}}>
-        <Button
-            style ={{
-              marginTop: '8px',
-              width: '100%',
-              backgroundColor: '#4b5563',
-              borderColor: '#4b5563',
-              color: '#e0e0e0',
-              borderRadius: '1rem',
-              marginRight: 12,
-              border: '1px solid'
-            }}
-          >
-            <Link href="/login">Log In</Link>
-        </Button>
-        <Button
-            style ={{
-              marginTop: '8px',
-              width: '100%',
-              backgroundColor: '#4b5563',
-              borderColor: '#4b5563',
-              color: '#e0e0e0',
-              marginRight: 8,
-              border: '1px solid'
-            }}
-          >
-            <Link href="/signup">Sign Up</Link>
-        </Button>
-        </div>
-
     </Layout>
-    //hello
   )
+}
+
+const buttonStyle = {
+  width: '100%',
+  backgroundColor: '#203625',
+  color: '#F1F1EA',
+  border: 'none',
+  borderRadius: '1rem'
+}
+
+const smallBtn = {
+  backgroundColor: '#203625',
+  color: '#F1F1EA',
+  border: 'none',
+  borderRadius: '0.5rem',
+  fontSize: '12px',
+  padding: '4px 12px',
+  height: '28px'
 }
