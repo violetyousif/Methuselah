@@ -39,7 +39,7 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
         body: JSON.stringify({ walletAddress, ...values })
       })
       if (!response.ok) throw new Error('Failed to save user data')
-      onClose()
+      onClose() // Close modal after successful save
     } catch (error) {
       console.error('Error saving user data:', error)
     } finally {

@@ -18,6 +18,13 @@ import { getConversations, addConversation, Conversation, UserData } from '../mo
 const { Sider, Content } = Layout
 const { Text } = Typography
 
+// declare global {
+//    interface Window {
+//      ethereum?: import('ethers').Eip1193Provider
+//    }
+//  }
+
+
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
