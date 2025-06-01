@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// Messsage.js: defines the structure of a Message call in MongoDB.
+import mongoose from 'mongoose';
 
 const MessageSchema = new mongoose.Schema({
   conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: true },
@@ -8,5 +9,4 @@ const MessageSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Message', MessageSchema, 'Messages');
-// This schema defines the structure of a Message document in MongoDB.
+export default mongoose.model('Message', MessageSchema, 'Messages');

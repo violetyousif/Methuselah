@@ -3,7 +3,7 @@
 import jwt from 'jsonwebtoken';
 
 
-// Name: Violet, 5/31/2025
+// Name: Violet Yousif, 5/31/2025
 // Date: 5/31/2025
 // Description: This middleware checks if the user is authenticated by verifying the JWT token.
 const auth = (req, res, next) => {

@@ -1,3 +1,4 @@
+// User.js: defines the structure of a User call in MongoDB.
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
@@ -18,4 +19,5 @@ const UserSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-export default mongoose.model('User', UserSchema, 'Users');
+const User = mongoose.model('User', UserSchema, 'Users');
+export default User;

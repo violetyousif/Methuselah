@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// Goal.js: defines the structure of a Goal call in MongoDB.
+import mongoose from 'mongoose';
 
 const GoalSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -11,5 +12,4 @@ const GoalSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Goal', GoalSchema, 'Goals');
-// This schema defines the structure of a Goal document in MongoDB.
+export default mongoose.model('Goal', GoalSchema, 'Goals');

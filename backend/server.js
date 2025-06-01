@@ -1,7 +1,7 @@
 // Server.js: Backend file that contains routes and calls to perform database functions
 // Created by Viktor, 5/28/2025
 
-// Edited by Violet, 5/31/2025
+// Edited by Violet Yousif, 5/31/2025
 // Description: Fixed errors and converted imported CommonJS to ES module syntax
 import dotenv from 'dotenv';
 import express from 'express';
@@ -13,10 +13,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 //import { Types } from 'mongoose'; // for ObjectId type in mongoose
  
-import logger from './middleware/logger';
-import auth from './middleware/auth';
-import userLogin from './routes/userLogin';
-import User from './models/User.js';
+import logger from './middleware/logger.js';
+//import auth from './middleware/auth.js';
+//import User from './middleware/User.js';
+import login from './routes/userLogin.js';
+import userRegister from './routes/userRegister.js';
 
 // Description: Set up the express app and connect to MongoDB
 const __filename = fileURLToPath(import.meta.url);
@@ -28,7 +29,8 @@ dotenv.config({ path: path.join(__dirname, '/.env.local') });
 // Description: Create an instance of express app and set up middleware
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+//app.use(cors());
 app.use(logger);  // Logs all incoming requests
 
 // Description: MongoDB Connection
@@ -42,15 +44,14 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Debugging: confirm MongoDB URI is loaded correctly
 console.log("Mongo URI:", process.env.MONGODB_URI); 
 
-
 // Description: Default Route
 app.get('/', (req, res) => {
-    res.send('Welcome to the Methuselah Backend Database API!');
+    res.send('Welcome to the Methuselah Backend API!');
   });
 
-  // Protected Routes
-app.use('/api', userLogin);
-
+// Protected Routes
+app.use('/api', login);
+app.use('/api', userRegister);
 
 // Description: Start Server
 const PORT = process.env.PORT || 8080;
