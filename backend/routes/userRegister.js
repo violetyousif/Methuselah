@@ -14,9 +14,10 @@ const router = express.Router();
 // Name: Violet Yousif
 // Date: 6/1/2025
 // Description: rate limiting middleware to prevent abuse
+// (Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts)
 const registerLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 5, // limit each IP to 5 registration attempts per minute
+  windowMs: 1 * 60 * 1000,  // 1 minute
+  max: 5,                   // limit each IP to 5 registration attempts per minute
   message: 'Too many registration attempts from this IP. Please try again later.'
 });
 
