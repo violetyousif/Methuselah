@@ -1,3 +1,4 @@
+/* Modified: Syed Rabbey (6/1/25) added new scroll wheel design */
 
 /* Override Modal header */
 .custom-modal .ant-modal-content {
@@ -126,4 +127,30 @@ footer {
   color: #1e1e1e;
   padding: 8px 12px;
   border-radius: 8px;
+}
+
+/* Custom simple Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color:#F1F1EA;
+
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(60, 60, 60, 0.5);
+}
+
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(60, 60, 60, 0.3) transparent;
 }
