@@ -1,3 +1,4 @@
+//Modified: Syed Rabbey (5/31/25) - rearranged buttons and color scheme
 // src/pages/index.tsx
 
 // Edited by: Violet Yousif
@@ -6,6 +7,7 @@
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
 import { MenuOutlined, SettingOutlined } from '@ant-design/icons'
+import { CameraOutlined, BulbOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'
@@ -84,56 +86,97 @@ export default function Home() {
   }
 
   return (
-    <Layout style={styles.page}>
-      <Sider width={collapsed ? 48 : 250} style={styles.sider}>
+    <Layout style={{ minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+ 
+      <Sider
+        width={collapsed ? 48 : 250}
+        style={{
+          backgroundColor: '#9AB7A9',
+          padding: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 1000
+        }}
+      >
         {collapsed ? (
           <div style={styles.collapsedMenu}>
             <Button icon={<MenuOutlined />} onClick={() => setCollapsed(false)} style={styles.transparentBtn} />
           </div>
         ) : (
-          <>
-            <div style={styles.avatarContainer}>
-              <Button icon={<MenuOutlined />} onClick={() => setCollapsed(true)} style={styles.menuButton} />
-              <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
-                <Avatar size={64} src="/methuselah-avatar.png" style={styles.avatar} />
-                <Text strong style={{ display: 'block', marginTop: 8 }}>{userData?.name || 'Guest'}</Text>
-              </div>
-              <div style={styles.authButtons}>
-                <Link href="/login"><Button style={styles.smallBtn}>Login</Button></Link>
-                <Link href="/register"><Button style={styles.smallBtn}>Register</Button></Link>
-              </div>
-            </div>
-
-            <div style={styles.menuSection}>
-              <Button onClick={handleNewChat} style={styles.primaryBtn}>+ New Chat</Button>
-              <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
-              {chatHistory.map((chat) => (
-                <div
-                  key={chat.conversationId}
-                  style={{
-                    ...styles.chatItem,
-                    backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent'
-                  }}
-                  onClick={() => setSelectedChatId(chat.conversationId)}
-                >
-                  {chat.summary || chat.title}
+          // Begin new flex column for sidebar content
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ backgroundColor: '#8AA698', padding: '16px', textAlign: 'center', position: 'relative' }}>
+                <Button
+                  icon={<MenuOutlined />}
+                  onClick={() => setCollapsed(true)}
+                  style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
+                />
+                <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
+                  <Avatar size={64}  style={{ backgroundColor: '#6F9484', marginTop: 16 }} />
+                  <Text strong style={{ display: 'block', marginTop: 8 }}>
+                    {userData?.name || 'Guest'}
+                  </Text>
                 </div>
-              ))}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+                  <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
+                  <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                <div style={{ padding: '16px' }}>
+                  <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+                  <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
+                </div>
+
+                <div style={{
+                  flexGrow: 1,
+                  maxHeight: '400px', // Approx. space for ~10 chats
+                  overflowY: chatHistory.length > 10 ? 'auto' : 'visible',
+                  padding: '0 16px 16px 16px'
+                }}>
+                  {chatHistory.map((chat) => (
+                    <div
+                      key={chat.conversationId}
+                      style={{
+                        padding: '8px 12px',
+                        marginBottom: '8px',
+                        backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        color: '#203625'
+                      }}
+                      onClick={() => setSelectedChatId(chat.conversationId)}
+                    >
+                      {chat.summary || chat.title}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Bottom buttons */}
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
+            <Link href="/settings">
+              <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
+            </Link>
+            <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
+            <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
             </div>
 
-            <div style={{ flexGrow: 1 }} />
-
-            <div style={styles.footerButtons}>
-              <Link href="/settings"><Button style={styles.primaryBtn}>Settings</Button></Link>
-              <Button onClick={() => setDashboardVisible(true)} style={styles.primaryBtn}>Dashboard</Button>
-              <Button style={styles.primaryBtn}>Feedback</Button>
-            </div>
-          </>
+          </div>
         )}
       </Sider>
 
-      <Layout style={styles.contentArea}>
-        <Content style={styles.content}>
+
+      <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: '#FFFFFF' }}>
+        <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%', paddingBottom: '60px'}}>
           {selectedChatId && (
             <ChatGPT
               fetchPath="/api/chat-completion"
@@ -145,8 +188,8 @@ export default function Home() {
             />
           )}
         </Content>
-        <div style={styles.footer}>LongevityAI © 2025</div>
       </Layout>
+      <div style={styles.footer}>LongevityAI © 2025</div>
 
       <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
       <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} />
@@ -154,6 +197,23 @@ export default function Home() {
   )
 }
 
+const buttonStyle = {
+  width: '100%',
+  backgroundColor: '#F1F1EA',
+  color: '#000000',
+  border: 'none',
+  borderRadius: '1rem'
+}
+
+const smallBtn = {
+  backgroundColor: '#F1F1EA',
+  color: '#000000',
+  border: 'none',
+  borderRadius: '0.5rem',
+  fontSize: '12px',
+  padding: '4px 12px',
+  height: '28px'
+}
 const styles = {
   page: {
     minHeight: '100vh',
@@ -247,9 +307,14 @@ const styles = {
     width: '100%'
   } as React.CSSProperties,
   footer: {
-    backgroundColor: '#FFFFFF',
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#1D1E2C',
+    color: '#ffffff',
     textAlign: 'center',
     padding: '12px 0',
-    color: '#000000'
+    zIndex: 1000
   } as React.CSSProperties
 }
