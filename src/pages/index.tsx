@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { message } from 'antd'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
+import { useRouter } from 'next/router';
 
 const { Sider, Content } = Layout
 const { Text } = Typography
@@ -26,6 +27,8 @@ const { Text } = Typography
 
 
 export default function Home() {
+  const router = useRouter()
+
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
@@ -34,6 +37,11 @@ export default function Home() {
   const [dashboardVisible, setDashboardVisible] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [collapsed, setCollapsed] = useState(false)
+{/*If You dont want to redirect to login page comment this function out! -Viktor 6/2/2025*/}
+  useEffect(() => { {/*If theres no token, prompt user to sign in page -Viktor 6/2/2025*/}
+    const token = localStorage.getItem('token')
+    if (!token) { router.push('/login')}
+  }, [])
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -127,6 +135,7 @@ export default function Home() {
               <Link href="/settings"><Button style={styles.primaryBtn}>Settings</Button></Link>
               <Button onClick={() => setDashboardVisible(true)} style={styles.primaryBtn}>Dashboard</Button>
               <Button style={styles.primaryBtn}>Feedback</Button>
+              <Button onClick={() => {localStorage.removeItem('token'); window.location.href = '/userLogin'}}>Logout</Button>  {/*Removes token from browser local storage. logs out user. -Viktor 6/2/2025*/}
             </div>
           </>
         )}
