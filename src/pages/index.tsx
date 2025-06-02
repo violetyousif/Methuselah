@@ -68,6 +68,23 @@ export default function Home() {
     }
   }, [walletAddress])
 
+  // Message transfer from landing page
+  useEffect(() => {
+  const savedMessage = localStorage.getItem('initialMessage')
+  if (savedMessage && selectedChatId) {
+    // Clear it so it only happens once
+    localStorage.removeItem('initialMessage')
+
+    // Send the message to the chat component (simulate input)
+    const inputBox = document.querySelector('textarea') as HTMLTextAreaElement
+    if (inputBox) {
+      inputBox.value = savedMessage
+      const event = new Event('input', { bubbles: true })
+      inputBox.dispatchEvent(event)
+    }
+  }
+  }, [selectedChatId])
+
   const connectWallet = async () => {
     if (!window.ethereum) {
       message.error('MetaMask is not installed!')
