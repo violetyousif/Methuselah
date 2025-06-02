@@ -3,6 +3,8 @@ import '@/styles/globals.css'
 //import 'antd/dist/antd.css'
 import type { AppProps } from 'next/app'
 import '../styles/globals.css'
+import '@/styles/globals.css'
+
 import { useEffect, useState } from 'react'
 
 export default function App({ Component, pageProps }: AppProps) {

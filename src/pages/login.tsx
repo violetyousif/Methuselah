@@ -8,6 +8,11 @@
 // Date: 06/01/2025
 // Reformatted the code to simplify project's coding style.
 
+// Modified by: Mohammad Hoque
+// Date: 06/01/2025
+// Description: Added "Forgot Password?" link below password field
+
+
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import Link from 'next/link';
@@ -72,6 +77,14 @@ function Login() {
             rules={[{ required: true, message: 'Please enter your password' }]}
           >
             <Input.Password />
+          </Form.Item>
+
+          <Form.Item>
+            <div style={{ textAlign: 'right' }}>
+              <Link href="/forgotPassword" style={{ color: '#203625', fontWeight: 'bold' }}>
+                Forgot your password?
+              </Link>
+            </div>
           </Form.Item>
 
           <Form.Item style={styles.submitContainer}>

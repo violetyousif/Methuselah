@@ -11,18 +11,12 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken'; 
 
-//app.use(logger);  // Apply logger globally
-
-// Protect some routes with auth
-//const login = require('./routes/userLogin');
-//app.use('/api', auth, login);
-
 // Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts
 import rateLimit from 'express-rate-limit';
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15,                   // Limit to 5 login attempts per IP per windowMs
+  max: 15,                  // Limit to 5 login attempts per IP per windowMs
   message: {
     message: 'Too many login attempts, please try again after 15 minutes',
   },
@@ -51,6 +45,8 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'User not found' });
     }
 
+    // Checks password against the hashed password stored in the database
+    // and uses bcrypt.compare to decode and verify the password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       console.log('Invalid password');
