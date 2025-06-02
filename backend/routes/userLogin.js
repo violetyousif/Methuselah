@@ -1,32 +1,94 @@
-const express = require('express');
-const router = express.Router() 
+// Name: Viktor
+// Date: 5/28/2025
+// Description: handles user login route
 
-const User = require('../models/User'); //loads the user model that represents users table in mongo db
-const bcrypt = require('bcrypt'); //loads the bcrypt library to hash passwords
+// Edited by Violet Yousif, 5/31/2025
+// Description: Fixed errors and converted imported files to ES module import/export syntax
 
-const jwt = require('jsonwebtoken'); //loads the jsonwebtoken library to create and verify tokens
-//userLogin.js done by Viktor
+import express from 'express';
+const router = express.Router();
+import User from '../models/User.js'; 
+import bcrypt from 'bcrypt'; 
+import jwt from 'jsonwebtoken'; 
 
-//user sign up route
-router.post('/signup', async (req, res) =>{
-    try{
-        const {name, password, email} = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({name, email, password: hashedPassword});
+//app.use(logger);  // Apply logger globally
 
+// Protect some routes with auth
+//const login = require('./routes/userLogin');
+//app.use('/api', auth, login);
 
-        res.status(201).json({message: 'User signed up successfully', user: newUser}); 
-    }
-    catch(err){
-        res.status(500).json({error: err.message});
+// Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts
+import rateLimit from 'express-rate-limit';
 
-    }
-
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15,                   // Limit to 5 login attempts per IP per windowMs
+  message: {
+    message: 'Too many login attempts, please try again after 15 minutes',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
-//used to test sign up route
+
+// Description: handles user login by checking the provided email and password against the db.
+// Edited By: Violet Yousif
+// Date: 5/31/2025
+// Edit: Downloaded validator dependency for error/security checks and added $eq operator to the email query to prevent injection attacks.
+router.post('/login', loginLimiter, async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log('POST /api/login hit with:', req.body);
+
+    if (typeof email !== 'string' || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      console.log('Invalid email format');
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    const user = await User.findOne({ email: { $eq: email } });
+    if (!user) {
+      console.log('User not found');
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log('Invalid password');
+      return res.status(400).json({ message: 'Invalid password' });
+    }
+
+    res.status(200).json({ message: 'Login successful', user });
+  } catch (err) {
+    console.log('Server error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+export default router;
+
+
+// Name: Viktor
+// Date: 5/28/2025
+// Description: test
 /*
-fetch('http://localhost:8080/api/signup', {
+app.post('/api/users', async (req, res) => {
+  try {
+    console.log('Incoming data:', req.body);
+    const { name, email, password } = req.body;
+
+    const newUser = await User.create({ name, email, password });
+
+    res.status(201).json({ message: 'User successfully created', data: newUser });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create user', details: err.message });
+  }
+});
+*/
+
+// used to test sign up route
+/*
+fetch('http://localhost:8080/api/register', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -38,46 +100,11 @@ fetch('http://localhost:8080/api/signup', {
 .then(res => res.json())
 .then(data => console.log('SUCCESS SIGN UP:', data))
 .catch(err => console.error('ERROR:', err));
-
 */
-
-
-
-
-// Login route
-// TODO: Will revisit this to fix and download validator dependency for error handling/security check --Violet
-/*router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (typeof email !== 'string' || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      return res.status(400).json({ message: 'Invalid email format' });
-    }
-
-    // Find the user by email in database
-    const user = await User.findOne({ email: { $eq: email } });
-    if (!user) {
-      return res.status(400).json({ message: 'User not found' });
-    }
-
-    // Compare the password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid password' });
-    }
-
-    // Send success response
-    res.status(200).json({ message: 'Login successful', user });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-*/
-
 
 //used to test login:
 /*
-fetch('http://localhost:8080/api/login', {
+fetch('http://localhost:8080/api/userLogin', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -89,7 +116,3 @@ fetch('http://localhost:8080/api/login', {
 .then(data => console.log('SUCCESSFUL LOGIN:', data))
 .catch(err => console.error('ERROR:', err));
  */
-
-
-
-module.exports = router; 

@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// Feeback.js: defines the structure of a Feedback call in MongoDB.
+import mongoose from 'mongoose';
 
 const FeedbackSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -8,5 +9,4 @@ const FeedbackSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Feedback', FeedbackSchema, 'Feedback');
-// This schema defines the structure of a Feedback document in MongoDB.
+export default mongoose.model('Feedback', FeedbackSchema, 'Feedback');

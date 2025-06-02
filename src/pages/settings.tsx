@@ -2,6 +2,10 @@
 // Date: 5/27/25
 // Description: Created a settings page using antd, moment, and other libraries to save user settings for application.
 
+// Edited by: Violet Yousif
+// Date: 06/01/2025
+// Reformatted the code to simplify project's coding style.
+
 import { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -11,7 +15,8 @@ import enLocale from 'i18n-iso-countries/langs/en.json'
 import moment from 'moment'
 
 const { Option } = Select
-//Register and store list of country names
+
+// Register and store list of country names
 countries.registerLocale(enLocale)
 const allCountries = Object.values(countries.getNames('en'))
 
@@ -19,11 +24,11 @@ const allCountries = Object.values(countries.getNames('en'))
 export default function Settings() {
   const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState('default')
-  const [country, setCountry] = useState('United States')
+  // const [country, setCountry] = useState('United States')
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState<moment.Moment | null>(null)
 
-  //Updates document body and saves to LOCAL storage for font size change
+  // Updates document body and saves to LOCAL storage for font size change
   useEffect(() => {
     document.body.dataset.fontsize = fontSize
     localStorage.setItem('fontSize', fontSize)
@@ -33,7 +38,6 @@ export default function Settings() {
     const settings = {
       name,
       birthday: birthday ? birthday.toISOString() : null,
-      country,
       theme,
       fontSize
     }
@@ -41,75 +45,42 @@ export default function Settings() {
     message.success('Settings saved!')
   }
 
-  //JSX layout of containers/boxes/etc
   return (
-    <div
-      className="fade-in"
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#F1F1EB',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '40px'
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#A0B6AA',
-          borderRadius: '2rem',
-          border: '3px solid',
-          padding: '40px',
-          width: '100%',
-          maxWidth: '480px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-        }}
-      >
+    <div className="fade-in" style={styles.page}>
+      <div style={styles.card}>
         <Link href="/">
-          <Button
-            icon={<ArrowLeftOutlined />}
-            style={{
-              marginBottom: '24px',
-              backgroundColor: '#203625',
-              color: 'white',
-              borderColor: '#203625',
-              borderRadius: '9999px'
-            }}
-          >
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>
         </Link>
 
-        <h1 style={{ textAlign: 'center', fontSize: '24px', marginBottom: '32px', color: '#1D1E2C' }}>
-          Settings
-        </h1>
+        <h1 style={styles.header}>Settings</h1>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={styles.form}>
+          {/* Name Field */}
           <div>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Name:</div>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={{ borderRadius: '12px' }}
-            />
+            <div style={styles.label}>Name:</div>
+            <Input value={name} onChange={(e) => setName(e.target.value)} style={styles.input} />
           </div>
 
+          {/* Date of Birth Field */}
           <div>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Date of Birth:</div>
+            <div style={styles.label}>Date of Birth:</div>
             <DatePicker
               value={birthday}
               onChange={(date) => setBirthday(date)}
-              style={{ width: '100%', borderRadius: '12px' }}
+              style={styles.input}
             />
           </div>
 
-          <div>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Country:</div>
+          {/* Country Field */}
+          {/* <div>
+            <div style={styles.label}>Country:</div>
             <Select
               showSearch
               value={country}
               onChange={(val) => setCountry(val)}
-              style={{ width: '100%', borderRadius: '12px' }}
+              style={styles.input}
               placeholder="Select your country"
             >
               {allCountries.map((c, i) => (
@@ -118,47 +89,85 @@ export default function Settings() {
                 </Option>
               ))}
             </Select>
-          </div>
+          </div> */}
 
+          {/* Theme Field */}
           <div>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Theme:</div>
-            <Select
-              value={theme}
-              onChange={(val) => setTheme(val)}
-              style={{ width: '100%', borderRadius: '12px' }}
-            >
+            <div style={styles.label}>Theme:</div>
+            <Select value={theme} onChange={(val) => setTheme(val)} style={styles.input}>
               <Option value="default">Default</Option>
             </Select>
           </div>
 
+          {/* Font Size Field */}
           <div>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Font Size:</div>
-            <Select
-              value={fontSize}
-              onChange={(val) => setFontSize(val)}
-              style={{ width: '100%', borderRadius: '12px' }}
-            >
+            <div style={styles.label}>Font Size:</div>
+            <Select value={fontSize} onChange={(val) => setFontSize(val)} style={styles.input}>
               <Option value="regular">Regular</Option>
               <Option value="large">Large</Option>
               <Option value="extra-large">Extra Large</Option>
             </Select>
           </div>
 
-          <Button
-            type="primary"
-            onClick={handleSave}
-            style={{
-              marginTop: '16px',
-              backgroundColor: '#203625',
-              color: 'white',
-              borderColor: '#203625',
-              borderRadius: '9999px'
-            }}
-          >
+          {/* Save Button */}
+          <Button type="primary" onClick={handleSave} style={styles.saveButton}>
             Save Changes
           </Button>
         </div>
       </div>
     </div>
   )
+}
+
+const styles: { [key: string]: React.CSSProperties } = {
+  page: {
+    minHeight: '100vh',
+    backgroundColor: '#F1F1EB',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '40px'
+  },
+  card: {
+    backgroundColor: '#A0B6AA',
+    borderRadius: '2rem',
+    border: '3px solid',
+    padding: '40px',
+    width: '100%',
+    maxWidth: '480px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+  },
+  backButton: {
+    marginBottom: '24px',
+    backgroundColor: '#203625',
+    color: 'white',
+    borderColor: '#203625',
+    borderRadius: '9999px'
+  },
+  header: {
+    textAlign: 'center',
+    fontSize: '24px',
+    marginBottom: '32px',
+    color: '#1D1E2C'
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px'
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: '4px'
+  },
+  input: {
+    width: '100%',
+    borderRadius: '12px'
+  },
+  saveButton: {
+    marginTop: '16px',
+    backgroundColor: '#203625',
+    color: 'white',
+    borderColor: '#203625',
+    borderRadius: '9999px'
+  }
 }

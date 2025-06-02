@@ -1,5 +1,9 @@
 //Modified: Syed Rabbey (5/31/25) - rearranged buttons and color scheme
 // src/pages/index.tsx
+
+// Edited by: Violet Yousif
+// Date: 06/01/2025
+// Reformatted the code to simplify project's coding style.
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
 import { MenuOutlined, SettingOutlined } from '@ant-design/icons'
@@ -15,11 +19,12 @@ import { getConversations, addConversation, Conversation, UserData } from '../mo
 const { Sider, Content } = Layout
 const { Text } = Typography
 
-declare global {
-  interface Window {
-    ethereum?: import('ethers').Eip1193Provider
-  }
-}
+// declare global {
+//    interface Window {
+//      ethereum?: import('ethers').Eip1193Provider
+//    }
+//  }
+
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
@@ -99,12 +104,8 @@ export default function Home() {
         }}
       >
         {collapsed ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '8px' }}>
-            <Button
-              icon={<MenuOutlined />}
-              onClick={() => setCollapsed(false)}
-              style={{ backgroundColor: 'transparent', border: 'none' }}
-            />
+          <div style={styles.collapsedMenu}>
+            <Button icon={<MenuOutlined />} onClick={() => setCollapsed(false)} style={styles.transparentBtn} />
           </div>
         ) : (
           // Begin new flex column for sidebar content
@@ -183,27 +184,11 @@ export default function Home() {
             />
           )}
         </Content>
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          textAlign: 'center',
-          padding: '12px 0',
-          color: '#000000'
-        }}>
-          LongevityAI © 2025
-        </div>
+        <div style={styles.footer}>LongevityAI © 2025</div>
       </Layout>
 
-      <Profile
-        visible={profileVisible}
-        walletAddress={walletAddress}
-        onClose={() => setProfileVisible(false)}
-      />
-
-      <Dashboard
-        visible={dashboardVisible}
-        walletAddress={walletAddress}
-        onClose={() => setDashboardVisible(false)}
-      />
+      <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
+      <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} />
     </Layout>
   )
 }
@@ -224,4 +209,103 @@ const smallBtn = {
   fontSize: '12px',
   padding: '4px 12px',
   height: '28px'
+}
+const styles = {
+  page: {
+    minHeight: '100vh',
+    backgroundColor: '#FFFFFF'
+  } as React.CSSProperties,
+  sider: {
+    backgroundColor: '#9AB7A9',
+    padding: 0,
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'flex-start',
+    height: '100vh',
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 1000
+  } as React.CSSProperties,
+  collapsedMenu: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    paddingTop: '8px'
+  } as React.CSSProperties,
+  transparentBtn: {
+    backgroundColor: 'transparent',
+    border: 'none'
+  } as React.CSSProperties,
+  avatarContainer: {
+    backgroundColor: '#8AA698',
+    padding: '16px',
+    textAlign: 'center',
+    position: 'relative'
+  } as React.CSSProperties,
+  menuButton: {
+    position: 'absolute',
+    left: 8,
+    top: 8,
+    backgroundColor: 'transparent',
+    border: 'none'
+  } as React.CSSProperties,
+  avatar: {
+    marginTop: 16
+  } as React.CSSProperties,
+  authButtons: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 12
+  } as React.CSSProperties,
+  menuSection: {
+    padding: '16px'
+  } as React.CSSProperties,
+  primaryBtn: {
+    width: '100%',
+    backgroundColor: '#203625',
+    color: '#F1F1EA',
+    border: 'none',
+    borderRadius: '1rem'
+  } as React.CSSProperties,
+  smallBtn: {
+    backgroundColor: '#203625',
+    color: '#F1F1EA',
+    border: 'none',
+    borderRadius: '0.5rem',
+    fontSize: '12px',
+    padding: '4px 12px',
+    height: '28px'
+  } as React.CSSProperties,
+  chatItem: {
+    padding: '8px 12px',
+    marginBottom: '8px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    color: '#203625'
+  } as React.CSSProperties,
+  footerButtons: {
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '12px'
+  } as React.CSSProperties,
+  contentArea: {
+    marginLeft: 250,
+    backgroundColor: '#FFFFFF'
+  } as React.CSSProperties,
+  content: {
+    padding: '24px',
+    maxWidth: '960px',
+    margin: '0 auto',
+    width: '100%'
+  } as React.CSSProperties,
+  footer: {
+    backgroundColor: '#FFFFFF',
+    textAlign: 'center',
+    padding: '12px 0',
+    color: '#000000'
+  } as React.CSSProperties
 }

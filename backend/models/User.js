@@ -1,11 +1,14 @@
-const mongoose = require('mongoose');
+// User.js: defines the structure of a User call in MongoDB.
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName:  { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  dateOfBirth: { type: String },
-  country: { type: String },
+  phoneNum:  { type: String },
+  dateOfBirth: { type: String, required: true },
+  agreedToTerms: { type: Boolean, default: false, required: true },
   preferences: {
     theme: { type: String, default: 'default' },
     aiMode: { type: String, default: 'short' },
@@ -14,9 +17,10 @@ const UserSchema = new mongoose.Schema({
     notificationsEnabled: { type: Boolean, default: true },
     language: { type: String, default: 'en' }
   },
+  updatedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('User', UserSchema, 'Users');
-// This schema defines the structure of a User document in MongoDB.
+const getUser = mongoose.model('User', UserSchema, 'Users');
+export default getUser;
+
