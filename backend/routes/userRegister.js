@@ -20,6 +20,14 @@ const registerLimiter = rateLimit({
   message: 'Too many registration attempts from this IP. Please try again later.'
 });
 
+// Helper function to capitalize the first letter of a string
+const capitalize = (str) => {
+  if (typeof str !== 'string') return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+// Description: handles user registration; checks if the email already exists, 
+// hashes password, and saves new user to db.
 router.post('/register', registerLimiter, async (req, res) => {
   try {
     let {
@@ -29,6 +37,7 @@ router.post('/register', registerLimiter, async (req, res) => {
         password,
         phoneNum,
         dateOfBirth,
+        gender,
         agreedToTerms,
     } = req.body;
 
@@ -50,6 +59,7 @@ router.post('/register', registerLimiter, async (req, res) => {
         password: hashedPassword,
         phoneNum,
         dateOfBirth,
+        gender,
         agreedToTerms
     });
 
