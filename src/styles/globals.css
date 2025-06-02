@@ -154,3 +154,9 @@ footer {
   scrollbar-width: thin;
   scrollbar-color: rgba(60, 60, 60, 0.3) transparent;
 }
+
+.chat-icon-black-outline {
+  color: black;
+  stroke: black;
+  stroke-width: 1.5;
+}

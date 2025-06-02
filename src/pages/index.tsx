@@ -7,6 +7,7 @@
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
 import { MenuOutlined, SettingOutlined } from '@ant-design/icons'
+import { CameraOutlined, BulbOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import FooterBar from '@/components/FooterBar'
 import Profile from './profile'
@@ -125,7 +126,7 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
                   <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
-                  <Link href="/signup"><Button style={smallBtn}>Register</Button></Link>
+                  <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
                 </div>
               </div>
 
@@ -161,18 +162,21 @@ export default function Home() {
               </div>
             </div>
             {/* Bottom buttons */}
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Link href="/settings"><Button style={buttonStyle}>Settings</Button></Link>
-              <Button onClick={() => setDashboardVisible(true)} style={buttonStyle}>Dashboard</Button>
-              <Button style={buttonStyle}>Feedback</Button>
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
+            <Link href="/settings">
+              <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
+            </Link>
+            <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
+            <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
             </div>
+
           </div>
         )}
       </Sider>
 
 
       <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: '#FFFFFF' }}>
-        <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%' }}>
+        <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%', paddingBottom: '60px'}}>
           {selectedChatId && (
             <ChatGPT
               fetchPath="/api/chat-completion"
@@ -184,8 +188,8 @@ export default function Home() {
             />
           )}
         </Content>
-        <div style={styles.footer}>LongevityAI © 2025</div>
       </Layout>
+      <div style={styles.footer}>LongevityAI © 2025</div>
 
       <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
       <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} />
@@ -303,9 +307,14 @@ const styles = {
     width: '100%'
   } as React.CSSProperties,
   footer: {
-    backgroundColor: '#FFFFFF',
+    position: 'fixed',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#1D1E2C',
+    color: '#ffffff',
     textAlign: 'center',
     padding: '12px 0',
-    color: '#000000'
+    zIndex: 1000
   } as React.CSSProperties
 }
