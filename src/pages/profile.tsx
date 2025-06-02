@@ -33,7 +33,7 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
     if (!walletAddress) return
     setLoading(true)
     try {
-      const response = await fetch('/api/user-data', {
+      const response = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress, ...values })

@@ -6,7 +6,6 @@ import express from 'express';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import User from './models/User.js';
 import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
@@ -17,19 +16,18 @@ const router = express.Router();
 // (Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts)
 const registerLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,  // 1 minute
-  max: 5,                   // limit each IP to 5 registration attempts per minute
+  max: 15,                   // limit each IP to 5 registration attempts per minute
   message: 'Too many registration attempts from this IP. Please try again later.'
 });
 
 router.post('/register', registerLimiter, async (req, res) => {
   try {
-    const {
+    let {
         firstName,
         lastName,
         email,
         password,
         phoneNum,
-        country,
         dateOfBirth,
         agreedToTerms,
     } = req.body;
@@ -37,6 +35,7 @@ router.post('/register', registerLimiter, async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email: { $eq: email } });
     if (existingUser) {
+      console.log('Email already registered:', email);
       return res.status(409).json({ message: 'Email already registered' });
     }
 
@@ -44,18 +43,17 @@ router.post('/register', registerLimiter, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create and save the user
-    const newUser = await User.create({
-        firstName,
-        lastName,
-        email,
+    const user = await User.create({
+        firstName : capitalize(firstName),
+        lastName: capitalize(lastName),
+        email: email.toLowerCase(),
         password: hashedPassword,
         phoneNum,
-        country,
         dateOfBirth,
         agreedToTerms
     });
 
-    res.status(201).json({ message: 'User successfully registered!', user: newUser });
+    res.status(201).json({ message: 'User successfully registered!', user });
   } catch (err) {
     res.status(500).json({ message: 'Registration failed', error: err.message });
   }

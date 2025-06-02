@@ -10,7 +10,6 @@ const router = express.Router();
 import User from '../models/User.js'; 
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken'; 
-import rateLimit from 'express-rate-limit';
 
 //app.use(logger);  // Apply logger globally
 
@@ -23,7 +22,7 @@ import rateLimit from 'express-rate-limit';
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,                   // Limit to 5 login attempts per IP per windowMs
+  max: 15,                   // Limit to 5 login attempts per IP per windowMs
   message: {
     message: 'Too many login attempts, please try again after 15 minutes',
   },
@@ -36,7 +35,7 @@ const loginLimiter = rateLimit({
 // Edited By: Violet Yousif
 // Date: 5/31/2025
 // Edit: Downloaded validator dependency for error/security checks and added $eq operator to the email query to prevent injection attacks.
-router.post('/userLogin', loginLimiter, async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log('POST /api/login hit with:', req.body);
