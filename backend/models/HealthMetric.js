@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// HealthMetric.js: defines the structure of a HealthMetric call in MongoDB.
+import mongoose from 'mongoose';
 
 const HealthMetricSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -8,5 +9,4 @@ const HealthMetricSchema = new mongoose.Schema({
   recordedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');
-// This schema defines the structure of a HealthMetric document in MongoDB.
+export default mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');

@@ -1,0 +1,29 @@
+// Name: Violet Yousif
+// Date: 6/1/2025
+// Description: This script updates all Users documents in the MongoDB database to
+// remove the "name" field and split it into "firstName" and "lastName" fields.
+use('Longevity');
+
+(async () => {
+  const users = await db.Users.find({ name: { $exists: true, $ne: "" } }).toArray();
+
+  console.log(`Found ${users.length} users`);
+
+  for (const user of users) {
+    const fullName = user.name.trim();
+    const [firstName, ...rest] = fullName.split(" ");
+    const lastName = rest.join(" ") || "";
+
+    const result = await db.Users.updateOne(
+      { _id: user._id },
+      {
+        $unset: { name: "" },
+        $set: { firstName, lastName }
+      }
+    );
+
+    console.log(`Updated ${user._id}:`, result.modifiedCount ? 'Success' : 'Skipped');
+  }
+
+  console.log("Batch update complete.");
+})();

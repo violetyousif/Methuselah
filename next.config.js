@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
-const withLess = require('next-with-less');
-const path = require('node:path');
+
+// Edited by: Violet Yousif
+// Date: 5/31/2025
+// Description: __dirname is used to get the current directory of the file
+// but ESM modules do not support __dirname directly
+// so we use fileURLToPath and dirname from 'node:path' to get the directory name
+import withLess from 'next-with-less';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const nextConfig = {
   output: 'standalone',
@@ -29,4 +38,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withLess(nextConfig);
+export default withLess(nextConfig);

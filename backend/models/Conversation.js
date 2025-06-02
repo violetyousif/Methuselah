@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// Conversation.js: defines the structure of a Conversation call in MongoDB.
+import mongoose from 'mongoose';
 
 const ConversationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -12,5 +13,4 @@ const ConversationSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Conversation', ConversationSchema, 'Conversations');
-// This schema defines the structure of a Conversation document in MongoDB.
+export default mongoose.model('Conversation', ConversationSchema, 'Conversations');

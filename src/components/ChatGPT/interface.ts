@@ -8,6 +8,9 @@ export enum ChatRole {
 
 export interface ChatGPTProps {
   fetchPath: string
+  assistantBubbleColor?: string
+  userBubbleColor?: string
+  inputBarColor?: string
 }
 
 export interface ChatMessage {

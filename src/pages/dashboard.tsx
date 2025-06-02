@@ -1,7 +1,12 @@
 // Creator: Syed Rabbey
 // Date: 5/26/25
-// Description: Created a popup dashboard page with static charts and pre-written messages for the user. Dashboard component function is declared, an event handler is used to close the modal, 
+// Description: Created a popup dashboard page with static charts and pre-written messages for the user. 
+// Dashboard component function is declared, an event handler is used to close the modal, 
 // and recharts functions are pulled to render sleep/exercise activity.
+
+// Edited by: Violet Yousif
+// Date: 06/01/2025
+// Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
 
 import React from 'react'
 import { Modal } from 'antd'
@@ -35,44 +40,32 @@ const healthData = [
 
 const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
   return (
-    //antd modal to display dashboard overlay
     <Modal
-      title={<span style={{ color: '#F1F1EB', fontSize: '28px', fontWeight: 600 }}>Your Health Dashboard</span>}
+      title={<span style={styles.modalTitle}>Your Health Dashboard</span>}
       open={visible}
       onCancel={onClose}
       footer={null}
       width="90%"
-      style={{
-        backgroundColor: '#203625',
-        borderRadius: '16px',
-        overflow: 'hidden'
-      }}
-      bodyStyle={{
-        backgroundColor: '#203625',
-        padding: '40px',
-        borderRadius: '16px',
-        minHeight: '85vh'
+      style={styles.modalContainer}
+      styles={{
+        body: styles.modalBody,
+        mask: styles.modalMask
       }}
       closable
-      maskStyle={{
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        borderRadius: '16px'
-      }}
       wrapClassName="custom-modal"
     >
       {/* Greeting */}
-      <div style={{ color: '#F1F1EB', fontSize: '20px', marginBottom: '30px' }}>
+      <div style={styles.greeting}>
         Welcome back, <strong>{walletAddress || 'Guest'}</strong>! Here's a look at your recent health activity.
       </div>
 
       {/* Bar Charts Section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '40px' }}>
+      <div style={styles.chartSection}>
         {/* Sleep Chart */}
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <h3 style={{ color: '#318182', textAlign: 'center', marginBottom: '20px', fontSize: '22px' }}>Your Sleep</h3>
+        <div style={styles.chartContainer}>
+          <h3 style={styles.chartTitle}>Sleep Health</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
-              {/* Axis, hoverover, gridlines */}
               <CartesianGrid stroke="#A0B6AA" strokeDasharray="3 3" />
               <XAxis dataKey="day" stroke="#F1F1EB" />
               <YAxis stroke="#F1F1EB" />
@@ -84,8 +77,8 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
         </div>
 
         {/* Exercise Chart */}
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <h3 style={{ color: '#318182', textAlign: 'center', marginBottom: '20px', fontSize: '22px' }}>Your Exercise Habits</h3>
+        <div style={styles.chartContainer}>
+          <h3 style={styles.chartTitle}>Exercise Habits</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
               <CartesianGrid stroke="#A0B6AA" strokeDasharray="3 3" />
@@ -100,15 +93,78 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
       </div>
 
       {/* Health Tips */}
-      <div style={{ marginTop: '50px', fontSize: '20px', lineHeight: '2.2' }}>
-        <p style={{ color: '#FF6B6B' }}>☀️ It is recommended that you increase your Vitamin D intake.</p>
-        <p style={{ color: '#F1F1EB' }}>
-          💪 To meet your weight gain goals, make sure you're getting <span style={{ color: '#FF6B6B' }}>consistent sleep</span> and <span style={{ color: '#FF6B6B' }}>planned exercise routines</span>.
+      <div style={styles.tips}>
+        <p style={styles.tipPrimary}>☀️ It is recommended that you increase your Vitamin D intake.</p>
+        <p style={styles.tipNeutral}>
+          💪 To meet your weight gain goals, make sure you're getting{' '}
+          <span style={styles.tipHighlight}>consistent sleep</span> and{' '}
+          <span style={styles.tipHighlight}>planned exercise routines</span>.
         </p>
-        <p style={{ color: '#A0B6AA' }}>👏 Good job on your consistency! You earned it.</p>
+        <p style={styles.tipSecondary}>👏 Good job on your consistency! You earned it.</p>
       </div>
     </Modal>
   )
 }
 
 export default Dashboard
+
+const styles = {
+  modalTitle: {
+    color: '#F1F1EB',
+    fontSize: '28px',
+    fontWeight: 600
+  },
+  modalContainer: {
+    backgroundColor: '#203625',
+    borderRadius: '16px',
+    overflow: 'hidden'
+  },
+  modalBody: {
+    backgroundColor: '#203625',
+    padding: '40px',
+    borderRadius: '16px',
+    minHeight: '85vh'
+  },
+  modalMask: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: '16px'
+  },
+  greeting: {
+    color: '#F1F1EB',
+    fontSize: '20px',
+    marginBottom: '30px'
+  },
+  chartSection: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap' as 'wrap',
+    gap: '40px'
+  },
+  chartContainer: {
+    flex: 1,
+    minWidth: '300px'
+  },
+  chartTitle: {
+    color: '#4BC2C4',
+    textAlign: 'center' as const,
+    marginBottom: '20px',
+    fontSize: '22px'
+  },
+  tips: {
+    marginTop: '50px',
+    fontSize: '20px',
+    lineHeight: '2.2'
+  },
+  tipPrimary: {
+    color: '#4BC2C4'
+  },
+  tipNeutral: {
+    color: '#F1F1EB'
+  },
+  tipHighlight: {
+    color: '#4BC2C4'
+  },
+  tipSecondary: {
+    color: '#A0B6AA'
+  }
+}

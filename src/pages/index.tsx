@@ -1,5 +1,8 @@
-
 // src/pages/index.tsx
+
+// Edited by: Violet Yousif
+// Date: 06/01/2025
+// Reformatted the code to simplify project's coding style.
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography } from 'antd'
 import { MenuOutlined, SettingOutlined } from '@ant-design/icons'
@@ -15,11 +18,12 @@ import { getConversations, addConversation, Conversation, UserData } from '../mo
 const { Sider, Content } = Layout
 const { Text } = Typography
 
-declare global {
-  interface Window {
-    ethereum?: import('ethers').Eip1193Provider
-  }
-}
+// declare global {
+//    interface Window {
+//      ethereum?: import('ethers').Eip1193Provider
+//    }
+//  }
+
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
@@ -80,64 +84,35 @@ export default function Home() {
   }
 
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
-      <Sider
-        width={collapsed ? 48 : 250}
-        style={{
-          backgroundColor: '#9AB7A9',
-          padding: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          height: '100vh',
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: 1000
-        }}
-      >
+    <Layout style={styles.page}>
+      <Sider width={collapsed ? 48 : 250} style={styles.sider}>
         {collapsed ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '8px' }}>
-            <Button
-              icon={<MenuOutlined />}
-              onClick={() => setCollapsed(false)}
-              style={{ backgroundColor: 'transparent', border: 'none' }}
-            />
+          <div style={styles.collapsedMenu}>
+            <Button icon={<MenuOutlined />} onClick={() => setCollapsed(false)} style={styles.transparentBtn} />
           </div>
         ) : (
           <>
-            <div style={{ backgroundColor: '#8AA698', padding: '16px', textAlign: 'center', position: 'relative' }}>
-              <Button
-                icon={<MenuOutlined />}
-                onClick={() => setCollapsed(true)}
-                style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
-              />
+            <div style={styles.avatarContainer}>
+              <Button icon={<MenuOutlined />} onClick={() => setCollapsed(true)} style={styles.menuButton} />
               <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
-                <Avatar size={64} src="/methuselah-avatar.png" style={{ marginTop: 16 }} />
-                <Text strong style={{ display: 'block', marginTop: 8 }}>
-                  {userData?.name || 'Guest'}
-                </Text>
+                <Avatar size={64} src="/methuselah-avatar.png" style={styles.avatar} />
+                <Text strong style={{ display: 'block', marginTop: 8 }}>{userData?.name || 'Guest'}</Text>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12 }}>
-                <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
-                <Link href="/signup"><Button style={smallBtn}>Register</Button></Link>
+              <div style={styles.authButtons}>
+                <Link href="/login"><Button style={styles.smallBtn}>Login</Button></Link>
+                <Link href="/register"><Button style={styles.smallBtn}>Register</Button></Link>
               </div>
             </div>
 
-            <div style={{ padding: '16px' }}>
-              <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+            <div style={styles.menuSection}>
+              <Button onClick={handleNewChat} style={styles.primaryBtn}>+ New Chat</Button>
               <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
               {chatHistory.map((chat) => (
                 <div
                   key={chat.conversationId}
                   style={{
-                    padding: '8px 12px',
-                    marginBottom: '8px',
-                    backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    color: '#203625'
+                    ...styles.chatItem,
+                    backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent'
                   }}
                   onClick={() => setSelectedChatId(chat.conversationId)}
                 >
@@ -146,19 +121,19 @@ export default function Home() {
               ))}
             </div>
 
-            <div style={{ flexGrow: 1 }} /> {/* Pushes the buttons down */}
+            <div style={{ flexGrow: 1 }} />
 
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Link href="/settings"><Button style={buttonStyle}>Settings</Button></Link>
-              <Button onClick={() => setDashboardVisible(true)} style={buttonStyle}>Dashboard</Button>
-              <Button style={buttonStyle}>Feedback</Button>
+            <div style={styles.footerButtons}>
+              <Link href="/settings"><Button style={styles.primaryBtn}>Settings</Button></Link>
+              <Button onClick={() => setDashboardVisible(true)} style={styles.primaryBtn}>Dashboard</Button>
+              <Button style={styles.primaryBtn}>Feedback</Button>
             </div>
           </>
         )}
       </Sider>
 
-      <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: '#FFFFFF' }}>
-        <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%' }}>
+      <Layout style={styles.contentArea}>
+        <Content style={styles.content}>
           {selectedChatId && (
             <ChatGPT
               fetchPath="/api/chat-completion"
@@ -170,45 +145,111 @@ export default function Home() {
             />
           )}
         </Content>
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          textAlign: 'center',
-          padding: '12px 0',
-          color: '#000000'
-        }}>
-          LongevityAI © 2025
-        </div>
+        <div style={styles.footer}>LongevityAI © 2025</div>
       </Layout>
 
-      <Profile
-        visible={profileVisible}
-        walletAddress={walletAddress}
-        onClose={() => setProfileVisible(false)}
-      />
-
-      <Dashboard
-        visible={dashboardVisible}
-        walletAddress={walletAddress}
-        onClose={() => setDashboardVisible(false)}
-      />
+      <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
+      <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} />
     </Layout>
   )
 }
 
-const buttonStyle = {
-  width: '100%',
-  backgroundColor: '#203625',
-  color: '#F1F1EA',
-  border: 'none',
-  borderRadius: '1rem'
-}
-
-const smallBtn = {
-  backgroundColor: '#203625',
-  color: '#F1F1EA',
-  border: 'none',
-  borderRadius: '0.5rem',
-  fontSize: '12px',
-  padding: '4px 12px',
-  height: '28px'
+const styles = {
+  page: {
+    minHeight: '100vh',
+    backgroundColor: '#FFFFFF'
+  } as React.CSSProperties,
+  sider: {
+    backgroundColor: '#9AB7A9',
+    padding: 0,
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'flex-start',
+    height: '100vh',
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 1000
+  } as React.CSSProperties,
+  collapsedMenu: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    paddingTop: '8px'
+  } as React.CSSProperties,
+  transparentBtn: {
+    backgroundColor: 'transparent',
+    border: 'none'
+  } as React.CSSProperties,
+  avatarContainer: {
+    backgroundColor: '#8AA698',
+    padding: '16px',
+    textAlign: 'center',
+    position: 'relative'
+  } as React.CSSProperties,
+  menuButton: {
+    position: 'absolute',
+    left: 8,
+    top: 8,
+    backgroundColor: 'transparent',
+    border: 'none'
+  } as React.CSSProperties,
+  avatar: {
+    marginTop: 16
+  } as React.CSSProperties,
+  authButtons: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 12
+  } as React.CSSProperties,
+  menuSection: {
+    padding: '16px'
+  } as React.CSSProperties,
+  primaryBtn: {
+    width: '100%',
+    backgroundColor: '#203625',
+    color: '#F1F1EA',
+    border: 'none',
+    borderRadius: '1rem'
+  } as React.CSSProperties,
+  smallBtn: {
+    backgroundColor: '#203625',
+    color: '#F1F1EA',
+    border: 'none',
+    borderRadius: '0.5rem',
+    fontSize: '12px',
+    padding: '4px 12px',
+    height: '28px'
+  } as React.CSSProperties,
+  chatItem: {
+    padding: '8px 12px',
+    marginBottom: '8px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    color: '#203625'
+  } as React.CSSProperties,
+  footerButtons: {
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '12px'
+  } as React.CSSProperties,
+  contentArea: {
+    marginLeft: 250,
+    backgroundColor: '#FFFFFF'
+  } as React.CSSProperties,
+  content: {
+    padding: '24px',
+    maxWidth: '960px',
+    margin: '0 auto',
+    width: '100%'
+  } as React.CSSProperties,
+  footer: {
+    backgroundColor: '#FFFFFF',
+    textAlign: 'center',
+    padding: '12px 0',
+    color: '#000000'
+  } as React.CSSProperties
 }

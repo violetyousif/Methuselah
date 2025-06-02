@@ -28,13 +28,21 @@ const SendBar = (props: SendBarProps & { inputColor?: string }) => {
     if (content) {
       inputRef.current!.value = ''
       inputRef.current!.style.height = 'auto'
-      onSend({ content, role: ChatRole.User })
+      onSend({
+        content,
+        role: ChatRole.User,
+      })
     }
   }
 
   const onKeydown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-    if (e.shiftKey) return
-    if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSend()
+    if (e.shiftKey) {
+      return
+    }
+
+    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+      handleSend()
+    }
   }
 
   return (
@@ -42,7 +50,9 @@ const SendBar = (props: SendBarProps & { inputColor?: string }) => {
       fallback={
         <div className="thinking">
           <span>Please wait ...</span>
-          <div className="stop" onClick={onStop}>Stop</div>
+          <div className="stop" onClick={onStop}>
+            Stop
+          </div>
         </div>
       }
       loading={loading}
