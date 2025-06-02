@@ -9,7 +9,7 @@ import Image from 'next/image'
 const md = MarkdownIt({ html: true }).use(mdKatex).use(mdHighlight)
 
 const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, userColor?: string }) => {
-  const { message, assistantColor = '#9AB7A9', userColor = '#318182' } = props
+  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA' } = props
 
   const isUser = message.role === 'user'
   const bgColor = isUser ? userColor : assistantColor
@@ -32,7 +32,7 @@ const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, us
 
       <div
         style={{
-          background: bgColor,
+          background: isUser ? '#F1F1EA' : assistantColor,
           borderRadius: '12px',
           padding: '8px 14px',
           maxWidth: '100%',
@@ -46,7 +46,7 @@ const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, us
         <div style={{ marginLeft: 8 }}>
           <div
             style={{
-              backgroundColor: '#318182',
+              backgroundColor: '#F1F1EA',
               borderRadius: '50%',
               width: 36,
               height: 36
