@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
-import styles from '@/styles/Landing.module.css'
+import styles from '@/styles/landing.module.css'
 
 const Landing = () => {
   const router = useRouter()
@@ -54,6 +54,8 @@ const Landing = () => {
       </div>
     </div>
   )
+
+
 }
 
 export default Landing
