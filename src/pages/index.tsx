@@ -81,6 +81,7 @@ export default function Home() {
 
   return (
     <Layout style={{ minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+ 
       <Sider
         width={collapsed ? 48 : 250}
         style={{
@@ -106,56 +107,68 @@ export default function Home() {
             />
           </div>
         ) : (
-          <>
-            <div style={{ backgroundColor: '#8AA698', padding: '16px', textAlign: 'center', position: 'relative' }}>
-              <Button
-                icon={<MenuOutlined />}
-                onClick={() => setCollapsed(true)}
-                style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
-              />
-              <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
-                <Avatar size={64} src="/methuselah-avatar.png" style={{ marginTop: 16 }} />
-                <Text strong style={{ display: 'block', marginTop: 8 }}>
-                  {userData?.name || 'Guest'}
-                </Text>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 12 }}>
-                <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
-                <Link href="/signup"><Button style={smallBtn}>Register</Button></Link>
-              </div>
-            </div>
-
-            <div style={{ padding: '16px' }}>
-              <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
-              <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
-              {chatHistory.map((chat) => (
-                <div
-                  key={chat.conversationId}
-                  style={{
-                    padding: '8px 12px',
-                    marginBottom: '8px',
-                    backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    color: '#203625'
-                  }}
-                  onClick={() => setSelectedChatId(chat.conversationId)}
-                >
-                  {chat.summary || chat.title}
+          // Begin new flex column for sidebar content
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ backgroundColor: '#8AA698', padding: '16px', textAlign: 'center', position: 'relative' }}>
+                <Button
+                  icon={<MenuOutlined />}
+                  onClick={() => setCollapsed(true)}
+                  style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
+                />
+                <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
+                  <Avatar size={64}  style={{ backgroundColor: '#6F9484', marginTop: 16 }} />
+                  <Text strong style={{ display: 'block', marginTop: 8 }}>
+                    {userData?.name || 'Guest'}
+                  </Text>
                 </div>
-              ))}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+                  <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
+                  <Link href="/signup"><Button style={smallBtn}>Register</Button></Link>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                <div style={{ padding: '16px' }}>
+                  <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+                  <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
+                </div>
+
+                <div style={{
+                  flexGrow: 1,
+                  maxHeight: '400px', // Approx. space for ~10 chats
+                  overflowY: chatHistory.length > 10 ? 'auto' : 'visible',
+                  padding: '0 16px 16px 16px'
+                }}>
+                  {chatHistory.map((chat) => (
+                    <div
+                      key={chat.conversationId}
+                      style={{
+                        padding: '8px 12px',
+                        marginBottom: '8px',
+                        backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        color: '#203625'
+                      }}
+                      onClick={() => setSelectedChatId(chat.conversationId)}
+                    >
+                      {chat.summary || chat.title}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-
-            <div style={{ flexGrow: 1 }} /> {/* Pushes the buttons down */}
-
+            {/* Bottom buttons */}
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <Link href="/settings"><Button style={buttonStyle}>Settings</Button></Link>
               <Button onClick={() => setDashboardVisible(true)} style={buttonStyle}>Dashboard</Button>
               <Button style={buttonStyle}>Feedback</Button>
             </div>
-          </>
+          </div>
         )}
       </Sider>
+
 
       <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: '#FFFFFF' }}>
         <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%' }}>
@@ -197,15 +210,15 @@ export default function Home() {
 
 const buttonStyle = {
   width: '100%',
-  backgroundColor: '#203625',
-  color: '#F1F1EA',
+  backgroundColor: '#F1F1EA',
+  color: '#000000',
   border: 'none',
   borderRadius: '1rem'
 }
 
 const smallBtn = {
-  backgroundColor: '#203625',
-  color: '#F1F1EA',
+  backgroundColor: '#F1F1EA',
+  color: '#000000',
   border: 'none',
   borderRadius: '0.5rem',
   fontSize: '12px',

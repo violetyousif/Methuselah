@@ -55,7 +55,7 @@ const SendBar = (props: SendBarProps & { inputColor?: string }) => {
           placeholder="Shift + Enter for new line"
           autoComplete="off"
           rows={1}
-          style={{ flex: 1, border: 'none', borderRadius: 8, padding: '8px' }}
+          style={{ flex: 1, border: 'none', borderRadius: 8, padding: '8px', color:'#000000' }}
           onKeyDown={onKeydown}
           onInput={onInputAutoSize}
         />
