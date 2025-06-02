@@ -80,7 +80,7 @@ function Login() {
 
           <Form.Item>
             <div style={{ textAlign: 'right' }}>
-              <Link href="/forgot-password" style={{ color: '#203625', fontWeight: 'bold' }}>
+              <Link href="/forgotPassword" style={{ color: '#203625', fontWeight: 'bold' }}>
                 Forgot your password?
               </Link>
             </div>

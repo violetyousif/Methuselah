@@ -40,7 +40,7 @@ function ForgotPassword() {
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Forgot Password</h2>
+        <h2 style={styles.header}>Forgot Password?</h2>
         <p style={styles.subtext}>Enter your email and we'll send a reset link.</p>
 
         <Form form={form} layout="vertical" onFinish={onFinish}>
