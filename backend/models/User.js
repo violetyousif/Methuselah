@@ -7,7 +7,6 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   phoneNum:  { type: String },
-  country: { type: String },
   dateOfBirth: { type: String, required: true },
   agreedToTerms: { type: Boolean, default: false, required: true },
   preferences: {
@@ -18,11 +17,10 @@ const UserSchema = new mongoose.Schema({
     notificationsEnabled: { type: Boolean, default: true },
     language: { type: String, default: 'en' }
   },
-  timestamps: true // This adds createdAt and updatedAt automatically
-  //createdAt: { type: Date, default: Date.now },
-  //updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
 });
 
-const User = mongoose.model('User', UserSchema, 'Users');
-export default User;
+const getUser = mongoose.model('User', UserSchema, 'Users');
+export default getUser;
 

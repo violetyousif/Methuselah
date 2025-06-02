@@ -24,7 +24,8 @@ function Login() {
 
   const onFinish = async (values: any) => {
     try {
-      const response = await fetch('http://localhost:8080/api/userLogin', {
+      // Connect to backend API to sign-in user
+      const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
@@ -32,7 +33,7 @@ function Login() {
       const data = await response.json();
       if (response.ok) {
         message.success('Login successful');
-        router.push('/'); // Redirect to home page (index.tsx)
+        router.push('/');   // Redirect to home page (index.tsx)
       } else {
         message.error(data.message || 'Login failed');
       }

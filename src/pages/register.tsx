@@ -1,8 +1,6 @@
 // Name: Mizanur Mizan
 // Description: Created the register page frontend layout and input boxes for name, email, and password
-// Date: 5/26/25
-// Modified by Mizan: 5/29/25
-// pages/register.tsx
+// Date: 5/26/25, modified 5/29/25
 
 // Edited by: Violet Yousif
 // Date: 06/01/2025
@@ -13,19 +11,47 @@ import { Form, Input, Button, Checkbox } from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import ModalTerms from '../components/TermsModal';
-import { Weight } from 'lucide-react';
+import { useRouter } from 'next/router';
 
-function register() {
-  const [form] = Form.useForm();
-  const [termsVisible, setTermsVisible] = useState(false);
+
+// Name: Violet Yousif
+// Date: 06/01/2025
+// Description: Function to format phone number input to US style (000-000-0000)
+function formatPhoneNumber(value: string) {
+  // Remove all non-digit characters
+  const digits = value.replace(/\D/g, '');
+  // Format: 000-000-0000
+  if (digits.length === 10) {
+    return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
+  }
+  return value; // Return as is if not 10 digits
+}
+
+
 
   // Edited by: Violet Yousif
   // Date: 06/01/2025
   // Description: Edited function to fetch backend data, include
-  // error handling and run validation in the register form submission.
+  // error handling (make names lowercase, edited pw check, errorMsg, etc.)
+  // and to validate user doesn't already exist.
+function register() {
+  const [form] = Form.useForm();
+  const [termsVisible, setTermsVisible] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const router = useRouter();
+
   const onFinish = async (values: any) => {
   try {
-    const res = await fetch('/api/register', {
+    const payload = {
+      firstName: values.firstName.toLowerCase(),
+      lastName: values.lastName.toLowerCase(),
+      email: values.email.toLowerCase(),
+      phoneNum: values.phoneNum,
+      dateOfBirth: values.dateOfBirth,
+      // country: values.country?.toLowerCase() || values.country,
+    };
+    // connect to backend API to register user
+    const res = await fetch('http://localhost:8080/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values)
@@ -33,16 +59,24 @@ function register() {
 
     const result = await res.json();
 
-    if (!res.ok) throw new Error(result.message);
-    console.log('register successful: ', result);
+    if (!res.ok) {
+      console.error('Server response:', result);
+      throw new Error(result.message || 'Registration failed');
+    }
+    console.log('Registered successfully: ', result);
+    router.push('/login'); // Redirects to login page if registration is successful
+
     } catch (error) {
-      console.error('ERROR: register failed: ', error);
+      if (!errorMsg) setErrorMsg('Registration failed. Please try again.');
+      console.error('ERROR - Registration failed: ', error);
     }
   };
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
+
+        { /* Back Button */ }
         <Link href="/">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
@@ -52,6 +86,8 @@ function register() {
         <h2 style={styles.header}>Create an Account</h2>
 
         <Form form={form} name="register" layout="vertical" onFinish={onFinish}>
+
+          { /* First Name */ }
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={ styles.label }>First Name</span>}
@@ -61,15 +97,17 @@ function register() {
             <Input placeholder="Jane" style={styles.placeholderStyle} />
           </Form.Item>
 
+          { /* Last Name */ }
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Last Name</span>}
-            name="LastName"
+            name="lastName"
             rules={[{ required: true, message: 'Please enter your last name' }]}
           >
             <Input placeholder="Doe" style={styles.placeholderStyle} />
           </Form.Item>
 
+          {/* Valid Email */}
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Email</span>}
@@ -82,7 +120,7 @@ function register() {
             <Input placeholder="janedoe@example.com" style={styles.placeholderStyle} />
           </Form.Item>
 
-          {/* Set password input to require at least 8 characters, 1 number, and other constraints */}
+          {/* Set password input to require at least 10 characters, 1 number, 1 special char, 1 uppercase, 1 lowercase */}
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Password</span>}
@@ -100,6 +138,7 @@ function register() {
             <Input.Password type="password" placeholder="Minimum 10 characters" style={styles.placeholderStyle} />
           </Form.Item>
 
+          { /* Confirm Password */}
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Confirm Password</span>}
@@ -120,19 +159,45 @@ function register() {
             <Input.Password placeholder="Verify Password" style={styles.placeholderStyle} />
           </Form.Item>
 
+          {/* Phone Number */}
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Phone Number</span>}
             name="phoneNum"
             rules={[
               { required: true, message: 'Please enter your phone number' },
-              // digits values and amount entered
-              { pattern: /^\+?[0-9\-()\s]{7,20}$/, message: 'Please enter a valid phone number' }
+              {
+                validator: (_, value) => {
+                  const digits = value ? value.replace(/\D/g, '') : '';
+                  if (digits.length === 10) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject('Phone number must be exactly 10 digits');
+                  }
+                }
             ]}
           >
-            <Input placeholder="000-000-0000" style={styles.placeholderStyle} />
+            {/* Input field for phone number with formatting */}
+            <Input
+              placeholder="000-000-0000"
+              style={styles.placeholderStyle}
+              onBlur={e => {
+                const formatted = formatPhoneNumber(e.target.value);
+                form.setFieldsValue({ phoneNum: formatted });
+              }}
+              onChange={e => {
+                // Only allow up to 10 digits
+                const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                let formatted = digits;
+                if (digits.length === 10) {
+                  formatted = formatPhoneNumber(digits);
+                }
+                form.setFieldsValue({ phoneNum: formatted });
+              }}
+            />
           </Form.Item>
 
+          { /* Date of Birth */}
           <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Date of Birth</span>}
@@ -142,34 +207,40 @@ function register() {
             <Input type="date" style={styles.placeholderStyle} />
           </Form.Item>
 
-          <Form.Item
+          { /* Country (Not sure if necessary to have)*/}
+          {/* <Form.Item
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Country</span>}
             name="country"
             rules={[{ required: true, message: 'Please enter your country' }]}
           >
             <Input placeholder="United States" style={styles.placeholderStyle} />
-          </Form.Item>
+          </Form.Item> */}
 
+          { /* Terms and Conditions Agreement */}
           <Form.Item
             name="agreedToTerms"
             valuePropName="checked"
-            // the rule uses a custom validator to verify the checkbox is checked
-            rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('You must agree to the terms') }]}
+            rules={[
+              {
+                validator: (_, value) =>
+                  value ? Promise.resolve() : Promise.reject('You must agree to the terms'),
+              },
+            ]}
           >
-            <Checkbox required>
+            <Checkbox>
               I agree to the{' '}
-              <a onClick={() => setTermsVisible(true)} style={styles.linkColor}>
+              <span
+                onClick={() => setTermsVisible(true)}
+                style={{ ...styles.linkColor, textDecoration: 'underline', cursor: 'pointer' }}
+              >
                 Terms of Service
-              </a>
+              </span>
             </Checkbox>
-            <ModalTerms visible={termsVisible} onClose={() => setTermsVisible(false)} />
-            {/* <Checkbox style={styles.checkBoxlabel}>
-              I agree to the <Link href="/userLogin">Terms and Conditions</Link>
-            </Checkbox> */}
           </Form.Item>
+          <ModalTerms visible={termsVisible} onClose={() => setTermsVisible(false)} />
 
-
+          { /* Submit Button */}
           <Form.Item style={styles.submitContainer}>
             <Button type="primary" htmlType="submit" style={styles.submitButton}>
               Sign Up
@@ -177,8 +248,9 @@ function register() {
           </Form.Item>
           </Form>
 
+        { /* Redirect to Login Page */}
         <div style={styles.loginRedirect}>
-          Already have an account? <Link href="/userLogin" style={styles.linkColor}>Log In</Link>
+          Already have an account? <Link href="/login" style={styles.linkColor}>Log In</Link>
         </div>
       </div>
     </div>

@@ -14,9 +14,9 @@ import { fileURLToPath } from 'url';
 //import { Types } from 'mongoose'; // for ObjectId type in mongoose
  
 import logger from './middleware/logger.js';
-//import auth from './middleware/auth.js';
-//import User from './middleware/User.js';
-import login from './routes/userLogin.js';
+//import auth from './middleware/auth';
+//import User from './middleware/User';
+import userLogin from './routes/userLogin.js';
 import userRegister from './routes/userRegister.js';
 
 // Description: Set up the express app and connect to MongoDB
@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
   });
 
 // Protected Routes
-app.use('/api', login);
+app.use('/api', userLogin);
 app.use('/api', userRegister);
 
 // Description: Start Server

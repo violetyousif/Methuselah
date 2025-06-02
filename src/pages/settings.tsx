@@ -24,7 +24,7 @@ const allCountries = Object.values(countries.getNames('en'))
 export default function Settings() {
   const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState('default')
-  const [country, setCountry] = useState('United States')
+  // const [country, setCountry] = useState('United States')
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState<moment.Moment | null>(null)
 
@@ -38,7 +38,6 @@ export default function Settings() {
     const settings = {
       name,
       birthday: birthday ? birthday.toISOString() : null,
-      country,
       theme,
       fontSize
     }
@@ -75,7 +74,7 @@ export default function Settings() {
           </div>
 
           {/* Country Field */}
-          <div>
+          {/* <div>
             <div style={styles.label}>Country:</div>
             <Select
               showSearch
@@ -90,7 +89,7 @@ export default function Settings() {
                 </Option>
               ))}
             </Select>
-          </div>
+          </div> */}
 
           {/* Theme Field */}
           <div>
