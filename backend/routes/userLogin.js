@@ -52,11 +52,27 @@ router.post('/login', loginLimiter, async (req, res) => {
       console.log('Invalid password');
       return res.status(400).json({ message: 'Invalid password' });
     }
+    //Viktor 
+    //Date 6/1/2025
+    //session tokens are assigned to the user to only be signed in for 1 hour. Afterwhich, they will have to log back in again
+    const token = jwt.sign( //creating variable token and assigning it with a generated token from sign
+      { userId: user._id, email : user.email }, //assigning data User(collection) variable: _id and email to userId and email respectively
+      process.env.JWT_SECRET, //Secret key to prove its from our server. (authentication)
+      { expiresIn: '1h' } 
+    );
 
-    res.status(200).json({ message: 'Login successful', user });
+    const {password: _, ...userWithoutPassword} = user.toObject(); //deconstructing the user object and creating a new user without a password variable
+    res.status(200).json({message: 'Login Successful!', token, user: userWithoutPassword    }); //send the user data back to the client with the token
+    } catch (err) {
+      console.log('Server Error: ', err);
+      res.status(500).json({ error: err.message });
+
+
+
+   /* res.status(200).json({ message: 'Login successful', user });
   } catch (err) {
     console.log('Server error:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });*/
   }
 });
 
