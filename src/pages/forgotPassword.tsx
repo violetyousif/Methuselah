@@ -12,7 +12,7 @@ function ForgotPassword() {
 
   const onFinish = async (values: any) => {
     try {
-      const response = await fetch('http://localhost:8080/api/forgot-password', {
+      const response = await fetch('http://localhost:8080/api/forgotpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
