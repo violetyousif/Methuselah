@@ -7,7 +7,7 @@
 // Reformatted the code to simplify project's coding style.
 
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox, Select } from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import ModalTerms from '../components/TermsModal';
@@ -26,7 +26,6 @@ function formatPhoneNumber(value: string) {
   }
   return value; // Return as is if not 10 digits
 }
-
 
 
   // Edited by: Violet Yousif
@@ -48,7 +47,7 @@ function register() {
       email: values.email.toLowerCase(),
       phoneNum: values.phoneNum,
       dateOfBirth: values.dateOfBirth,
-      // country: values.country?.toLowerCase() || values.country,
+      gender: values.gender
     };
     // connect to backend API to register user
     const res = await fetch('http://localhost:8080/api/register', {
@@ -92,7 +91,10 @@ function register() {
             style={ styles.rowSpacing }
             label={<span style={ styles.label }>First Name</span>}
             name="firstName"
-            rules={[{ required: true, message: 'Please enter your first name' }]}
+            rules={[
+              { required: true, message: 'Please enter your first name' },
+              { pattern: /^[A-Za-z\s'-]+$/, message: "Only letters, dashes, spaces, and apostrophes are allowed" }
+            ]}
           >
             <Input placeholder="Jane" style={styles.placeholderStyle} />
           </Form.Item>
@@ -102,7 +104,10 @@ function register() {
             style={ styles.rowSpacing }
             label={<span style={styles.label}>Last Name</span>}
             name="lastName"
-            rules={[{ required: true, message: 'Please enter your last name' }]}
+            rules={[
+              { required: true, message: 'Please enter your last name' },
+              { pattern: /^[A-Za-z\s'-]+$/, message: "Only letters, dashes, spaces, and apostrophes are allowed" }
+            ]}
           >
             <Input placeholder="Doe" style={styles.placeholderStyle} />
           </Form.Item>
@@ -197,9 +202,10 @@ function register() {
             />
           </Form.Item>
 
+          <div style={styles.shortInputContainer}>
           { /* Date of Birth */}
           <Form.Item
-            style={ styles.rowSpacing }
+            style={{ ...styles.rowSpacing, ...styles.halfWidth }} // half width for date of birth
             label={<span style={styles.label}>Date of Birth</span>}
             name="dateOfBirth"
             rules={[{ required: true, message: 'Please enter your birth date' }]}
@@ -207,15 +213,21 @@ function register() {
             <Input type="date" style={styles.placeholderStyle} />
           </Form.Item>
 
-          { /* Country (Not sure if necessary to have)*/}
-          {/* <Form.Item
-            style={ styles.rowSpacing }
-            label={<span style={styles.label}>Country</span>}
-            name="country"
-            rules={[{ required: true, message: 'Please enter your country' }]}
+          { /* Gender */}
+          <Form.Item
+            style={{ ...styles.rowSpacing, ...styles.halfWidth }} // half width for gender
+            label={<span style={styles.label}>Gender</span>}
+            name="gender"
+            rules={[{ required: true, message: 'Select Gender' }]}
           >
-            <Input placeholder="United States" style={styles.placeholderStyle} />
-          </Form.Item> */}
+            <Select placeholder="Select Gender" style={styles.placeholderStyle}>
+              <Select.Option value="female">Female</Select.Option>
+              <Select.Option value="male">Male</Select.Option>
+              <Select.Option value="other">Other</Select.Option>
+              <Select.Option value="prefer_not_to_say">Prefer not to say</Select.Option>
+            </Select>
+          </Form.Item>
+          </div>
 
           { /* Terms and Conditions Agreement */}
           <Form.Item
@@ -298,6 +310,14 @@ const styles = {
   placeholderStyle: {
     opacity: 0.8,     // Text transparency in input fields
     color: '#1D1E2C'
+  },
+  shortInputContainer: {
+    display: 'flex',
+    gap: '16px', // space between fields
+  },
+  halfWidth: {
+    flex: 1.7,
+    minWidth: 0,
   },
   checkBoxlabel: {
     color: '#1D1E2C',

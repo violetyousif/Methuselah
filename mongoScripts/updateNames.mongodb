@@ -11,7 +11,7 @@ use('Longevity');
 
   for (const user of users) {
     const fullName = user.name.trim();
-    const [firstName, ...rest] = fullName.split(" ");
+    const [firstName, ...rest] = fullName.split(" "); // Split the name into first name and the rest
     const lastName = rest.join(" ") || "";
 
     const result = await db.Users.updateOne(
