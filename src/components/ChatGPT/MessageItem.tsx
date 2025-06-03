@@ -1,4 +1,4 @@
-
+// Modified: 6/3/25 by Syed to add timestamps to messages.
 import React from 'react'
 import MarkdownIt from 'markdown-it'
 import mdHighlight from 'markdown-it-highlightjs'
@@ -14,7 +14,18 @@ const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, us
   const isUser = message.role === 'user'
   const bgColor = isUser ? userColor : assistantColor
 
+  const timestamp = new Date(message.timestamp || Date.now()).toLocaleTimeString('en-US', {
+    timeZone: 'America/New_York',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
+
   return (
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ fontStyle: 'italic', fontSize: '12px', color: '#000', marginBottom: '4px', textAlign: isUser ? 'right' : 'left' }}>
+        {timestamp}
+    </div>
     <div
       className="message-item"
       style={{
@@ -55,6 +66,7 @@ const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, us
         </div>
       )}
     </div>
+  </div>
   )
 
 }
