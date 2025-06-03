@@ -289,3 +289,21 @@ body[data-theme='default'] .custom-modal .ant-btn-primary {
   color: black !important;
 }
 
+/* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
+body[data-fontsize='regular'] { font-size: 16px; }
+body[data-fontsize='large'] { font-size: 17px; }
+body[data-fontsize='extra-large'] { font-size: 18px; }
+
+body[data-fontsize='large'] h1,
+body[data-fontsize='large'] h2,
+body[data-fontsize='large'] input,
+body[data-fontsize='large'] .ant-select-selector {
+  font-size: 2em !important;
+}
+body[data-fontsize='extra-large'] h1,
+body[data-fontsize='extra-large'] h2,
+body[data-fontsize='extra-large'] input,
+body[data-fontsize='extra-large'] .ant-select-selector {
+  font-size: 2.5em !important;
+}
+
