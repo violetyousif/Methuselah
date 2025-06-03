@@ -10,12 +10,18 @@
 // Date: 06/02/2025
 // Description: Added dynamic dark mode theme support and enhanced phone formatting + form validation
 
+// Edited by: Viktor Gjorgjevski
+// Date: 06/03/2025
+// Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
+
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ModalTerms from '../components/TermsModal'
 import { useRouter } from 'next/router'
+import { profilePicPresets } from '../components/profilePicker'; //imports users choice on profile image
+
 
 // Dark mode theme state
 const getThemeFromBody = (): 'default' | 'dark' =>
@@ -52,7 +58,8 @@ function Register() {
         email: values.email.toLowerCase(),
         phoneNum: values.phoneNum,
         dateOfBirth: values.dateOfBirth,
-        gender: values.gender
+        gender: values.gender,
+        profilePic: values.profilePic || '/avatars/avatar1.png'
       }
       
       // connect to backend API to register user
@@ -246,6 +253,27 @@ function Register() {
                 <Select.Option value="other">Other</Select.Option>
                 <Select.Option value="prefer_not_to_say">Prefer not to say</Select.Option>
               </Select>
+            </Form.Item>
+
+            { /* Profile Picker */}
+            <Form.Item label={<span style={styles.label}>Choose Your profile picture</span>} name="profilePic">
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                {profilePicPresets.map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={'Profile ${idx + 1}'}
+                    onClick={() =>  form.setFieldsValue({avatar: url})}
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      border: form.getFieldValue('profilePic') === url ? '3px solid #318182' : '2px solid transparent',
+                      cursor: 'pointer'
+                    }}
+                    />
+                ))}
+              </div>
             </Form.Item>
           </div>
 
