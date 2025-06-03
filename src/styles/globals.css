@@ -147,6 +147,15 @@ footer {
   stroke-width: 1.5;
 }
 
+/* Link styles */
+/* a {
+    color: #C9F4DC !important;
+}
+ a:hover {
+    color: #318182 !important;
+    text-decoration: underline;
+} */
+
 /* ------------------ DARK THEME STYLES ------------------ */
 /* Added by: Mohammad Hoque - 06/02/25 */
 [data-theme='dark'] {
@@ -289,10 +298,21 @@ footer {
 
 /* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */
-a {
-    color: #C9F4DC !important;
-}
-a:hover {
+[data-theme='dark'] a {
     color: #318182 !important;
+    background-color: none !important;
+}
+[data-theme='dark'] a:hover {
+    color: #203625 !important;
     text-decoration: underline;
+    background-color: none !important;
+}
+/* Links on Sign In and Registration*/
+[data-theme='extPages'] {
+  color: #3b8d8e !important;
+  background-color: transparent !important;
+}
+[data-theme='extPages']:hover {
+  color: #203625 !important;
+  text-decoration: underline;
 }

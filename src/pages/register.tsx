@@ -243,7 +243,7 @@ function register() {
             <Checkbox>
               I agree to the{' '}
               <span onClick={() => setTermsVisible(true)}>
-                Terms of Service
+                <span data-theme='extPages'>Terms of Service</span>
               </span>
             </Checkbox>
           </Form.Item>
@@ -259,7 +259,7 @@ function register() {
 
         { /* Redirect to Login Page */}
         <div>
-          Already have an account? <Link href="/login">Log In</Link>
+          Already have an account? <span data-theme='extPages'><Link href="/login">Login</Link></span>
         </div>
       </div>
     </div>
@@ -270,7 +270,7 @@ export default register;
 
 const styles = {
   page: {
-    backgroundColor: '#F1F1EB',
+    backgroundColor: '#1D1E2C',
     displauy: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',
@@ -285,7 +285,7 @@ const styles = {
     maxWidth: 400,
     margin: '1rem auto',
     padding: '2rem',
-    backgroundColor: '#A0B6AA',
+    backgroundColor: '#F1F1EB',
     borderRadius: '20px',
     paddingBottom: '24px',
   },
@@ -340,5 +340,5 @@ const styles = {
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'
-  }
+  },
 } as const;
