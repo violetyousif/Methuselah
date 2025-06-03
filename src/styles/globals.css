@@ -143,6 +143,38 @@ footer {
   background-color: #0f0f17;
   color: #F1F1EA;
 }
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-content,
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-header {
+  background-color: #252525 !important;
+  border-radius: 1.5rem !important;
+}
+
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-close-x {
+  color: #fff !important;
+  z-index: 10;
+}
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-close-x:hover {
+  color: #4BC2C4 !important;
+}
+
+
+[data-theme='dark'] .ant-input-affix-wrapper,
+[data-theme='dark'] .ant-input-affix-wrapper-focused,
+[data-theme='dark'] .ant-input-password {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-input-affix-wrapper:focus,
+[data-theme='dark'] .ant-input-affix-wrapper-focused,
+[data-theme='dark'] .ant-input-affix-wrapper input:focus {
+  border-color: #42a9aa !important;
+  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
+  background-color: #0f0f17 !important;
+  color: #F1F1EA !important;
+}
+
 
 [data-theme='dark'] .card,
 [data-theme='dark'] .container,
@@ -207,6 +239,39 @@ footer {
   stroke: #F1F1EA;
 }
 
+/* Default theme (light mode) modal fix */
+body[data-theme='default'] .custom-modal .ant-modal-content {
+  background-color: #A0B6AA !important;
+  color: #1D1E2C !important;
+  border-radius: 2rem !important;
+  border: 2px solid #203625 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1) !important;
+}
+
+body[data-theme='default'] .custom-modal .ant-modal-body {
+  padding: 24px !important;
+}
+
+body[data-theme='default'] .custom-modal .ant-btn {
+  border-radius: 1rem !important;
+}
+body[data-theme='default'] .custom-modal .ant-modal-header {
+  background-color: #A0B6AA !important;
+  border-bottom: 1px solid #203625 !important;
+  color: #1D1E2C !important;
+}
+
+body[data-theme='default'] .custom-modal .ant-modal-close-x {
+  color: #1D1E2C !important;
+}
+body[data-theme='default'] .custom-modal .ant-btn-primary {
+  background-color: #203625 !important;
+  border-color: #203625 !important;
+}
+
+/* Already present dark mode styles should remain — do not remove them */
+
+
 /* ------------------ Dashboard color ------------------ */
 .custom-dashboard-modal .ant-modal-content {
   background-color: #9AB7A9 !important;
@@ -222,5 +287,23 @@ footer {
 
 .custom-dashboard-modal .ant-modal-close {
   color: black !important;
+}
+
+/* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
+body[data-fontsize='regular'] { font-size: 16px; }
+body[data-fontsize='large'] { font-size: 17px; }
+body[data-fontsize='extra-large'] { font-size: 18px; }
+
+body[data-fontsize='large'] h1,
+body[data-fontsize='large'] h2,
+body[data-fontsize='large'] input,
+body[data-fontsize='large'] .ant-select-selector {
+  font-size: 2em !important;
+}
+body[data-fontsize='extra-large'] h1,
+body[data-fontsize='extra-large'] h2,
+body[data-fontsize='extra-large'] input,
+body[data-fontsize='extra-large'] .ant-select-selector {
+  font-size: 2.5em !important;
 }
 

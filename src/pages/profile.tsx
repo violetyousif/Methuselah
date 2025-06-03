@@ -21,7 +21,12 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-  const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
+  const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      return (document.body.dataset.theme as 'default' | 'dark') || 'default'
+    }
+    return 'default'
+  })
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'default'
@@ -65,9 +70,7 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
       open={visible}
       onCancel={onClose}
       footer={null}
-      style={styles.modal}
       styles={{
-        body: styles.modalBody,
         mask: styles.modalMask
       }}
       closable
@@ -140,58 +143,59 @@ export default Profile
 
 const getStyles = (theme: 'default' | 'dark') => ({
   modalTitle: {
-    color: theme === 'dark' ? '#e0e0e0' : '#000000'
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    fontWeight: 'bold',
+    fontSize: '1.1rem'
   },
-  modal: {
-    backgroundColor: theme === 'dark' ? '#252525' : '#ffffff',
-    borderRadius: '8px'
-  },
-  modalBody: {
-    backgroundColor: theme === 'dark' ? '#252525' : '#ffffff',
-    padding: '16px',
-    borderRadius: '8px'
-  },
+  
   modalMask: {
-    backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.6)'
+    backgroundColor: theme === 'dark'
+      ? 'rgba(0, 0, 0, 0.7)'
+      : 'rgba(0, 0, 0, 0.1)'
   },
   form: {
-    color: theme === 'dark' ? '#e0e0e0' : '#000000'
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C'
   },
   label: {
-    color: theme === 'dark' ? '#e0e0e0' : '#000000'
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    fontWeight: 'bold',
+    marginBottom: 4
   },
   input: {
     backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: '#4b5563',
-    color: theme === 'dark' ? '#e0e0e0' : '#000000'
+    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    borderRadius: '8px'
   },
   inputNumber: {
     width: '100%',
     backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: '#4b5563',
-    color: theme === 'dark' ? '#e0e0e0' : '#000000'
+    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    borderRadius: '8px'
   },
   select: {
     width: '100%',
     backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: '#4b5563',
-    color: theme === 'dark' ? '#e0e0e0' : '#000000'
+    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    borderRadius: '8px'
   },
   option: {
-    color: theme === 'dark' ? '#e0e0e0' : '#000000',
+    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
     backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff'
   },
   primaryButton: {
-    backgroundColor: '#4b5563',
-    borderColor: '#4b5563',
-    color: theme === 'dark' ? '#e0e0e0' : '#ffffff',
-    borderRadius: '1rem'
+    backgroundColor: theme === 'dark' ? '#4b5563' : '#203625',
+    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    color: '#ffffff',
+    borderRadius: '1rem',
+    marginRight: '8px'
   },
   cancelButton: {
-    marginLeft: 8,
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: '#4b5563',
-    color: theme === 'dark' ? '#e0e0e0' : '#000000',
+    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#F1F1EB',
+    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    color: theme === 'dark' ? '#e0e0e0' : '#203625',
     borderRadius: '1rem'
   }
 })

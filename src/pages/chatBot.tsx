@@ -1,5 +1,5 @@
 // Modified: Syed Rabbey (5/31/25) - rearranged buttons and color scheme
-// src/pages/index.tsx
+// src/pages/chatBot.tsx
 
 // Edited by: Violet Yousif
 // Date: 06/01/2025
