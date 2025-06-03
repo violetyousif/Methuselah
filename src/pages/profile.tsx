@@ -157,7 +157,7 @@ const styles = {
     width: '100%',
     backgroundColor: '#2f2f2f',
     borderColor: '#4b5563',
-    color: '#FFFFFF'
+    color: '#e0e0e0'
   },
   select: {
     width: '100%',
