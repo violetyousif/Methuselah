@@ -206,3 +206,21 @@ footer {
   color: #F1F1EA;
   stroke: #F1F1EA;
 }
+
+/* ------------------ Dashboard color ------------------ */
+.custom-dashboard-modal .ant-modal-content {
+  background-color: #9AB7A9 !important;
+}
+
+.custom-dashboard-modal .ant-modal-header {
+  background-color: #9AB7A9 !important;
+}
+
+.custom-dashboard-modal .ant-modal-title {
+  color: black !important;
+}
+
+.custom-dashboard-modal .ant-modal-close {
+  color: black !important;
+}
+
