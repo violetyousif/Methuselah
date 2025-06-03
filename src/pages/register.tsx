@@ -22,9 +22,11 @@ const getThemeFromBody = (): 'default' | 'dark' =>
   (document?.body?.dataset?.theme as 'default' | 'dark') || 'default'
 
 // Format US-style phone number
-function formatPhoneNumber(value: string) {
-  const digits = value.replace(/\D/g, '')
-  if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`
+function formatPhoneNumber(value: string) {  
+  const digits = value.replace(/\D/g, '')   // Remove all non-digit characters
+  // Format: 000-000-0000
+  if (digits.length === 10) 
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`
   return value
 }
 
@@ -35,13 +37,13 @@ function Register() {
   const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const router = useRouter()
 
-  // 🟢 Load current theme from <body data-theme>
+  // Load current theme from <body data-theme>
   useEffect(() => {
     const currentTheme = getThemeFromBody()
     setTheme(currentTheme)
   }, [])
 
-  // 🟢 Form submit handler – sends data to backend
+  // Form submit handler – sends data to backend
   const onFinish = async (values: any) => {
     try {
       const payload = {
@@ -52,7 +54,8 @@ function Register() {
         dateOfBirth: values.dateOfBirth,
         gender: values.gender
       }
-
+      
+      // connect to backend API to register user
       const res = await fetch('http://localhost:8080/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -62,14 +65,14 @@ function Register() {
       const result = await res.json()
       if (!res.ok) throw new Error(result.message || 'Registration failed')
 
-      router.push('/login') // 🔄 Redirect on success
+      router.push('/login') // Redirects to login page if registration is successful
     } catch (error) {
       if (!errorMsg) setErrorMsg('Registration failed. Please try again.')
       console.error('ERROR - Registration failed: ', error)
     }
   }
 
-  // 🔧 Dynamic styles based on dark/light theme
+  // Dynamic styles based on dark/light theme
   const styles = {
     page: {
       backgroundColor: theme === 'dark' ? '#0f0f17' : '#F1F1EB',
@@ -140,7 +143,7 @@ function Register() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        {/* 🔙 Back to homepage */}
+        {/* Back to homepage */}
         <Link href="/">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
@@ -150,7 +153,7 @@ function Register() {
         <h2 style={styles.header}>Create an Account</h2>
 
         <Form form={form} name="register" layout="vertical" onFinish={onFinish}>
-          {/* 📝 Basic input fields */}
+          {/* First Name */}
           <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[
             { required: true, message: 'Please enter your first name' },
             { pattern: /^[A-Za-z\s'-]+$/, message: "Only letters, dashes, spaces, and apostrophes allowed" }
@@ -158,6 +161,7 @@ function Register() {
             <Input placeholder="Jane" style={styles.placeholderStyle} />
           </Form.Item>
 
+          { /* Last Name */ }
           <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[
             { required: true, message: 'Please enter your last name' },
             { pattern: /^[A-Za-z\s'-]+$/, message: "Only letters, dashes, spaces, and apostrophes allowed" }
@@ -165,6 +169,7 @@ function Register() {
             <Input placeholder="Doe" style={styles.placeholderStyle} />
           </Form.Item>
 
+          {/* Valid Email */}
           <Form.Item label={<span style={styles.label}>Email</span>} name="email" rules={[
             { required: true, message: 'Please enter your email' },
             { type: 'email', message: 'Enter a valid email' }
@@ -172,7 +177,7 @@ function Register() {
             <Input placeholder="janedoe@example.com" style={styles.placeholderStyle} />
           </Form.Item>
 
-          {/* 🔐 Password + confirm password fields */}
+          {/* Set password input to require at least 10 characters, 1 number, 1 special char, 1 uppercase, 1 lowercase */}
           <Form.Item label={<span style={styles.label}>Password</span>} name="password" rules={[
             { required: true, message: 'Please enter a secure password' },
             { min: 10, message: 'Minimum 10 characters' },
@@ -184,6 +189,7 @@ function Register() {
             <Input.Password placeholder="Minimum 10 characters" style={styles.placeholderStyle} />
           </Form.Item>
 
+          { /* Confirm Password */}
           <Form.Item label={<span style={styles.label}>Confirm Password</span>} name="confirmPassword" dependencies={['password']} rules={[
             { required: true, message: 'Please confirm your password' },
             ({ getFieldValue }) => ({
@@ -197,7 +203,7 @@ function Register() {
             <Input.Password placeholder="Verify Password" style={styles.placeholderStyle} />
           </Form.Item>
 
-          {/* 📞 Phone with dynamic formatting */}
+          {/* Phone Number */}
           <Form.Item label={<span style={styles.label}>Phone Number</span>} name="phoneNum" rules={[
             { required: true, message: 'Enter phone number' },
             {
@@ -209,25 +215,28 @@ function Register() {
               }
             }
           ]}>
+            {/* Input field for phone number with formatting */}
             <Input
               placeholder="000-000-0000"
               style={styles.placeholderStyle}
               onBlur={(e) => form.setFieldsValue({ phoneNum: formatPhoneNumber(e.target.value) })}
               onChange={(e) => {
+                // Only allow up to 10 digits
                 const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
                 form.setFieldsValue({ phoneNum: formatPhoneNumber(digits) })
               }}
             />
           </Form.Item>
 
-          {/* 🎂 DOB & Gender side by side */}
           <div style={styles.shortInputContainer}>
+            { /* Date of Birth */}
             <Form.Item label={<span style={styles.label}>Date of Birth</span>} name="dateOfBirth" style={styles.halfWidth} rules={[
               { required: true, message: 'Enter your birth date' }
             ]}>
               <Input type="date" style={styles.placeholderStyle} />
             </Form.Item>
-
+            
+            { /* Gender */}
             <Form.Item label={<span style={styles.label}>Gender</span>} name="gender" style={styles.halfWidth} rules={[
               { required: true, message: 'Select Gender' }
             ]}>
@@ -240,7 +249,7 @@ function Register() {
             </Form.Item>
           </div>
 
-          {/* 📃 Terms Modal */}
+          { /* Terms and Conditions Agreement */}
           <Form.Item name="agreedToTerms" valuePropName="checked" rules={[
             {
               validator: (_, value) =>
@@ -257,7 +266,7 @@ function Register() {
 
           <ModalTerms visible={termsVisible} onClose={() => setTermsVisible(false)} />
 
-          {/* 📩 Submit */}
+          { /* Submit Button */}
           <Form.Item style={styles.submitContainer}>
             <Button type="primary" htmlType="submit" style={styles.submitButton}>
               Sign Up
@@ -265,7 +274,7 @@ function Register() {
           </Form.Item>
         </Form>
 
-        {/* 🔁 Redirect to Login */}
+        { /* Redirect to Login Page */}
         <div style={styles.loginRedirect}>
           Already have an account? <Link href="/login" style={styles.linkColor}>Log In</Link>
         </div>
