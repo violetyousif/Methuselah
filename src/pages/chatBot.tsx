@@ -32,6 +32,8 @@ const Chatbot = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
 
   // COMMENT OUT DURING TESTING WHILE USER NOT LOGGED IN -Viktor 6/2/2025
   // Will check if user is logged in, else redirect to login page
@@ -40,7 +42,13 @@ const Chatbot = () => {
   //   if (!token) { router.push('/login')}
   // }, [])
 
+  // New useEffect to update isLoggedIn state based on token presence
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    setIsLoggedIn(!!token)
+  }, [])
 
+  // Load theme and font size from localStorage on initial render
   useEffect(() => {
   const theme = localStorage.getItem('theme') || 'default'
   const fontSize = localStorage.getItem('fontSize') || 'regular'
@@ -168,10 +176,26 @@ const buttonStyle = {
                       {userData?.name || 'Guest'}
                     </Text>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
-                    <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
-                    <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
-                  </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
+                      {!isLoggedIn && (
+                        <>
+                          <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
+                          <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
+                        </>
+                      )}
+                      {isLoggedIn && (
+                        <Button
+                          style={styles.logoutBtn}
+                          onClick={() => {
+                            localStorage.removeItem('token')
+                            setIsLoggedIn(false)
+                            router.push('/login')
+                          }}
+                        >
+                          Logout
+                        </Button>
+                      )}
+                    </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                   <div style={{ padding: '16px' }}>
@@ -215,15 +239,6 @@ const buttonStyle = {
                 </Link>
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
                 <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
-                <Button
-                  style={styles.logoutBtn}
-                  onClick={() => {
-                    localStorage.removeItem('token')
-                    window.location.href = '/login'
-                  }}
-                >
-                  Logout
-                </Button>
               </div>
             </div>
           </div>
