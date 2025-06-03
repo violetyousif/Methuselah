@@ -1,79 +1,66 @@
-/* Modified: Syed Rabbey (6/1/25), added new scroll wheel design */
+/* Modified: Syed Rabbey (6/1/25), - Added custom scrollbar, modal styling, and dark theme styles */
+/* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
 /* Modified: Violet Yousif (6/2/25), added new styling for global footer */
 
-/* Override Modal header */
+/* Modal Styling - Dark themed */
 .custom-modal .ant-modal-content {
   background-color: #252525 !important;
   border-radius: 8px;
 }
-
 .custom-modal .ant-modal-header {
   background-color: #252525 !important;
   border-bottom: 1px solid #4b5563 !important;
   border-radius: 8px 8px 0 0;
 }
-
 .custom-modal .ant-modal-close-x {
   color: #e0e0e0 !important;
 }
-
 .custom-modal .ant-modal-close-x:hover {
   color: #d1d5db !important;
 }
 
-/* Override Select dropdown */
+/* Select Styling - Dark themed dropdowns */
 .custom-select .ant-select-selector {
   background-color: #2f2f2f !important;
   border-color: #4b5563 !important;
   color: #e0e0e0 !important;
 }
-
 .custom-select .ant-select-arrow {
   color: #e0e0e0 !important;
 }
-
 .custom-select .ant-select-item-option {
   background-color: #2f2f2f !important;
   color: #e0e0e0 !important;
 }
-
 .custom-select .ant-select-item-option:hover {
   background-color: #3a3a3a !important;
 }
-
 .custom-select .ant-select-item-option-selected {
   background-color: #4b5563 !important;
 }
 
-/* Font size control for user settings */
-body[data-fontsize='regular'] {
-  font-size: 16px;
-}
+/* Font size control for theme settings (Mohammad Hoque) */
+body[data-fontsize='regular'] { font-size: 16px; }
+body[data-fontsize='large'] { font-size: 17px; }
+body[data-fontsize='extra-large'] { font-size: 18px; }
 
-body[data-fontsize='large'] {
-  font-size: 17px;
-}
-
-body[data-fontsize='extra-large'] {
-  font-size: 18px;
-}
-
-/* Fade-in animation */
+/* Animation - global fade in */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 .fade-in {
   animation: fadeIn 1.5s ease-in-out;
 }
 
+/* Accessibility: reduce motion for users with preference (Mohammad Hoque) */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none !important;
+  }
+}
+
+/* Footer default (light mode) */
 footer {
   position: fixed;
   bottom: 0;
@@ -91,32 +78,27 @@ footer {
   right: 0;
 }
 
-/* Sidebar */
+/* Sidebar styling */
 .sidebar-collapsed {
   width: 40px !important;
   min-width: 40px !important;
 }
-
 .hamburger-button {
   position: absolute !important;
   top: 16px;
   left: 12px;
   z-index: 1000;
 }
-
-/* Ensure the sidebar doesn't completely vanish */
 .sider {
   min-width: 40px;
   background-color: #9AB7A9 !important;
 }
-
-/* Sidebar button placement */
 .sidebar-bottom {
   margin-top: auto;
   padding-bottom: 16px;
 }
 
-/* Avatar styling */
+/* Avatar display */
 .meta.assistant .avatar img {
   width: 40px;
   height: 40px;
@@ -124,13 +106,12 @@ footer {
   object-fit: cover;
 }
 
-
+/* Send bar */
 .send-bar .button {
   background-color: #F1F1EA !important;
   border: none;
   color: #1e1e1e;
 }
-
 .send-bar .input {
   background-color: #F1F1EA !important;
   border: none;
@@ -139,38 +120,174 @@ footer {
   border-radius: 8px;
 }
 
-/* Custom simple Scrollbar */
+/* Scrollbar styling - Custom theme (Syed Rabbey) */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background-color:#F1F1EA;
-
+  background-color: #F1F1EA;
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(60, 60, 60, 0.5);
 }
-
-
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(60, 60, 60, 0.3) transparent;
 }
 
+/* Chat icon outline */
 .chat-icon-black-outline {
   color: black;
   stroke: black;
   stroke-width: 1.5;
 }
 
+/* ------------------ DARK THEME STYLES ------------------ */
+/* Added by: Mohammad Hoque - 06/02/25 */
+[data-theme='dark'] {
+  background-color: #0f0f17;
+  color: #F1F1EA;
+}
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .container,
+[data-theme='dark'] .ant-card {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-btn-primary {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+}
+[data-theme='dark'] .ant-btn-primary:hover {
+  background-color: #256c6f !important;
+  border-color: #256c6f !important;
+}
+
+[data-theme='dark'] .ant-input,
+[data-theme='dark'] .ant-select-selector,
+[data-theme='dark'] .ant-picker {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-input:focus,
+[data-theme='dark'] .ant-select-selector:focus,
+[data-theme='dark'] .ant-picker-focused {
+  border-color: #42a9aa !important;
+  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
+}
+
+[data-theme='dark'] .ant-select-item-option-selected {
+  background-color: #318182 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] footer {
+  background-color: #0f0f17 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .sider {
+  background-color: #318182 !important;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background-color: #318182;
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background-color: #0f0f17;
+}
+
+[data-theme='dark'] * {
+  scrollbar-color: #318182 #0f0f17;
+}
+
+[data-theme='dark'] .chat-icon-black-outline {
+  color: #F1F1EA;
+  stroke: #F1F1EA;
+}
+
+/* ------------------ DARK THEME STYLES ------------------ */
+/* Added by: Mohammad Hoque - 06/02/25 */
+[data-theme='dark'] {
+  background-color: #0f0f17;
+  color: #F1F1EA;
+}
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .container,
+[data-theme='dark'] .ant-card {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-btn-primary {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+}
+[data-theme='dark'] .ant-btn-primary:hover {
+  background-color: #256c6f !important;
+  border-color: #256c6f !important;
+}
+
+[data-theme='dark'] .ant-input,
+[data-theme='dark'] .ant-select-selector,
+[data-theme='dark'] .ant-picker {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-input:focus,
+[data-theme='dark'] .ant-select-selector:focus,
+[data-theme='dark'] .ant-picker-focused {
+  border-color: #42a9aa !important;
+  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
+}
+
+[data-theme='dark'] .ant-select-item-option-selected {
+  background-color: #318182 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] footer {
+  background-color: #0f0f17 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .sider {
+  background-color: #318182 !important;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background-color: #318182;
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background-color: #0f0f17;
+}
+
+[data-theme='dark'] * {
+  scrollbar-color: #318182 #0f0f17;
+}
+
+[data-theme='dark'] .chat-icon-black-outline {
+  color: #F1F1EA;
+  stroke: #F1F1EA;
+}
+
+/* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */
 a {
     color: #C9F4DC !important;
