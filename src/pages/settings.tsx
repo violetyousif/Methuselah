@@ -6,6 +6,10 @@
 // Date: 06/01/2025
 // Reformatted the code to simplify project's coding style.
 
+// Edited by: Mohammad Hoque
+// Date: 06/02/2025
+// Enhancements: Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
+
 import { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -20,15 +24,34 @@ const { Option } = Select
 countries.registerLocale(enLocale)
 const allCountries = Object.values(countries.getNames('en'))
 
-// Settings component with user options for Methuselah
 export default function Settings() {
   const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState('default')
-  // const [country, setCountry] = useState('United States')
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState<moment.Moment | null>(null)
 
-  // Updates document body and saves to LOCAL storage for font size change
+  // Added by: Mohammad Hoque - 06/02/2025
+  // Restores user settings on component mount (persistent state)
+  useEffect(() => {
+    const saved = localStorage.getItem('userSettings')
+    if (saved) {
+      const settings = JSON.parse(saved)
+      setName(settings.name || '')
+      setFontSize(settings.fontSize || 'regular')
+      setTheme(settings.theme || 'default')
+      setBirthday(settings.birthday ? moment(settings.birthday) : null)
+    }
+  }, [])
+
+  // Added by: Mohammad Hoque - 06/02/2025
+  // Sync selected theme to <body> attribute for global dark mode styling
+  useEffect(() => {
+    document.body.dataset.theme = theme
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  // Added by: Mohammad Hoque - 06/02/2025
+  // Sync selected font size to <body> attribute
   useEffect(() => {
     document.body.dataset.fontsize = fontSize
     localStorage.setItem('fontSize', fontSize)
@@ -43,6 +66,66 @@ export default function Settings() {
     }
     localStorage.setItem('userSettings', JSON.stringify(settings))
     message.success('Settings saved!')
+  }
+
+  // Modified by: Mohammad Hoque - 06/02/2025
+  // Dynamically apply dark or light styles using ternary conditions
+  const styles: { [key: string]: React.CSSProperties } = {
+    page: {
+      minHeight: '100vh',
+      backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '40px'
+    },
+    card: {
+      backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA',
+      borderRadius: '2rem',
+      border: '3px solid',
+      borderColor: theme === 'dark' ? '#318182' : '#000000',
+      padding: '40px',
+      width: '100%',
+      maxWidth: '480px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+    },
+    backButton: {
+      marginBottom: '24px',
+      backgroundColor: theme === 'dark' ? '#318182' : '#203625',
+      color: 'white',
+      borderColor: theme === 'dark' ? '#318182' : '#203625',
+      borderRadius: '9999px'
+    },
+    header: {
+      textAlign: 'center',
+      fontSize: '24px',
+      marginBottom: '32px',
+      color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
+    },
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px'
+    },
+    label: {
+      fontWeight: 'bold',
+      marginBottom: '4px',
+      color: theme === 'dark' ? '#F1F1EA' : 'inherit'
+    },
+    input: {
+      width: '100%',
+      borderRadius: '12px',
+      backgroundColor: theme === 'dark' ? '#1D1E2C' : undefined,
+      color: theme === 'dark' ? '#F1F1EA' : undefined,
+      borderColor: theme === 'dark' ? '#318182' : undefined
+    },
+    saveButton: {
+      marginTop: '16px',
+      backgroundColor: theme === 'dark' ? '#318182' : '#203625',
+      color: 'white',
+      borderColor: theme === 'dark' ? '#318182' : '#203625',
+      borderRadius: '9999px'
+    }
   }
 
   return (
@@ -73,29 +156,12 @@ export default function Settings() {
             />
           </div>
 
-          {/* Country Field */}
-          {/* <div>
-            <div style={styles.label}>Country:</div>
-            <Select
-              showSearch
-              value={country}
-              onChange={(val) => setCountry(val)}
-              style={styles.input}
-              placeholder="Select your country"
-            >
-              {allCountries.map((c, i) => (
-                <Option key={i} value={c}>
-                  {c}
-                </Option>
-              ))}
-            </Select>
-          </div> */}
-
           {/* Theme Field */}
           <div>
             <div style={styles.label}>Theme:</div>
             <Select value={theme} onChange={(val) => setTheme(val)} style={styles.input}>
-              <Option value="default">Default</Option>
+              <Option value="default">Light</Option>
+              <Option value="dark">Dark</Option>
             </Select>
           </div>
 
@@ -109,7 +175,31 @@ export default function Settings() {
             </Select>
           </div>
 
-          {/* Save Button */}
+          {/* Global font size scaling */}
+          <style jsx global>{`
+            body[data-fontsize='regular'] {
+              font-size: 16px;
+            }
+            body[data-fontsize='large'] {
+              font-size: 18px;
+            }
+            body[data-fontsize='extra-large'] {
+              font-size: 20px;
+            }
+            body[data-fontsize='large'] h1,
+            body[data-fontsize='large'] h2,
+            body[data-fontsize='large'] input,
+            body[data-fontsize='large'] .ant-select-selector {
+              font-size: 2em !important;
+            }
+            body[data-fontsize='extra-large'] h1,
+            body[data-fontsize='extra-large'] h2,
+            body[data-fontsize='extra-large'] input,
+            body[data-fontsize='extra-large'] .ant-select-selector {
+              font-size: 2.5em !important;
+            }
+          `}</style>
+
           <Button type="primary" onClick={handleSave} style={styles.saveButton}>
             Save Changes
           </Button>
@@ -117,57 +207,4 @@ export default function Settings() {
       </div>
     </div>
   )
-}
-
-const styles: { [key: string]: React.CSSProperties } = {
-  page: {
-    minHeight: '100vh',
-    backgroundColor: '#F1F1EB',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '40px'
-  },
-  card: {
-    backgroundColor: '#A0B6AA',
-    borderRadius: '2rem',
-    border: '3px solid',
-    padding: '40px',
-    width: '100%',
-    maxWidth: '480px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-  },
-  backButton: {
-    marginBottom: '24px',
-    backgroundColor: '#203625',
-    color: 'white',
-    borderColor: '#203625',
-    borderRadius: '9999px'
-  },
-  header: {
-    textAlign: 'center',
-    fontSize: '24px',
-    marginBottom: '32px',
-    color: '#1D1E2C'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px'
-  },
-  label: {
-    fontWeight: 'bold',
-    marginBottom: '4px'
-  },
-  input: {
-    width: '100%',
-    borderRadius: '12px'
-  },
-  saveButton: {
-    marginTop: '16px',
-    backgroundColor: '#203625',
-    color: 'white',
-    borderColor: '#203625',
-    borderRadius: '9999px'
-  }
 }
