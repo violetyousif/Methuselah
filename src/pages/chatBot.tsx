@@ -4,6 +4,10 @@
 // Edited by: Violet Yousif
 // Date: 06/01/2025
 // Reformatted the code to simplify project's coding style.
+
+// Edited by: Viktor Gjorgjevski
+// Date: 06/03/2025
+// Edited Logout button and added profile pic
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
@@ -39,6 +43,14 @@ const Chatbot = () => {
   //   const token = localStorage.getItem('token')
   //   if (!token) { router.push('/login')}
   // }, [])
+
+  useEffect(() => {
+  const storedUser = localStorage.getItem('userData');
+  if (storedUser) {
+    setUserData(JSON.parse(storedUser));
+  }
+}, []);
+// END COMMENT OUT -Viktor 6/2/2025
 
 
   useEffect(() => {
@@ -163,9 +175,9 @@ const buttonStyle = {
                     style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
                   />
                   <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
-                    <Avatar size={64} style={{ backgroundColor: '#6F9484', marginTop: 16 }} />
+                    <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={{ marginTop: 16 }} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
-                      {userData?.name || 'Guest'}
+                      {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')} 
                     </Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
@@ -216,10 +228,12 @@ const buttonStyle = {
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
                 <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
                 <Button
-                  style={styles.logoutBtn}
+                  style={styles.logoutBtn} //logout button edited by Viktor 6/3/2025
                   onClick={() => {
                     localStorage.removeItem('token')
-                    window.location.href = '/login'
+                    localStorage.removeItem('userData');
+                    setUserData(null);
+                    router.push('/login').then(() => window.location.reload()); //window.location.href = '/login' (original line)
                   }}
                 >
                   Logout
