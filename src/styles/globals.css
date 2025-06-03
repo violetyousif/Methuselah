@@ -1,4 +1,5 @@
-/* Modified: Syed Rabbey (6/1/25) added new scroll wheel design */
+/* Modified: Syed Rabbey (6/1/25), added new scroll wheel design */
+/* Modified: Violet Yousif (6/2/25), added new styling for global footer */
 
 /* Override Modal header */
 .custom-modal .ant-modal-content {
@@ -74,11 +75,20 @@ body[data-fontsize='extra-large'] {
 }
 
 footer {
-  background-color: #ffffff !important;
-  color: #000000 !important;
+  position: fixed;
+  bottom: 0;
+  justify-content:end;
+  background-color: #1D1E2C !important;
+  color: #F1F1EA !important;
   text-align: center;
-  height: 30px;
-  padding: 4px;
+  height: 35px;
+  margin-top: 10px;
+  padding-top: 10px;
+  z-index: 1000;
+  width: 100%;
+  font-size: x-small;
+  left: 0;
+  right: 0;
 }
 
 /* Sidebar */
@@ -159,4 +169,13 @@ footer {
   color: black;
   stroke: black;
   stroke-width: 1.5;
+}
+
+/* Link styles */
+a {
+    color: #C9F4DC !important;
+}
+a:hover {
+    color: #318182 !important;
+    text-decoration: underline;
 }

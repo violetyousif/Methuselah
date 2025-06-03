@@ -242,10 +242,7 @@ function register() {
           >
             <Checkbox>
               I agree to the{' '}
-              <span
-                onClick={() => setTermsVisible(true)}
-                style={{ ...styles.linkColor, textDecoration: 'underline', cursor: 'pointer' }}
-              >
+              <span onClick={() => setTermsVisible(true)}>
                 Terms of Service
               </span>
             </Checkbox>
@@ -261,8 +258,8 @@ function register() {
           </Form>
 
         { /* Redirect to Login Page */}
-        <div style={styles.loginRedirect}>
-          Already have an account? <Link href="/login" style={styles.linkColor}>Log In</Link>
+        <div>
+          Already have an account? <Link href="/login">Log In</Link>
         </div>
       </div>
     </div>
@@ -274,15 +271,23 @@ export default register;
 const styles = {
   page: {
     backgroundColor: '#F1F1EB',
+    displauy: 'block',
+    position: 'absolute' as const,
     minHeight: '100vh',
-    padding: '1.5rem'
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    height: '100%',
+    width: '100%',
   },
   card: {
     maxWidth: 400,
-    margin: 'auto',
+    margin: '1rem auto',
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '20px',
+    paddingBottom: '24px',
   },
   rowSpacing: {
     marginBottom: '0.6px'
@@ -291,7 +296,7 @@ const styles = {
     marginBottom: '24px',
     backgroundColor: '#203625',
     color: 'white',
-    borderColor: '#203625',
+    border: 'none',
     borderRadius: '9999px'
   },
   header: {
@@ -335,13 +340,5 @@ const styles = {
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'
-  },
-  linkColor: {
-    color: '#C9F4DC',
-    Weight: '600' as const,
-    textDecoration: 'underline' as const,
-  },
-  loginRedirect: {
-    textAlign: 'center' as const
   }
 } as const;

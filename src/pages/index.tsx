@@ -32,10 +32,11 @@ export default function Home() {
 
   // COMMENT OUT DURING TESTING WHILE USER NOT LOGGED IN -Viktor 6/2/2025
   // Will check if user is logged in, else redirect to login page
-  useEffect(() => {
+  /*useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token) { router.push('/login')}
   }, [])
+  */
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -138,13 +139,13 @@ export default function Home() {
                     </Text>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
-                    <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
-                    <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
+                    <Link href="/login"><Button style={styles.smallBtn}>Login</Button></Link>
+                    <Link href="/register"><Button style={styles.smallBtn}>Register</Button></Link>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                   <div style={{ padding: '16px' }}>
-                    <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+                    <Button onClick={handleNewChat} style={styles.primaryBtn}>+ New Chat</Button>
                     <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
                   </div>
                   <div style={{ flexGrow: 1 }} />
@@ -180,10 +181,10 @@ export default function Home() {
               {/* Bottom buttons */}
               <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
                 <Link href="/settings">
-                  <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
+                  <Button style={styles.primaryBtn} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
-                <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
-                <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
+                <Button onClick={() => setDashboardVisible(true)} style={styles.primaryBtn} icon={<CameraOutlined />}>Dashboard</Button>
+                <Button style={styles.primaryBtn} icon={<BulbOutlined />}>Feedback</Button>
                 <Button
                   style={styles.logoutBtn}
                   onClick={() => {
@@ -212,30 +213,30 @@ export default function Home() {
           )}
         </Content>
       </Layout>
-      <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
+      {/* <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div> */}
       <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
       <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} />
     </Layout>
   )
 }
 
-const buttonStyle = {
-  width: '100%',
-  backgroundColor: '#F1F1EA',
-  color: '#000000',
-  border: 'none',
-  borderRadius: '1rem'
-}
+// const buttonStyle = {
+//   width: '100%',
+//   backgroundColor: '#F1F1EA',
+//   color: '#000000',
+//   border: 'none',
+//   borderRadius: '1rem'
+// }
 
-const smallBtn = {
-  backgroundColor: '#F1F1EA',
-  color: '#000000',
-  border: 'none',
-  borderRadius: '0.5rem',
-  fontSize: '12px',
-  padding: '4px 12px',
-  height: '28px'
-}
+// const smallBtn = {
+//   backgroundColor: '#F1F1EA',
+//   color: '#000000',
+//   border: 'none',
+//   borderRadius: '0.5rem',
+//   fontSize: '12px',
+//   padding: '4px 12px',
+//   height: '28px'
+// }
 
 const styles = {
   page: {
