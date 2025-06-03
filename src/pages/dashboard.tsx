@@ -8,6 +8,10 @@
 // Date: 06/01/2025
 // Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
 
+// Edited by: Syed Rabbey
+// Date: 06/02/2025
+// Reformatted the code to change colors and add new data point.
+
 import React from 'react'
 import { Modal } from 'antd'
 import {
@@ -18,7 +22,11 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Label
 } from 'recharts'
 
 interface DashboardProps {
@@ -27,7 +35,6 @@ interface DashboardProps {
   onClose: () => void
 }
 
-// Static weekly data - replace with dynamic later
 const healthData = [
   { day: 'Mon', sleep: 6.5, exercise: 1.0 },
   { day: 'Tue', sleep: 7.0, exercise: 0.5 },
@@ -38,6 +45,15 @@ const healthData = [
   { day: 'Sun', sleep: 8.5, exercise: 1.0 }
 ]
 
+const dietData = [
+  { name: 'Protein', value: 25 },
+  { name: 'Fruits', value: 25 },
+  { name: 'Whole Grains', value: 20 },
+  { name: 'Vegetables', value: 30 }
+]
+
+const COLORS = ['#2F4F4F', '#3C6E71', '#5A8F7B', '#7FB285']
+
 const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
   return (
     <Modal
@@ -45,54 +61,63 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
       open={visible}
       onCancel={onClose}
       footer={null}
-      width="90%"
+      width="80%"
       style={styles.modalContainer}
       styles={{
         body: styles.modalBody,
-        mask: styles.modalMask
+        mask: styles.modalMask,
       }}
       closable
-      wrapClassName="custom-modal"
+      wrapClassName="custom-dashboard-modal" 
     >
-      {/* Greeting */}
       <div style={styles.greeting}>
         Welcome back, <strong>{walletAddress || 'Guest'}</strong>! Here's a look at your recent health activity.
       </div>
 
-      {/* Bar Charts Section */}
       <div style={styles.chartSection}>
-        {/* Sleep Chart */}
         <div style={styles.chartContainer}>
           <h3 style={styles.chartTitle}>Sleep Health</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
-              <CartesianGrid stroke="#A0B6AA" strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke="#F1F1EB" />
-              <YAxis stroke="#F1F1EB" />
+              <CartesianGrid stroke="#203625" strokeDasharray="3 3" />
+              <XAxis dataKey="day" stroke="#000000" />
+              <YAxis stroke="#000000" />
               <Tooltip />
               <Legend />
-              <Bar dataKey="sleep" fill="#A0B6AA" name="Hours Slept" />
+              <Bar dataKey="sleep" fill="#203625" name="Hours Slept" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Exercise Chart */}
         <div style={styles.chartContainer}>
           <h3 style={styles.chartTitle}>Exercise Habits</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
-              <CartesianGrid stroke="#A0B6AA" strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke="#F1F1EB" />
-              <YAxis stroke="#F1F1EB" />
+              <CartesianGrid stroke="#203625" strokeDasharray="3 3" />
+              <XAxis dataKey="day" stroke="#000000" />
+              <YAxis stroke="#000000" />
               <Tooltip />
               <Legend />
-              <Bar dataKey="exercise" fill="#F1F1EB" name="Hours Exercised" />
+              <Bar dataKey="exercise" fill="#203625" name="Hours Exercised" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Health Tips */}
+      <div style={styles.pieChartSection}>
+        <h3 style={styles.chartTitle}>Diet Breakdown</h3>
+        <ResponsiveContainer width={400} height={300}>
+          <PieChart>
+            <Pie data={dietData} dataKey="value" cx="50%" cy="50%" outerRadius={100} label>
+              {dietData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
       <div style={styles.tips}>
         <p style={styles.tipPrimary}>☀️ It is recommended that you increase your Vitamin D intake.</p>
         <p style={styles.tipNeutral}>
@@ -110,61 +135,71 @@ export default Dashboard
 
 const styles = {
   modalTitle: {
-    color: '#F1F1EB',
+    color: '#000000',
     fontSize: '28px',
     fontWeight: 600
   },
+
   modalContainer: {
-    backgroundColor: '#203625',
+    backgroundColor: '#9AB7A9',
     borderRadius: '16px',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginTop: 24
   },
   modalBody: {
-    backgroundColor: '#203625',
-    padding: '40px',
+    backgroundColor: '#F1F1EB',
+    padding: '30px',
     borderRadius: '16px',
-    minHeight: '85vh'
+    minHeight: '75vh'
   },
   modalMask: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: '16px'
   },
   greeting: {
-    color: '#F1F1EB',
-    fontSize: '20px',
-    marginBottom: '30px'
+    color: '#000000',
+    fontSize: '18px',
+    marginBottom: '24px'
   },
   chartSection: {
     display: 'flex',
     justifyContent: 'space-between',
-    flexWrap: 'wrap' as 'wrap',
-    gap: '40px'
+    flexWrap: 'wrap' as const,
+    gap: '24px'
   },
   chartContainer: {
     flex: 1,
     minWidth: '300px'
   },
+  pieChartSection: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column' as const,
+    marginTop: '30px',
+    marginBottom: '20px'
+  },
   chartTitle: {
     color: '#4BC2C4',
     textAlign: 'center' as const,
-    marginBottom: '20px',
-    fontSize: '22px'
+    marginBottom: '16px',
+    fontSize: '20px'
   },
   tips: {
-    marginTop: '50px',
-    fontSize: '20px',
-    lineHeight: '2.2'
+    marginTop: '20px',
+    fontSize: '18px',
+    lineHeight: '1.9'
   },
   tipPrimary: {
     color: '#4BC2C4'
   },
   tipNeutral: {
-    color: '#F1F1EB'
+    color: '#000000'
   },
   tipHighlight: {
     color: '#4BC2C4'
   },
   tipSecondary: {
-    color: '#A0B6AA'
+    color: '#203625'
   }
 }
