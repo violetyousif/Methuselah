@@ -14,6 +14,8 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
+import '@/styles/globals.css'
+
 
 const { Sider, Content } = Layout
 const { Text } = Typography
@@ -29,6 +31,7 @@ const Chatbot = () => {
   const [dashboardVisible, setDashboardVisible] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [collapsed, setCollapsed] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
 
   // COMMENT OUT DURING TESTING WHILE USER NOT LOGGED IN -Viktor 6/2/2025
   // Will check if user is logged in, else redirect to login page
@@ -36,6 +39,34 @@ const Chatbot = () => {
   //   const token = localStorage.getItem('token')
   //   if (!token) { router.push('/login')}
   // }, [])
+
+
+  useEffect(() => {
+  const theme = localStorage.getItem('theme') || 'default'
+  const fontSize = localStorage.getItem('fontSize') || 'regular'
+  document.body.dataset.theme = theme
+  document.body.dataset.fontsize = fontSize
+  setCurrentTheme(theme as 'default' | 'dark')
+}, [])
+
+
+const buttonStyle = {
+    width: '100%',
+    backgroundColor: currentTheme === 'dark' ? '#318182' : '#F1F1EA',
+    color: currentTheme === 'dark' ? '#ffffff' : '#000000',
+    border: 'none',
+    borderRadius: '1rem'
+  }
+
+  const smallBtn = {
+    backgroundColor: currentTheme === 'dark' ? '#318182' : '#F1F1EA',
+    color: currentTheme === 'dark' ? '#ffffff' : '#000000',
+    border: 'none',
+    borderRadius: '0.5rem',
+    fontSize: '12px',
+    padding: '4px 12px',
+    height: '28px'
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -100,11 +131,11 @@ const Chatbot = () => {
   }
 
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#FFFFFF' }}>
+    <Layout style={{ minHeight: '100vh', backgroundColor: currentTheme === 'dark' ? '#0f0f17' : '#FFFFFF' }}>
       <Sider
         width={collapsed ? 48 : 250}
         style={{
-          backgroundColor: '#9AB7A9',
+          backgroundColor: currentTheme === 'dark' ? '#2b4240' : '#8AA698',
           padding: 0,
           display: 'flex',
           flexDirection: 'column',
@@ -198,7 +229,7 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
-      <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: '#FFFFFF' }}>
+      <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: currentTheme === 'dark' ? '#0f0f17' : '#FFFFFF' }}>
         <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%', paddingBottom: '60px' }}>
           {selectedChatId && (
             <ChatGPT
@@ -221,23 +252,10 @@ const Chatbot = () => {
 
 export default Chatbot
 
-const buttonStyle = {
-  width: '100%',
-  backgroundColor: '#F1F1EA',
-  color: '#000000',
-  border: 'none',
-  borderRadius: '1rem'
-}
+const currentTheme = typeof window !== 'undefined' ? document.body.dataset.theme : 'default'
 
-const smallBtn = {
-  backgroundColor: '#F1F1EA',
-  color: '#000000',
-  border: 'none',
-  borderRadius: '0.5rem',
-  fontSize: '12px',
-  padding: '4px 12px',
-  height: '28px'
-}
+
+
 
 const styles = {
   page: {
