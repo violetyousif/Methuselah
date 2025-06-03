@@ -100,7 +100,7 @@ function Login() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <Link href="/">
+        <Link href="/chatBot">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>

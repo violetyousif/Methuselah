@@ -131,7 +131,7 @@ export default function Settings() {
   return (
     <div className="fade-in" style={styles.page}>
       <div style={styles.card}>
-        <Link href="/">
+        <Link href="/chatBot">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>

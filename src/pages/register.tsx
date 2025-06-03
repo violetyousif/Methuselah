@@ -144,7 +144,7 @@ function Register() {
     <div style={styles.page}>
       <div style={styles.card}>
         {/* Back to homepage */}
-        <Link href="/">
+        <Link href="/chatBot">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>
