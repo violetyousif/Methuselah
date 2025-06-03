@@ -35,7 +35,7 @@ function Login() {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('token', data.token); //grabs tokens from backend when user logs in. Stores them in browser local storage -Viktor 6/2/2025
         message.success('Login successful');
         router.push('/');
       } else {
