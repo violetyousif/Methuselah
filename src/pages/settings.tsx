@@ -10,6 +10,10 @@
 // Date: 06/02/2025
 // Enhancements: Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
 
+// Edited by: Viktor Gjorgjevski
+// Date: 06/03/2025
+// -Added profile picking option into settings
+
 import { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -17,6 +21,8 @@ import Link from 'next/link'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import moment from 'moment'
+import { profilePicPresets } from '../components/profilePicker'
+
 
 const { Option } = Select
 
@@ -29,6 +35,8 @@ export default function Settings() {
   const [theme, setTheme] = useState('default')
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState<moment.Moment | null>(null)
+  const [profilePic, setProfilePic] = useState('')
+
 
   // Added by: Mohammad Hoque - 06/02/2025
   // Restores user settings on component mount (persistent state)
@@ -40,6 +48,7 @@ export default function Settings() {
       setFontSize(settings.fontSize || 'regular')
       setTheme(settings.theme || 'default')
       setBirthday(settings.birthday ? moment(settings.birthday) : null)
+      setProfilePic(settings.profilePic || '') // added by  Viktor Gjorgjevski - 06/03/2025
     }
   }, [])
 
@@ -62,7 +71,8 @@ export default function Settings() {
       name,
       birthday: birthday ? birthday.toISOString() : null,
       theme,
-      fontSize
+      fontSize,
+      profilePic // added by Viktor Gjorgjevski - 06/03/2025
     }
     localStorage.setItem('userSettings', JSON.stringify(settings))
     message.success('Settings saved!')
@@ -156,6 +166,28 @@ export default function Settings() {
             />
           </div>
 
+          {/* Profile Pic selection */} {/* added by viktor gjorgjevski 6/3/2025 */}
+          <div>
+            <div style={styles.label}>Profile Picture:</div>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              {profilePicPresets.map((pic, index) => (
+                <img
+                  key={index}
+                  src={pic}
+                  alt={`Profile ${index}`}
+                  style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    border: profilePic === pic ? '3px solid #318182' : '2px solid transparent',
+                    }}
+                    onClick={() => setProfilePic(pic)}
+                    />
+                    ))}
+            </div>
+          </div>
+          
           {/* Theme Field */}
           <div>
             <div style={styles.label}>Theme:</div>

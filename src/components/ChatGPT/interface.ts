@@ -16,6 +16,7 @@ export interface ChatGPTProps {
 export interface ChatMessage {
   content: string
   role: ChatRole
+  timestamp?: string
 }
 
 export interface ChatMessageItemProps {
