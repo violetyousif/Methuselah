@@ -296,6 +296,23 @@ footer {
   stroke: #F1F1EA;
 }
 
+/* ------------------ Dashboard color ------------------ */
+.custom-dashboard-modal .ant-modal-content {
+  background-color: #9AB7A9 !important;
+}
+
+.custom-dashboard-modal .ant-modal-header {
+  background-color: #9AB7A9 !important;
+}
+
+.custom-dashboard-modal .ant-modal-title {
+  color: black !important;
+}
+
+.custom-dashboard-modal .ant-modal-close {
+  color: black !important;
+}
+
 /* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */
 [data-theme='dark'] a {
