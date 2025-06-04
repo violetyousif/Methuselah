@@ -1,4 +1,7 @@
 // src/models/index.ts
+
+// THIS IS NOT FOR OUR MODELS! THIS IS THE PROTOTYPE FROM DR. LU
+
 import { ChatRole } from '../components/ChatGPT/interface'
 
 export interface Message {
@@ -19,14 +22,18 @@ export interface Conversation {
 }
 
 // Updated interface to include name and email
+// Updated interface to include profile pic, firstname, lastname: Viktor Gjorgjevski 6/3/2025
 export interface UserData {
-  name?: string
+  //name?: string
+  firstName?: string
+  lastName?: string
   email?: string
   age: number
   weight: number // kg
   height: number // cm
   activityLevel: 'sedentary' | 'moderate' | 'active'
   sleepHours: number
+  //profilePic?: string
 }
 
 let inMemoryConversations: Record<string, Conversation> = {}

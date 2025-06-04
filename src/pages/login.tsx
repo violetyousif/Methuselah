@@ -8,6 +8,8 @@
 // Date: 06/01/2025 - Added "Forgot Password?" link
 // Updated by: Mohammad Hoque
 // Date: 06/02/2025 - Added dark mode support based on saved user theme
+// Updated by: Viktor Gjrogjevski
+// Date: 06/03/2025 - Fixed token and data not being removed when logging out
 
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
@@ -37,6 +39,7 @@ function Login() {
       if (response.ok) {
         localStorage.setItem('token', data.token); //grabs tokens from backend when user logs in. Stores them in browser local storage -Viktor 6/2/2025
         localStorage.setItem('usersName', data.Users.firstName || 'Guest') // Stores user's first name in local storage - Violet 6/2/2025
+        //localStorage.setItem('userData', JSON.stringify(data.user)); //stores user data in local storage -Viktor 6/2/2025
         message.success('Login successful');
         // after successful login
 
@@ -103,7 +106,7 @@ function Login() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <Link href="/">
+        <Link href="/chatBot">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>

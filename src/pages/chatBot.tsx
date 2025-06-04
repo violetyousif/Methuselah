@@ -1,9 +1,13 @@
 // Modified: Syed Rabbey (5/31/25) - rearranged buttons and color scheme
-// src/pages/index.tsx
+// src/pages/chatBot.tsx
 
 // Edited by: Violet Yousif
 // Date: 06/01/2025
 // Reformatted the code to simplify project's coding style.
+
+// Edited by: Viktor Gjorgjevski
+// Date: 06/03/2025
+// Edited Logout button and added profile pic
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
@@ -42,11 +46,14 @@ const Chatbot = () => {
   //   if (!token) { router.push('/login')}
   // }, [])
 
-  // New useEffect to update isLoggedIn state based on token presence
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    setIsLoggedIn(!!token)
-  }, [])
+  const storedUser = localStorage.getItem('userData');
+  if (storedUser) {
+    setUserData(JSON.parse(storedUser));
+  }
+}, []);
+// END COMMENT OUT -Viktor 6/2/2025
+
 
   // Load theme and font size from localStorage on initial render
   useEffect(() => {
@@ -171,9 +178,9 @@ const buttonStyle = {
                     style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
                   />
                   <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
-                    <Avatar size={64} style={{ backgroundColor: '#6F9484', marginTop: 16 }} />
+                    <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={{ marginTop: 16 }} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
-                      {userData?.name || 'Guest'}
+                      {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')} 
                     </Text>
                   </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
@@ -239,6 +246,17 @@ const buttonStyle = {
                 </Link>
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
                 <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
+                <Button
+                  style={styles.logoutBtn} //logout button edited by Viktor 6/3/2025
+                  onClick={() => {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('userData');
+                    setUserData(null);
+                    router.push('/login').then(() => window.location.reload()); //window.location.href = '/login' (original line)
+                  }}
+                >
+                  Logout
+                </Button>
               </div>
             </div>
           </div>

@@ -10,29 +10,27 @@
 // Date: 06/02/2025
 // Description: Added dynamic dark mode theme support and enhanced phone formatting + form validation
 
+// Edited by: Viktor Gjorgjevski
+// Date: 06/03/2025
+// Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
 
-// Name: Mizanur Mizan
-// Description: Created the register page frontend layout and input boxes for name, email, and password
-// Date: 5/26/25, modified 5/29/25
-
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style.
-
-import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, Select } from 'antd';
-import Link from 'next/link';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import ModalTerms from '../components/TermsModal';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react'
+import { Form, Input, Button, Checkbox, Select } from 'antd'
+import Link from 'next/link'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import ModalTerms from '../components/TermsModal'
+import { useRouter } from 'next/router'
+import { profilePicPresets } from '../components/profilePicker'; //imports users choice on profile image
 
 
-// Name: Violet Yousif
-// Date: 06/01/2025
-// Description: Function to format phone number input to US style (000-000-0000)
-function formatPhoneNumber(value: string) {
-  // Remove all non-digit characters
-  const digits = value.replace(/\D/g, '');
+// Dark mode theme state
+// function getThemeFromBody(): 'default' | 'dark' {
+//   return (document?.body?.dataset?.theme as 'default' | 'dark') || 'default'
+// }
+
+// Format US-style phone number
+function formatPhoneNumber(value: string) {  
+  const digits = value.replace(/\D/g, '')   // Remove all non-digit characters
   // Format: 000-000-0000
   if (digits.length === 10) {
     return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
@@ -50,34 +48,32 @@ function register() {
   const [form] = Form.useForm();
   const [termsVisible, setTermsVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const router = useRouter();
 
   const onFinish = async (values: any) => {
-  try {
-    const payload = {
-      firstName: values.firstName.toLowerCase(),
-      lastName: values.lastName.toLowerCase(),
-      email: values.email.toLowerCase(),
-      phoneNum: values.phoneNum,
-      dateOfBirth: values.dateOfBirth,
-      gender: values.gender
-    };
-    // connect to backend API to register user
-    const res = await fetch('http://localhost:8080/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    });
+    try {
+      const payload = {
+        firstName: values.firstName.toLowerCase(),
+        lastName: values.lastName.toLowerCase(),
+        email: values.email.toLowerCase(),
+        phoneNum: values.phoneNum,
+        dateOfBirth: values.dateOfBirth,
+        gender: values.gender
+        //profilePic: values.profilePic || '/avatars/avatar1.png'
+      }
+      
+      // connect to backend API to register user
+      const res = await fetch('http://localhost:8080/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values)
+      })
 
-    const result = await res.json();
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.message || 'Registration failed')
 
-    if (!res.ok) {
-      console.error('Server response:', result);
-      throw new Error(result.message || 'Registration failed');
-    }
-    console.log('Registered successfully: ', result);
-    router.push('/login'); // Redirects to login page if registration is successful
-
+      router.push('/login') // Redirects to login page if registration is successful
     } catch (error) {
       if (!errorMsg) setErrorMsg('Registration failed. Please try again.');
       console.error('ERROR - Registration failed: ', error);
@@ -87,9 +83,8 @@ function register() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-
-        { /* Back Button */ }
-        <Link href="/">
+        {/* Back to homepage */}
+        <Link href="/login">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>
@@ -241,7 +236,26 @@ function register() {
             </Select>
           </Form.Item>
           </div>
-
+          { /* Profile Picker */}
+            {/* <Form.Item label={<span style={styles.label}>Choose Your profile picture</span>} name="profilePic">
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                {profilePicPresets.map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={'Profile ${idx + 1}'}
+                    onClick={() =>  form.setFieldsValue({avatar: url})}
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      border: form.getFieldValue('profilePic') === url ? '3px solid #318182' : '2px solid transparent',
+                      cursor: 'pointer'
+                    }}
+                    />
+                ))}
+              </div>
+            </Form.Item> */}
           { /* Terms and Conditions Agreement */}
           <Form.Item
             name="agreedToTerms"
