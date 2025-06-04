@@ -255,8 +255,10 @@ function Register() {
               </Select>
             </Form.Item>
 
+
+          </div>
             { /* Profile Picker */}
-            <Form.Item label={<span style={styles.label}>Choose Your profile picture</span>} name="profilePic">
+            {/* <Form.Item label={<span style={styles.label}>Choose Your profile picture</span>} name="profilePic">
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 {profilePicPresets.map((url, idx) => (
                   <img
@@ -274,9 +276,7 @@ function Register() {
                     />
                 ))}
               </div>
-            </Form.Item>
-          </div>
-
+            </Form.Item> */}
           { /* Terms and Conditions Agreement */}
           <Form.Item name="agreedToTerms" valuePropName="checked" rules={[
             {
