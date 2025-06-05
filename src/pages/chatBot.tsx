@@ -46,12 +46,19 @@ const Chatbot = () => {
   //   if (!token) { router.push('/login')}
   // }, [])
 
-  useEffect(() => {
-  const storedUser = localStorage.getItem('userData');
-  if (storedUser) {
-    setUserData(JSON.parse(storedUser));
-  }
-}, []);
+  // Violet's:
+  // New useEffect to update isLoggedIn state based on token presence
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token')
+  //   setIsLoggedIn(!!token)
+  // }, [])
+
+//   useEffect(() => {
+//   const storedUser = localStorage.getItem('userData');
+//   if (storedUser) {
+//     setUserData(JSON.parse(storedUser));
+//   }
+// }, []);
 // END COMMENT OUT -Viktor 6/2/2025
 
 
@@ -177,12 +184,12 @@ const buttonStyle = {
                     onClick={() => setCollapsed(true)}
                     style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
                   />
-                  <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
+                  {/* <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
                     <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={{ marginTop: 16 }} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
                       {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')} 
                     </Text>
-                  </div>
+                  </div> */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
                       {!isLoggedIn && (
                         <>
@@ -246,7 +253,7 @@ const buttonStyle = {
                 </Link>
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
                 <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
-                <Button
+                {/* <Button
                   style={styles.logoutBtn} //logout button edited by Viktor 6/3/2025
                   onClick={() => {
                     localStorage.removeItem('token')
@@ -256,7 +263,7 @@ const buttonStyle = {
                   }}
                 >
                   Logout
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>

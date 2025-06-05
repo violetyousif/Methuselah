@@ -53,11 +53,12 @@ export default function Home() {
         />
           <a href="/chatBot">
             Enter Home Screen
-          </a>
+            </a>
       </div>
 
 
     </div>
   )
+
 
 }

@@ -20,7 +20,7 @@ import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ModalTerms from '../components/TermsModal'
 import { useRouter } from 'next/router'
-import { profilePicPresets } from '../components/profilePicker'; //imports users choice on profile image
+//import { profilePicPresets } from '../components/profilePicker'; //imports users choice on profile image
 
 
 // Dark mode theme state
@@ -41,9 +41,8 @@ function formatPhoneNumber(value: string) {
 
   // Edited by: Violet Yousif
   // Date: 06/01/2025
-  // Description: Edited function to fetch backend data, include
-  // error handling (make names lowercase, edited pw check, errorMsg, etc.)
-  // and to validate user doesn't already exist.
+  // Description: Edited function to fetch backend data, include error handling 
+  // (make names lowercase, edited pw check, errorMsg, etc.) and to validate user doesn't already exist.
 function register() {
   const [form] = Form.useForm();
   const [termsVisible, setTermsVisible] = useState(false);
@@ -72,7 +71,7 @@ function register() {
 
       const result = await res.json()
       if (!res.ok) throw new Error(result.message || 'Registration failed')
-
+      console.log('Registered successfully: ', result);
       router.push('/login') // Redirects to login page if registration is successful
     } catch (error) {
       if (!errorMsg) setErrorMsg('Registration failed. Please try again.');
@@ -83,7 +82,7 @@ function register() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        {/* Back to homepage */}
+        {/* Back to login */}
         <Link href="/login">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
@@ -236,6 +235,7 @@ function register() {
             </Select>
           </Form.Item>
           </div>
+          
           { /* Profile Picker */}
             {/* <Form.Item label={<span style={styles.label}>Choose Your profile picture</span>} name="profilePic">
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -256,6 +256,7 @@ function register() {
                 ))}
               </div>
             </Form.Item> */}
+
           { /* Terms and Conditions Agreement */}
           <Form.Item
             name="agreedToTerms"

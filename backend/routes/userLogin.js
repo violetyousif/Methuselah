@@ -39,7 +39,7 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    const user = await User.findOne({ email: { $eq: email } });
+    const user = await User.findOne({ email: { $eq: email.trim().toLowerCase() } });
     if (!user) {
       console.log('User not found');
       return res.status(400).json({ message: 'User not found' });
@@ -61,19 +61,14 @@ router.post('/login', loginLimiter, async (req, res) => {
       { expiresIn: '1h' } 
     );
 
+    // Violet: Changed "user" to "User" to match the imported User model
     const {password: _, ...userWithoutPassword} = user.toObject(); //deconstructing the user object and creating a new user without a password variable
     res.status(200).json({message: 'Login Successful!', token, user: userWithoutPassword    }); //send the user data back to the client with the token
     } catch (err) {
       console.log('Server Error: ', err);
       res.status(500).json({ error: err.message });
+    }
 
-
-
-   /* res.status(200).json({ message: 'Login successful', user });
-  } catch (err) {
-    console.log('Server error:', err);
-    res.status(500).json({ error: err.message });*/
-  }
 });
 
 

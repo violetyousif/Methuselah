@@ -39,7 +39,7 @@ function Login() {
       if (response.ok) {
         localStorage.setItem('token', data.token); //grabs tokens from backend when user logs in. Stores them in browser local storage -Viktor 6/2/2025
         localStorage.setItem('usersName', data.Users.firstName || 'Guest') // Stores user's first name in local storage - Violet 6/2/2025
-        //localStorage.setItem('userData', JSON.stringify(data.user)); //stores user data in local storage -Viktor 6/2/2025
+        localStorage.setItem('userData', JSON.stringify(data.user)); //stores user data in local storage -Viktor 6/2/2025
         message.success('Login successful');
         // after successful login
 
