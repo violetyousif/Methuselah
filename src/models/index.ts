@@ -1,4 +1,7 @@
 // src/models/index.ts
+
+// This is not for personal User db calling! It pertains to AI-related calls only!
+
 import { ChatRole } from '../components/ChatGPT/interface'
 
 export interface Message {
@@ -30,7 +33,7 @@ export interface UserData {
   height: number // cm
   activityLevel: 'sedentary' | 'moderate' | 'active'
   sleepHours: number
-  profilePic?: string
+  //profilePic?: string
 }
 
 let inMemoryConversations: Record<string, Conversation> = {}

@@ -51,7 +51,12 @@ export default function Home() {
           className={styles.input}
           placeholder="Ask Methuselah anything..."
         />
+          <a href="/chatBot">
+            Enter Home Screen
+            </a>
       </div>
+
+
     </div>
   )
 
