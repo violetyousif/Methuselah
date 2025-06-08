@@ -1,6 +1,6 @@
 // User.js: defines the structure of a User call in MongoDB.
-//Edited by Viktor Gjorgjevski 6/3/2025
-//-added profilePic to User schema
+// Viktor Gjorgjevski, 6/3/2025, added profilePic to User schema
+
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({

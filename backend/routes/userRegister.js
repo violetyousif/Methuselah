@@ -1,7 +1,8 @@
-// Name: Violet Yousif & Viktor (merged code together and separated from login file)
-// Date: 6/1/2025
-// Description: handles user registration; checks if the email already exists, 
-// hashes password, and saves new user to db.
+// Violet Yousif & Viktor, 6/1/2025, merged code together and separated from login file
+// Violet Yousif, 6/1/2025, handles user registration; checks if email exists, hashes password, and saves new user to db
+// Violet Yousif, 6/1/2025, added rate limiting to prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
+
+
 import express from 'express';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
@@ -10,10 +11,8 @@ import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 
-// Name: Violet Yousif
-// Date: 6/1/2025
-// Description: rate limiting middleware to prevent abuse
-// (Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts)
+// Rate limiting middleware to prevent abuse
+// Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts
 const registerLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,  // 1 minute
   max: 15,                   // limit each IP to 5 registration attempts per minute
@@ -26,8 +25,7 @@ const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-// Description: handles user registration; checks if the email already exists, 
-// hashes password, and saves new user to db.
+// Description: handles user registration; checks if the email already exists, hashes password, and saves new user to db.
 router.post('/register', registerLimiter, async (req, res) => {
   try {
     let {
