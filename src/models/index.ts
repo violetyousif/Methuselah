@@ -1,6 +1,6 @@
 // src/models/index.ts
 
-// THIS IS NOT FOR OUR MODELS! THIS IS THE PROTOTYPE FROM DR. LU
+// This is not for personal User db calling! It pertains to AI-related calls only!
 
 import { ChatRole } from '../components/ChatGPT/interface'
 
