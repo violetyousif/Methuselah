@@ -33,7 +33,7 @@ export interface UserData {
   height: number // cm
   activityLevel: 'sedentary' | 'moderate' | 'active'
   sleepHours: number
-  //profilePic?: string
+  profilePic?: string
 }
 
 let inMemoryConversations: Record<string, Conversation> = {}

@@ -33,12 +33,15 @@ function Login() {
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',     // Include cookies for session management request
         body: JSON.stringify(values),
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('token', data.token); //grabs tokens from backend when user logs in. Stores them in browser local storage -Viktor 6/2/2025
-        localStorage.setItem('usersName', data.Users.firstName || 'Guest') // Stores user's first name in local storage - Violet 6/2/2025
+        // Stores user's first name in local storage - Violet 6/2/2025
+        // uses the "user" object from backend/server response to get data - Violet 6/8/2025
+        localStorage.setItem('usersName', data.user.firstName || 'Guest') 
+            
         localStorage.setItem('userData', JSON.stringify(data.user)); //stores user data in local storage -Viktor 6/2/2025
         message.success('Login successful');
         // after successful login
@@ -112,7 +115,7 @@ function Login() {
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Log In</h2>
+        <h2 style={styles.header}>Login</h2>
 
         <Form form={form} name="login" layout="vertical" onFinish={onFinish}>
           <Form.Item

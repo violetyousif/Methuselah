@@ -1,18 +1,8 @@
-// Name: Mizanur Mizan
-// Description: Created the register page frontend layout and input boxes for name, email, and password
-// Date: 5/26/25, modified 5/29/25
-
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style.
-
-// Modified by: Mohammad Hoque
-// Date: 06/02/2025
-// Description: Added dynamic dark mode theme support and enhanced phone formatting + form validation
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/03/2025
-// Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
+// Mizanur Mizan, 5/26/25 (modified 5/29/25), Created the register page frontend layout and input boxes for name, email, and password
+// Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style.
+// Violet Yousif, 06/01/2025, Edited function to fetch backend data, include error handling
+// Mohammad Hoque, 06/02/2025, Added dynamic dark mode theme support and enhanced phone formatting + form validation
+// Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
 
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
@@ -39,9 +29,7 @@ function formatPhoneNumber(value: string) {
 }
 
 
-  // Edited by: Violet Yousif
-  // Date: 06/01/2025
-  // Description: Edited function to fetch backend data, include error handling 
+  // Edited function to fetch backend data with error handling 
   // (make names lowercase, edited pw check, errorMsg, etc.) and to validate user doesn't already exist.
 function register() {
   const [form] = Form.useForm();
@@ -78,6 +66,27 @@ function register() {
       console.error('ERROR - Registration failed: ', error);
     }
   };
+
+  // Edited by: Violet Yousif
+  // Date: 06/01/2025Add commentMore actions
+  // Description: Edited function to fetch backend data, include
+  // error handling and run validation in the register form submission.
+  // const onFinish = async (values: any) => {
+  // try {
+  //   const res = await fetch('/api/register', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(values)
+  //   });
+
+  //   const result = await res.json();
+
+  //   if (!res.ok) throw new Error(result.message);
+  //   console.log('register successful: ', result);
+  //   } catch (error) {
+  //     console.error('ERROR: register failed: ', error);
+  //   }
+  // };
 
   return (
     <div style={styles.page}>
