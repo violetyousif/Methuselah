@@ -1,3 +1,9 @@
+// Name: Mizanur Mizan
+// Description: Created the backend route for settings page
+// Date: 6/11/25
+
+// routes/userSettings.js
+
 import express from 'express';
 import User from '../models/User.js';
 import authMiddleware from '../middleware/auth.js';
