@@ -6,11 +6,10 @@
 
 import express from 'express';
 import User from '../models/User.js';
-import authMiddleware from '../middleware/auth.js';
-
+import auth from '../middleware/auth.js';
 const router = express.Router();
 
-router.post('/update-settings', authMiddleware, async (req, res) => {
+router.post('/update-settings', auth, async (req, res) => {
   try {
     const { userId } = req.user;
 
