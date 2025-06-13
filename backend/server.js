@@ -1,6 +1,12 @@
 // Server.js: Backend file that contains routes and calls to perform database functions
 // Created by Viktor, 5/28/2025
 
+
+// Edited by: Viktor Gjorgjevski
+// Date: 06/12/2025
+// import for feedback and route api
+
+
 // Edited by Violet Yousif, 5/31/2025
 // Description: Fixed errors and converted imported CommonJS to ES module syntax
 import dotenv from 'dotenv';
@@ -11,6 +17,7 @@ import bcrypt from 'bcrypt';      // to encrypt passwords
 import jwt from 'jsonwebtoken';   // security: make sure user is logged in to access app session
 import path from 'path';
 import { fileURLToPath } from 'url';
+import feedbackRoutes from './routes/feedback.js';
 //import { Types } from 'mongoose'; // for ObjectId type in mongoose
  
 import logger from './middleware/logger.js';
@@ -52,6 +59,7 @@ app.get('/', (req, res) => {
 // Protected Routes
 app.use('/api', userLogin);
 app.use('/api', userRegister);
+app.use('/api', feedbackRoutes);
 
 // Description: Start Server
 const PORT = process.env.PORT || 8080;

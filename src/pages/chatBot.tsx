@@ -8,6 +8,11 @@
 // Edited by: Viktor Gjorgjevski
 // Date: 06/03/2025
 // Edited Logout button and added profile pic
+
+// Edited by: Viktor Gjorgjevski
+// Date: 06/13/2025
+// added link to button for feedback page
+
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
@@ -226,7 +231,11 @@ const buttonStyle = {
                   <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
-                <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
+                <Link href="/feedback"> 
+                  <Button style={buttonStyle} icon={<BulbOutlined />}>
+                    Feedback
+                  </Button>
+                </Link>
                 <Button
                   style={styles.logoutBtn} //logout button edited by Viktor 6/3/2025
                   onClick={() => {
