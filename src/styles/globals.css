@@ -1,5 +1,6 @@
-/* Modified: Syed Rabbey (6/1/25) - Added custom scrollbar, modal styling, and dark theme styles */
+/* Modified: Syed Rabbey (6/1/25), - Added custom scrollbar, modal styling, and dark theme styles */
 /* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
+/* Modified: Violet Yousif (6/2/25), added new styling for global footer */
 
 /* Modal Styling - Dark themed */
 .custom-modal .ant-modal-content {
@@ -61,11 +62,20 @@ body[data-fontsize='extra-large'] { font-size: 18px; }
 
 /* Footer default (light mode) */
 footer {
-  background-color: #ffffff !important;
-  color: #000000 !important;
+  position: fixed;
+  bottom: 0;
+  justify-content:end;
+  background-color: #1D1E2C !important;
+  color: #F1F1EA !important;
   text-align: center;
-  height: 30px;
-  padding: 4px;
+  height: 35px;
+  margin-top: 10px;
+  padding-top: 10px;
+  z-index: 1000;
+  width: 100%;
+  font-size: x-small;
+  left: 0;
+  right: 0;
 }
 
 /* Sidebar styling */
@@ -137,9 +147,18 @@ footer {
   stroke-width: 1.5;
 }
 
+/* Link styles */
+a {
+    color: #C9F4DC !important;
+}
+a:hover {
+    color: #318182 !important;
+    text-decoration: underline;
+} 
+
 /* ------------------ DARK THEME STYLES ------------------ */
 /* Added by: Mohammad Hoque - 06/02/25 */
-[data-theme='dark'] {
+/* [data-theme='dark'] {
   background-color: #0f0f17;
   color: #F1F1EA;
 }
@@ -205,7 +224,142 @@ footer {
 [data-theme='dark'] .chat-icon-black-outline {
   color: #F1F1EA;
   stroke: #F1F1EA;
+} */
+
+/* ------------------ DARK THEME STYLES ------------------ */
+/* Added by: Mohammad Hoque - 06/02/25 */
+[data-theme='dark'] {
+  background-color: #0f0f17;
+  color: #F1F1EA;
 }
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-content,
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-header {
+  background-color: #252525 !important;
+  border-radius: 1.5rem !important;
+}
+
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-close-x {
+  color: #fff !important;
+  z-index: 10;
+}
+[data-theme='dark'] .custom-dashboard-modal .ant-modal-close-x:hover {
+  color: #4BC2C4 !important;
+}
+
+
+[data-theme='dark'] .ant-input-affix-wrapper,
+[data-theme='dark'] .ant-input-affix-wrapper-focused,
+[data-theme='dark'] .ant-input-password {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-input-affix-wrapper:focus,
+[data-theme='dark'] .ant-input-affix-wrapper-focused,
+[data-theme='dark'] .ant-input-affix-wrapper input:focus {
+  border-color: #42a9aa !important;
+  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
+  background-color: #0f0f17 !important;
+  color: #F1F1EA !important;
+}
+
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .container,
+[data-theme='dark'] .ant-card {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-btn-primary {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+}
+[data-theme='dark'] .ant-btn-primary:hover {
+  background-color: #256c6f !important;
+  border-color: #256c6f !important;
+}
+
+[data-theme='dark'] .ant-input,
+[data-theme='dark'] .ant-select-selector,
+[data-theme='dark'] .ant-picker {
+  background-color: #0f0f17 !important;
+  border-color: #318182 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .ant-input:focus,
+[data-theme='dark'] .ant-select-selector:focus,
+[data-theme='dark'] .ant-picker-focused {
+  border-color: #42a9aa !important;
+  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
+}
+
+[data-theme='dark'] .ant-select-item-option-selected {
+  background-color: #318182 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] footer {
+  background-color: #0f0f17 !important;
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .sider {
+  background-color: #318182 !important;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background-color: #318182;
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background-color: #0f0f17;
+}
+
+[data-theme='dark'] * {
+  scrollbar-color: #318182 #0f0f17;
+}
+
+[data-theme='dark'] .chat-icon-black-outline {
+  color: #F1F1EA;
+  stroke: #F1F1EA;
+}
+
+/* Default theme (light mode) modal fix */
+body[data-theme='default'] .custom-modal .ant-modal-content {
+  background-color: #A0B6AA !important;
+  color: #1D1E2C !important;
+  border-radius: 2rem !important;
+  border: 2px solid #203625 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1) !important;
+}
+
+body[data-theme='default'] .custom-modal .ant-modal-body {
+  padding: 24px !important;
+}
+
+body[data-theme='default'] .custom-modal .ant-btn {
+  border-radius: 1rem !important;
+}
+body[data-theme='default'] .custom-modal .ant-modal-header {
+  background-color: #A0B6AA !important;
+  border-bottom: 1px solid #203625 !important;
+  color: #1D1E2C !important;
+}
+
+body[data-theme='default'] .custom-modal .ant-modal-close-x {
+  color: #1D1E2C !important;
+}
+body[data-theme='default'] .custom-modal .ant-btn-primary {
+  background-color: #203625 !important;
+  border-color: #203625 !important;
+}
+
+/* Already present dark mode styles should remain — do not remove them */
+
 
 /* ------------------ Dashboard color ------------------ */
 .custom-dashboard-modal .ant-modal-content {
@@ -222,5 +376,62 @@ footer {
 
 .custom-dashboard-modal .ant-modal-close {
   color: black !important;
+}
+
+/* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
+body[data-fontsize='regular'] { font-size: 16px; }
+body[data-fontsize='large'] { font-size: 17px; }
+body[data-fontsize='extra-large'] { font-size: 18px; }
+
+body[data-fontsize='large'] h1,
+body[data-fontsize='large'] h2,
+body[data-fontsize='large'] input,
+body[data-fontsize='large'] .ant-select-selector {
+  font-size: 2em !important;
+}
+body[data-fontsize='extra-large'] h1,
+body[data-fontsize='extra-large'] h2,
+body[data-fontsize='extra-large'] input,
+body[data-fontsize='extra-large'] .ant-select-selector {
+  font-size: 2.5em !important;
+}
+
+/* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
+body[data-fontsize='regular'] { font-size: 16px; }
+body[data-fontsize='large'] { font-size: 17px; }
+body[data-fontsize='extra-large'] { font-size: 18px; }
+
+body[data-fontsize='large'] h1,
+body[data-fontsize='large'] h2,
+body[data-fontsize='large'] input,
+body[data-fontsize='large'] .ant-select-selector {
+  font-size: 2em !important;
+}
+body[data-fontsize='extra-large'] h1,
+body[data-fontsize='extra-large'] h2,
+body[data-fontsize='extra-large'] input,
+body[data-fontsize='extra-large'] .ant-select-selector {
+  font-size: 2.5em !important;
+}
+
+/* ---- Added by: Violet Yousif - 06/02/25 ---- */
+/* Link styles */
+[data-theme='dark'] a {
+    color: #318182 !important;
+    background-color: none !important;
+}
+[data-theme='dark'] a:hover {
+    color: #203625 !important;
+    text-decoration: underline;
+    background-color: none !important;
+}
+/* Links on Sign In and Registration*/
+[data-theme='extPages'] {
+  color: #3b8d8e !important;
+  background-color: transparent !important;
+}
+[data-theme='extPages']:hover {
+  color: #203625 !important;
+  text-decoration: underline;
 }
 

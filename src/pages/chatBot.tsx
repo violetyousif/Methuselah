@@ -1,13 +1,9 @@
-// Modified: Syed Rabbey (5/31/25) - rearranged buttons and color scheme
-// src/pages/index.tsx
+// Syed Rabbey, 5/31/2025, rearranged buttons and color scheme
+// Violet Yousif, 6/01/2025, Reformatted the code to simplify project's coding style.
+// Viktor Gjorgjevski, 6/3/2025, Edited Logout button and added profile pic
+// Mohammad Hoque, 6/2/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
+// Violet Yousif, 6/8/2025, Fixed logout functionality to clear user data using backend connection and redirect to login page.
 
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style.
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/03/2025
-// Edited Logout button and added profile pic
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
@@ -19,7 +15,6 @@ import { ethers } from 'ethers'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
-
 
 const { Sider, Content } = Layout
 const { Text } = Typography
@@ -36,50 +31,43 @@ const Chatbot = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  // COMMENT OUT DURING TESTING WHILE USER NOT LOGGED IN -Viktor 6/2/2025
-  // Will check if user is logged in, else redirect to login page
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token')
-  //   if (!token) { router.push('/login')}
-  // }, [])
-
+  // Check login status on initial render
   useEffect(() => {
-  const storedUser = localStorage.getItem('userData');
-  if (storedUser) {
-    setUserData(JSON.parse(storedUser));
-  }
+  const checkLoginStatus = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/checkAuth', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setIsLoggedIn(true);
+        setUserData(result.user);   // will set user data if available/logged in
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+      setIsLoggedIn(false);
+    }
+  };
+
+  checkLoginStatus();
 }, []);
-// END COMMENT OUT -Viktor 6/2/2025
 
 
+  // Load theme and font size from localStorage on initial render
   useEffect(() => {
-  const theme = localStorage.getItem('theme') || 'default'
-  const fontSize = localStorage.getItem('fontSize') || 'regular'
-  document.body.dataset.theme = theme
-  document.body.dataset.fontsize = fontSize
-  setCurrentTheme(theme as 'default' | 'dark')
-}, [])
+    const theme = localStorage.getItem('theme') || 'default'
+    const fontSize = localStorage.getItem('fontSize') || 'regular'
+    document.body.dataset.theme = theme
+    document.body.dataset.fontsize = fontSize
+    setCurrentTheme(theme as 'default' | 'dark')
+  }, [])
 
-
-const buttonStyle = {
-    width: '100%',
-    backgroundColor: currentTheme === 'dark' ? '#318182' : '#F1F1EA',
-    color: currentTheme === 'dark' ? '#ffffff' : '#000000',
-    border: 'none',
-    borderRadius: '1rem'
-  }
-
-  const smallBtn = {
-    backgroundColor: currentTheme === 'dark' ? '#318182' : '#F1F1EA',
-    color: currentTheme === 'dark' ? '#ffffff' : '#000000',
-    border: 'none',
-    borderRadius: '0.5rem',
-    fontSize: '12px',
-    padding: '4px 12px',
-    height: '28px'
-  }
-
+  // Load wallet address from localStorage (grad students' code)
   useEffect(() => {
     const fetchUserData = async () => {
       if (walletAddress) {
@@ -117,7 +105,8 @@ const buttonStyle = {
     }
   }, [selectedChatId])
 
-  const connectWallet = async () => {
+  // --- Hiding this for now, as we are not using MetaMask integration. This is from the grad students. ---
+  /* const connectWallet = async () => {
     if (!window.ethereum) {
       message.error('MetaMask is not installed!')
       return
@@ -130,8 +119,7 @@ const buttonStyle = {
     } catch (error) {
       console.error('Error connecting wallet:', error)
       message.error('Failed to connect wallet')
-    }
-  }
+  }} */
 
   const handleNewChat = () => {
     const wallet = walletAddress || 'default-wallet'
@@ -142,23 +130,15 @@ const buttonStyle = {
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
 
+  // Styles moved to bottom, see `styles` below
+  const buttonStyle = styles.buttonStyle(currentTheme)
+  const smallBtn = styles.smallBtn(currentTheme)
+
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: currentTheme === 'dark' ? '#0f0f17' : '#FFFFFF' }}>
+    <Layout style={styles.layout(currentTheme)}>
       <Sider
         width={collapsed ? 48 : 250}
-        style={{
-          backgroundColor: currentTheme === 'dark' ? '#2b4240' : '#8AA698',
-          padding: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          height: '100vh',
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: 1000
-        }}
+        style={styles.sider(currentTheme)}
       >
         {collapsed ? (
           <div style={styles.collapsedMenu}>
@@ -168,25 +148,57 @@ const buttonStyle = {
           <div>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ backgroundColor: '#8AA698', padding: '16px', textAlign: 'center', position: 'relative' }}>
+                <div style={styles.avatarContainer}>
                   <Button
                     icon={<MenuOutlined />}
                     onClick={() => setCollapsed(true)}
-                    style={{ position: 'absolute', left: 8, top: 8, backgroundColor: 'transparent', border: 'none' }}
+                    style={styles.menuButton}
                   />
                   <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
-                    <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={{ marginTop: 16 }} />
+                    <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={styles.avatar} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
-                      {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')} 
+                      {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')}
                     </Text>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12 }}>
-                    <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
-                    <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
+                  {/* Logout button */}
+                  {/* TODO: move login and registration buttons to landing page (index.tsx) */}
+                  <div style={styles.authButtons}>
+                    {!isLoggedIn && (
+                      <>
+                        <Link href="/login"><Button style={smallBtn}>Login</Button></Link>
+                        <Link href="/register"><Button style={smallBtn}>Register</Button></Link>
+                      </>
+                    )}
+                    {isLoggedIn && (
+                      <Button
+                        style={styles.logoutBtn}
+                        onClick={ async () => {
+                          try {
+                            const res = await fetch('http://localhost:8080/api/logout', {
+                              method: 'POST',
+                              credentials: 'include', // Send cookies
+                            });
+
+                            if (res.ok) {
+                              setIsLoggedIn(false);
+                              setUserData(null);
+                              router.push('/login');
+                            } else {
+                              message.error('Logout failed.');
+                            }
+                          } catch (error) {
+                            console.error('Logout error:', error);
+                            message.error('Server error during logout.');
+                          }
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                  <div style={{ padding: '16px' }}>
+                  <div style={styles.menuSection}>
                     <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
                     <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
                   </div>
@@ -204,12 +216,8 @@ const buttonStyle = {
                         <div
                           key={chat.conversationId}
                           style={{
-                            padding: '8px 12px',
-                            marginBottom: '8px',
-                            backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            color: '#203625'
+                            ...styles.chatItem,
+                            backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent'
                           }}
                           onClick={() => setSelectedChatId(chat.conversationId)}
                         >
@@ -221,30 +229,19 @@ const buttonStyle = {
                 </div>
               </div>
               {/* Bottom buttons */}
-              <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
+              <div style={styles.bottomButtons}>
                 <Link href="/settings">
                   <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
                 <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
-                <Button
-                  style={styles.logoutBtn} //logout button edited by Viktor 6/3/2025
-                  onClick={() => {
-                    localStorage.removeItem('token')
-                    localStorage.removeItem('userData');
-                    setUserData(null);
-                    router.push('/login').then(() => window.location.reload()); //window.location.href = '/login' (original line)
-                  }}
-                >
-                  Logout
-                </Button>
               </div>
             </div>
           </div>
         )}
       </Sider>
-      <Layout style={{ marginLeft: collapsed ? 48 : 250, backgroundColor: currentTheme === 'dark' ? '#0f0f17' : '#FFFFFF' }}>
-        <Content style={{ padding: '24px', maxWidth: '960px', margin: '0 auto', width: '100%', paddingBottom: '60px' }}>
+      <Layout style={styles.contentArea(collapsed, currentTheme)}>
+        <Content style={styles.content}>
           {selectedChatId && (
             <ChatGPT
               fetchPath="/api/chat-completion"
@@ -266,29 +263,25 @@ const buttonStyle = {
 
 export default Chatbot
 
-const currentTheme = typeof window !== 'undefined' ? document.body.dataset.theme : 'default'
-
-
-
-
+// All CSS moved here:
 const styles = {
-  page: {
+  layout: (theme: 'default' | 'dark') => ({
     minHeight: '100vh',
-    backgroundColor: '#FFFFFF'
-  },
-  sider: {
-    backgroundColor: '#9AB7A9',
+    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF'
+  }),
+  sider: (theme: 'default' | 'dark') => ({
+    backgroundColor: theme === 'dark' ? '#2b4240' : '#8AA698',
     padding: 0,
     display: 'flex',
     flexDirection: 'column' as const,
     justifyContent: 'flex-start',
     height: '100vh',
-    position: 'fixed',
+    position: 'fixed' as 'fixed',
     left: 0,
     top: 0,
     bottom: 0,
     zIndex: 1000
-  },
+  }),
   collapsedMenu: {
     display: 'flex',
     flexDirection: 'column' as const,
@@ -302,11 +295,11 @@ const styles = {
   avatarContainer: {
     backgroundColor: '#8AA698',
     padding: '16px',
-    textAlign: 'center',
-    position: 'relative'
+    textAlign: 'center' as const,
+    position: 'relative' as const
   },
   menuButton: {
-    position: 'absolute',
+    position: 'absolute' as React.CSSProperties['position'],
     left: 8,
     top: 8,
     backgroundColor: 'transparent',
@@ -318,28 +311,28 @@ const styles = {
   authButtons: {
     display: 'flex',
     justifyContent: 'center',
-    gap: 8,
+    gap: 20,
     marginTop: 12
   },
   menuSection: {
     padding: '16px'
   },
-  primaryBtn: {
+  buttonStyle: (theme: 'default' | 'dark') => ({
     width: '100%',
-    backgroundColor: '#203625',
-    color: '#F1F1EA',
+    backgroundColor: theme === 'dark' ? '#318182' : '#F1F1EA',
+    color: theme === 'dark' ? '#ffffff' : '#000000',
     border: 'none',
     borderRadius: '1rem'
-  },
-  smallBtn: {
-    backgroundColor: '#203625',
-    color: '#F1F1EA',
+  }),
+  smallBtn: (theme: 'default' | 'dark') => ({
+    backgroundColor: theme === 'dark' ? '#318182' : '#F1F1EA',
+    color: theme === 'dark' ? '#ffffff' : '#000000',
     border: 'none',
     borderRadius: '0.5rem',
     fontSize: '12px',
     padding: '4px 12px',
     height: '28px'
-  },
+  }),
   chatItem: {
     padding: '8px 12px',
     marginBottom: '8px',
@@ -353,6 +346,13 @@ const styles = {
     flexDirection: 'column' as const,
     gap: '12px'
   },
+  bottomButtons: {
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '12px',
+    marginBottom: '60px'
+  },
   logoutBtn: {
     background: 'none',
     border: 'none',
@@ -365,15 +365,16 @@ const styles = {
     textDecoration: 'none',
     borderRadius: '3rem',
   },
-  contentArea: {
-    marginLeft: 250,
-    backgroundColor: '#FFFFFF'
-  },
+  contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
+    marginLeft: collapsed ? 48 : 250,
+    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF'
+  }),
   content: {
     padding: '24px',
     maxWidth: '960px',
     margin: '0 auto',
-    width: '100%'
+    width: '100%',
+    paddingBottom: '60px'
   },
   footer: {
     position: 'fixed',

@@ -35,7 +35,8 @@ const ModalTerms: React.FC<ModalTermsProps> = ({ visible, onClose }) => {
     )}
     >
       <Typography>
-        <Title level={4}>Last Updated: June 1, 2025</Title>
+        <Title level={4}>Today's Date: {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Title>
+        <Paragraph>Last Updated: June 1, 2025</Paragraph>
 
         <Paragraph>
           Welcome to Methuselah, an AI-powered health and longevity platform (“the Service”). By registering or using our platform, you agree to the following terms:

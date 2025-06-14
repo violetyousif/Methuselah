@@ -1,22 +1,23 @@
-// Name: Viktor
-// Date: 5/28/2025
-// Description: handles user login route
+// Viktor, 5/28/2025, handles user login route
+// Violet Yousif, 5/31/2025, Fixed errors and converted imported files to ES module import/export syntax
+// Violet Yousif, 5/31/2025, Added express-rate-limit to prevent brute-force attacks on login
+// Viktor, 6/1/2025, session tokens are assigned to the user to only be signed in for 1 hour. Afterwhich, they will have to log back in again
+// Violet Yousif, 6/8/2025, Added error handling for token signing and set token in a cookie with JWT_SECRET
 
-// Edited by Violet Yousif, 5/31/2025
-// Description: Fixed errors and converted imported files to ES module import/export syntax
 
 import express from 'express';
 const router = express.Router();
 import User from '../models/User.js'; 
 import bcrypt from 'bcrypt'; 
-import jwt from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken';
+import cookie from 'cookie';
 
-// Prevents brute-force or credential-stuffing attacks by limiting the number of registration attempts
+// prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
 import rateLimit from 'express-rate-limit';
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15,                  // Limit to 5 login attempts per IP per windowMs
+  max: 15,   // Limit to 5 login attempts per IP per windowMs
   message: {
     message: 'Too many login attempts, please try again after 15 minutes',
   },
@@ -26,9 +27,6 @@ const loginLimiter = rateLimit({
 
 
 // Description: handles user login by checking the provided email and password against the db.
-// Edited By: Violet Yousif
-// Date: 5/31/2025
-// Edit: Downloaded validator dependency for error/security checks and added $eq operator to the email query to prevent injection attacks.
 router.post('/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -39,7 +37,7 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    const user = await User.findOne({ email: { $eq: email } });
+    const user = await User.findOne({ email: { $eq: email.trim().toLowerCase() } });
     if (!user) {
       console.log('User not found');
       return res.status(400).json({ message: 'User not found' });
@@ -52,79 +50,43 @@ router.post('/login', loginLimiter, async (req, res) => {
       console.log('Invalid password');
       return res.status(400).json({ message: 'Invalid password' });
     }
-    //Viktor 
-    //Date 6/1/2025
-    //session tokens are assigned to the user to only be signed in for 1 hour. Afterwhich, they will have to log back in again
-    const token = jwt.sign( //creating variable token and assigning it with a generated token from sign
-      { userId: user._id, email : user.email }, //assigning data User(collection) variable: _id and email to userId and email respectively
-      process.env.JWT_SECRET, //Secret key to prove its from our server. (authentication)
-      { expiresIn: '1h' } 
-    );
 
-    const {password: _, ...userWithoutPassword} = user.toObject(); //deconstructing the user object and creating a new user without a password variable
-    res.status(200).json({message: 'Login Successful!', token, user: userWithoutPassword    }); //send the user data back to the client with the token
+    // Session tokens are assigned to the user to only be signed in for 1 hour before expiration
+    let token;
+    try {
+      token = jwt.sign(
+        // Assigning data User(collection) variable: _id and email to userId and email respectively
+        {  userId: user._id, email: user.email }, 
+        process.env.JWT_SECRET, // Secret key to prove its from our server (authentication)
+        { expiresIn: '1h' }     // Token will expire in 1 hour
+        );
+    }
+    catch (error) {
+      console.log(err);
+      console.error('Error signing token:', error);
+      return res.status(500).json({ message: 'Error signing token' }
+      );
+    }
+    // Set the token in a cookie with JWT_SECRET
+    res.setHeader('Set-Cookie', cookie.serialize('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 60 * 60, // 1 hour for the token to expire
+      path: '/',
+    }));
+
+    const {password: _, ...userWithoutPassword} = user.toObject(); // Send user data (excluding password) in response
+    
+    res.status(200).json({    // description: Send a success message with user data (excluding password)
+      message: 'Login successful!',
+      user: userWithoutPassword
+    });
     } catch (err) {
       console.log('Server Error: ', err);
       res.status(500).json({ error: err.message });
+    }
 
-
-
-   /* res.status(200).json({ message: 'Login successful', user });
-  } catch (err) {
-    console.log('Server error:', err);
-    res.status(500).json({ error: err.message });*/
-  }
 });
-
 
 export default router;
-
-
-// Name: Viktor
-// Date: 5/28/2025
-// Description: test
-/*
-app.post('/api/users', async (req, res) => {
-  try {
-    console.log('Incoming data:', req.body);
-    const { name, email, password } = req.body;
-
-    const newUser = await User.create({ name, email, password });
-
-    res.status(201).json({ message: 'User successfully created', data: newUser });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create user', details: err.message });
-  }
-});
-*/
-
-// used to test sign up route
-/*
-fetch('http://localhost:8080/api/register', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'Test User',
-    email: 'testuser@example.com',
-    password: 'securepassword'
-  })
-})
-.then(res => res.json())
-.then(data => console.log('SUCCESS SIGN UP:', data))
-.catch(err => console.error('ERROR:', err));
-*/
-
-//used to test login:
-/*
-fetch('http://localhost:8080/api/userLogin', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'testuser@example.com',
-    password: 'securepassword'
-  })
-})
-.then(res => res.json())
-.then(data => console.log('SUCCESSFUL LOGIN:', data))
-.catch(err => console.error('ERROR:', err));
- */

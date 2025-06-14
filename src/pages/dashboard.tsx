@@ -55,6 +55,30 @@ const dietData = [
 const COLORS = ['#2F4F4F', '#3C6E71', '#5A8F7B', '#7FB285']
 
 const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
+  const [currentTheme, setCurrentTheme] = React.useState<'default' | 'dark'>(() => {
+  if (typeof window !== 'undefined') {
+    return (document.body.dataset.theme as 'default' | 'dark') || 'default'
+  }
+  return 'default'
+})
+
+const isDark = currentTheme === 'dark';
+const axisColor = isDark ? '#B8FFF8' : '#000000';       // axes & legend
+const gridColor = isDark ? '#318182' : '#203625';       // grid lines
+const barColorSleep = isDark ? '#4BC2C4' : '#203625';   // sleep bar
+const barColorExercise = isDark ? '#96F2D7' : '#203625';// exercise bar
+const chartTitleColor = isDark ? '#4BC2C4' : '#4BC2C4';
+const tooltipBg = isDark ? "#232323" : "#fff";
+const tooltipText = isDark ? "#e0e0e0" : "#203625";
+const legendStyle = { color: axisColor };
+
+
+React.useEffect(() => {
+  const storedTheme = localStorage.getItem('theme') || 'default'
+  setCurrentTheme(storedTheme as 'default' | 'dark')
+}, [visible])
+  const styles = getStyles(currentTheme)
+
   return (
     <Modal
       title={<span style={styles.modalTitle}>Your Health Dashboard</span>}
@@ -79,13 +103,14 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
           <h3 style={styles.chartTitle}>Sleep Health</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
-              <CartesianGrid stroke="#203625" strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke="#000000" />
-              <YAxis stroke="#000000" />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="sleep" fill="#203625" name="Hours Slept" />
+              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+              <XAxis dataKey="day" stroke={axisColor} />
+              <YAxis stroke={axisColor} />
+              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+              <Legend wrapperStyle={legendStyle} />
+              <Bar dataKey="sleep" fill={barColorSleep} name="Hours Slept" />
             </BarChart>
+
           </ResponsiveContainer>
         </div>
 
@@ -93,13 +118,14 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
           <h3 style={styles.chartTitle}>Exercise Habits</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
-              <CartesianGrid stroke="#203625" strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke="#000000" />
-              <YAxis stroke="#000000" />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="exercise" fill="#203625" name="Hours Exercised" />
+              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+              <XAxis dataKey="day" stroke={axisColor} />
+              <YAxis stroke={axisColor} />
+              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+              <Legend wrapperStyle={legendStyle} />
+              <Bar dataKey="exercise" fill={barColorExercise} name="Hours Exercised" />
             </BarChart>
+
           </ResponsiveContainer>
         </div>
       </div>
@@ -113,8 +139,14 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip contentStyle={{
+              background: isDark ? '#232323' : '#fff',
+              color: isDark ? '#5eead4' : '#203625',
+              border: isDark ? '1px solid #318182' : '1px solid #203625'
+            }} />
+
           </PieChart>
+
         </ResponsiveContainer>
       </div>
 
@@ -133,31 +165,34 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }
 
 export default Dashboard
 
-const styles = {
+const getStyles = (theme: 'default' | 'dark') => ({
   modalTitle: {
-    color: '#000000',
+    color: theme === 'dark' ? '#F1F1EA' : '#000000',
     fontSize: '28px',
-    fontWeight: 600
-  },
+    fontWeight: 600,
+    textShadow: theme === 'dark' ? '0 1px 4px rgba(0,0,0,0.55)' : undefined
 
+  },
   modalContainer: {
-    backgroundColor: '#9AB7A9',
+    backgroundColor: theme === 'dark' ? '#252525' :'#9AB7A9',
     borderRadius: '16px',
+    border: `3px solid ${theme === 'dark' ? '#4b5563' : '#203625'}`,
     overflow: 'hidden',
     marginTop: 24
   },
   modalBody: {
-    backgroundColor: '#F1F1EB',
-    padding: '30px',
+    backgroundColor: theme === 'dark' ? '#252525' : '#F1F1EB',
     borderRadius: '16px',
-    minHeight: '75vh'
+    padding: '30px',
+    minHeight: '75vh',
   },
+
   modalMask: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: '16px'
   },
   greeting: {
-    color: '#000000',
+    color: theme === 'dark' ? '#e0e0e0' : '#000000',
     fontSize: '18px',
     marginBottom: '24px'
   },
@@ -180,7 +215,7 @@ const styles = {
     marginBottom: '20px'
   },
   chartTitle: {
-    color: '#4BC2C4',
+    color: theme === 'dark' ? '#4BC2C4' : '#203625',
     textAlign: 'center' as const,
     marginBottom: '16px',
     fontSize: '20px'
@@ -188,18 +223,20 @@ const styles = {
   tips: {
     marginTop: '20px',
     fontSize: '18px',
-    lineHeight: '1.9'
+    lineHeight: '1.9',
+    color: theme === 'dark' ? '#e0e0e0' : '#000000'
   },
   tipPrimary: {
-    color: '#4BC2C4'
+    color: theme === 'dark' ? '#4BC2C4' : '#203625'
   },
   tipNeutral: {
-    color: '#000000'
+    color: theme === 'dark' ? '#e0e0e0' : '#000000'
   },
   tipHighlight: {
-    color: '#4BC2C4'
+    color: theme === 'dark' ? '#4BC2C4' : '#203625'
+
   },
   tipSecondary: {
-    color: '#203625'
+    color: '#4BC2C4'
   }
-}
+})

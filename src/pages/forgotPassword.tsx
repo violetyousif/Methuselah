@@ -34,7 +34,7 @@ function ForgotPassword() {
       <div style={styles.card}>
         
         {/* Back Button to Home */}
-        <Link href="/">
+        <Link href="/login">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>
