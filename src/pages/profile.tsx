@@ -23,7 +23,6 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 const Profile: React.FC = () => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-  const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       return (document.body.dataset.theme as 'default' | 'dark') || 'default'
@@ -32,43 +31,61 @@ const Profile: React.FC = () => {
   })
 
   useEffect(() => {
-    const stored = localStorage.getItem('walletAddress')
-    setWalletAddress(stored)
-    const storedTheme = localStorage.getItem('theme') || 'default'
-    setCurrentTheme(storedTheme as 'default' | 'dark')
-  }, [])
+    const fetchProfile = async () => {
+      try {
+        const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
 
-  useEffect(() => {
-    if (walletAddress) {
-      fetch(`/api/user-data?walletAddress=${walletAddress}`)
-        .then((res) => res.json())
-        .then((data: UserData) => {
-          if (data) form.setFieldsValue(data)
-        })
-        .catch((error) => console.error('Error fetching user data:', error))
+      const res = await fetch('/api/profile', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+        if (!res.ok) throw new Error('Failed to fetch profile')
+        const data: UserData = await res.json()
+        form.setFieldsValue(data)
+      } catch (err) {
+        console.error('Error fetching profile:', err)
+        message.error('Failed to load profile')
+      }
     }
-  }, [walletAddress, form])
+    fetchProfile()
+  }, [form])
 
   const onFinish = async (values: UserData) => {
-    if (!walletAddress) return
-    setLoading(true)
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress, ...values })
-      })
-      if (!response.ok) throw new Error('Failed to save user data')
-      message.success('Profile saved successfully!')
+  setLoading(true)
+  try {
+    const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('token='))
+    ?.split('=')[1];
 
-    } catch (error) {
-      console.error('Error saving user data:', error)
-      message.error('There was an error saving your profile.')
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` })
+      
+      },
+      body: JSON.stringify(values)
+    })
 
-    } finally {
-      setLoading(false)
-    }
+    if (!res.ok) throw new Error('Failed to save profile')
+    message.success('Profile saved successfully!')
+  } catch (error) {
+    console.error('Error saving profile:', error)
+    message.error('There was an error saving your profile.')
+  } finally {
+    setLoading(false)
   }
+}
+
 
   const styles = getStyles(currentTheme)
 
@@ -85,10 +102,14 @@ const Profile: React.FC = () => {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ activityLevel: 'moderate', name: '', email: '' }}
+        initialValues={{ activityLevel: 'moderate', firstName: '', lastName: '', email: '' }}
         style={styles.form}
       >
-        <Form.Item label={<span style={styles.label}>Name</span>} name="name" rules={[{ required: true, message: 'Please enter your name' }]}>
+        <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
+          <Input style={styles.input} />
+        </Form.Item>
+
+        <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
           <Input style={styles.input} />
         </Form.Item>
 
