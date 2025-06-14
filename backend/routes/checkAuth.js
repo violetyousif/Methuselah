@@ -7,11 +7,18 @@ import express from 'express';
 //import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import auth from '../middleware/auth.js';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 
-router.get('/checkAuth', auth, async (req, res) => {
+// Define rate limiter: maximum of 100 requests per 15 minutes
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { message: 'Too many requests, please try again later.' },
+});
+
+router.get('/checkAuth', authRateLimiter, async (req, res) => {
   try {
     //const cookies = cookie.parse(req.headers.cookie || ''); // parse cookies from the request headers
     //const token = cookies.token;
