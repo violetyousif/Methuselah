@@ -55,7 +55,65 @@ function Login() {
     }
   };
 
-  const styles = {
+  return (
+    <div style={getStyles(theme).page}>
+      <div style={getStyles(theme).card}>
+        <Link href="/chatBot">
+          <Button icon={<ArrowLeftOutlined />} style={getStyles(theme).backButton}>
+            Back
+          </Button>
+        </Link>
+
+        <h2 style={getStyles(theme).header}>Login</h2>
+
+        <Form form={form} name="login" layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            label={<span style={getStyles(theme).label}>Email</span>}
+            name="email"
+            rules={[
+              { required: true, message: 'Please enter your email' },
+              { type: 'email', message: 'Please enter a valid email' }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label={<span style={getStyles(theme).label}>Password</span>}
+            name="password"
+            rules={[{ required: true, message: 'Please enter your password' }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item>
+            <div style={{ textAlign: 'right' }}>
+              <Link href="/forgotPassword" style={getStyles(theme).forgotLink}>
+                Forgot your password?
+              </Link>
+            </div>
+          </Form.Item>
+
+          <Form.Item style={getStyles(theme).submitContainer}>
+            <Button type="primary" htmlType="submit" style={getStyles(theme).submitButton}>
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <div style={getStyles(theme).registerRedirect}>
+          Don't have an account? <Link href="/register">Sign Up</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Login;
+
+// CSS-in-JS styles moved to the bottom
+function getStyles(theme: 'default' | 'dark') {
+  return {
     page: {
       backgroundColor: theme === 'dark' ? '#0f0f17' : '#F1F1EB',
       minHeight: '100vh',
@@ -105,59 +163,4 @@ function Login() {
       fontWeight: 'bold'
     }
   };
-
-  return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <Link href="/chatBot">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
-            Back
-          </Button>
-        </Link>
-
-        <h2 style={styles.header}>Login</h2>
-
-        <Form form={form} name="login" layout="vertical" onFinish={onFinish}>
-          <Form.Item
-            label={<span style={styles.label}>Email</span>}
-            name="email"
-            rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label={<span style={styles.label}>Password</span>}
-            name="password"
-            rules={[{ required: true, message: 'Please enter your password' }]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item>
-            <div style={{ textAlign: 'right' }}>
-              <Link href="/forgotPassword" style={styles.forgotLink}>
-                Forgot your password?
-              </Link>
-            </div>
-          </Form.Item>
-
-          <Form.Item style={styles.submitContainer}>
-            <Button type="primary" htmlType="submit" style={styles.submitButton}>
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-
-        <div style={styles.registerRedirect}>
-          Don't have an account? <Link href="/register">Sign Up</Link>
-        </div>
-      </div>
-    </div>
-  );
 }
-
-export default Login;

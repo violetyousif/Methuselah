@@ -69,14 +69,14 @@ const Chatbot = () => {
 
   // Load wallet address from localStorage (grad students' code)
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (walletAddress) {
-        const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
-        const data = await response.json()
-        setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' })
-      }
-    }
-    fetchUserData()
+    // const fetchUserData = async () => {
+    //   if (walletAddress) {
+    //     const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+    //     const data = await response.json()
+    //     setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' })
+    //   }
+    // }
+    // fetchUserData()
 
     const wallet = walletAddress || 'default-wallet'
     const convs = getConversations(wallet)

@@ -51,6 +51,7 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
       const response = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ walletAddress, ...values })
       })
       if (!response.ok) throw new Error('Failed to save user data')

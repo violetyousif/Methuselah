@@ -39,7 +39,13 @@ const ChatGPT = ({
         {messages.map((message, index) => (
           <MessageItem
             key={index}
-            message={message as ChatMessage}
+            // Converts message.timestamp into a string for chat display
+            message={{
+              ...message,
+              timestamp: typeof message.timestamp === 'string'
+                ? message.timestamp
+                : message.timestamp?.toISOString?.() ?? ''
+            } as ChatMessage}
             assistantColor={assistantBubbleColor}
             userColor={userBubbleColor}
           />
@@ -60,7 +66,7 @@ const ChatGPT = ({
         onSend={onSend}
         onClear={onClear}
         onStop={onStop}
-        inputColor={inputBarColor}
+        //inputColor={inputBarColor}
       />
     </div>
   )

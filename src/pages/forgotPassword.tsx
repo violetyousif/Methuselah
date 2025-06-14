@@ -15,6 +15,7 @@ function ForgotPassword() {
       const response = await fetch('http://localhost:8080/api/forgotpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(values),
       });
       const data = await response.json();

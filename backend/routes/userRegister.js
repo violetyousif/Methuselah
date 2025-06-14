@@ -8,6 +8,7 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -61,7 +62,13 @@ router.post('/register', registerLimiter, async (req, res) => {
         agreedToTerms
     });
 
-    res.status(201).json({ message: 'User successfully registered!', user });
+    // Remove password from the response
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
+    res.status(201).json({ 
+      message: 'User successfully registered!', 
+      user: userWithoutPassword 
+    });
   } catch (err) {
     res.status(500).json({ message: 'Registration failed', error: err.message });
   }

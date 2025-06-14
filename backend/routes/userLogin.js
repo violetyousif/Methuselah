@@ -10,14 +10,15 @@ const router = express.Router();
 import User from '../models/User.js'; 
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
-import cookie from 'cookie';
+//import cookie from 'cookie'; // Don't need anymore, using res.cookie() directly from server.js and middleware
 
 // prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
 import rateLimit from 'express-rate-limit';
 
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15,   // Limit to 5 login attempts per IP per windowMs
+  max: 15,   // Limit to 15 login attempts per IP per windowMs
   message: {
     message: 'Too many login attempts, please try again after 15 minutes',
   },
@@ -68,13 +69,13 @@ router.post('/login', loginLimiter, async (req, res) => {
       );
     }
     // Set the token in a cookie with JWT_SECRET
-    res.setHeader('Set-Cookie', cookie.serialize('token', token, {
+    res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict',
       maxAge: 60 * 60, // 1 hour for the token to expire
       path: '/',
-    }));
+    });
 
     const {password: _, ...userWithoutPassword} = user.toObject(); // Send user data (excluding password) in response
     
