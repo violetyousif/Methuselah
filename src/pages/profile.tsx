@@ -8,17 +8,19 @@
 // Date: 06/02/2025
 // Added dynamic theme support for dark and default themes using localStorage
 
+// Updated by: Mohammad Hoque
+// Date: 06/13/2025
+// Refactored to standalone page layout with back button to /chatBot.
+
 import React, { useState, useEffect } from 'react'
-import { Modal, Form, InputNumber, Select, Button, Input } from 'antd'
+import { Form, InputNumber, Select, Button, Input, message } from 'antd'
 import { UserData } from '../models'
+import Link from 'next/link'
+import { ArrowLeftOutlined } from '@ant-design/icons'
 
-interface ProfileProps {
-  visible: boolean
-  walletAddress: string | null
-  onClose: () => void
-}
 
-const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
+
+const Profile: React.FC = () => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>(() => {
@@ -29,61 +31,85 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
   })
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') || 'default'
-    setCurrentTheme(storedTheme as 'default' | 'dark')
-  }, [visible])
+    const fetchProfile = async () => {
+      try {
+        const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
 
-  useEffect(() => {
-    if (visible && walletAddress) {
-      fetch(`/api/user-data?walletAddress=${walletAddress}`)
-        .then((res) => res.json())
-        .then((data: UserData) => {
-          if (data) form.setFieldsValue(data)
-        })
-        .catch((error) => console.error('Error fetching user data:', error))
+      const res = await fetch('/api/profile', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+        if (!res.ok) throw new Error('Failed to fetch profile')
+        const data: UserData = await res.json()
+        form.setFieldsValue(data)
+      } catch (err) {
+        console.error('Error fetching profile:', err)
+        message.error('Failed to load profile')
+      }
     }
-  }, [visible, walletAddress, form])
+    fetchProfile()
+  }, [form])
 
   const onFinish = async (values: UserData) => {
-    if (!walletAddress) return
-    setLoading(true)
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress, ...values })
-      })
-      if (!response.ok) throw new Error('Failed to save user data')
-      onClose()
-    } catch (error) {
-      console.error('Error saving user data:', error)
-    } finally {
-      setLoading(false)
-    }
+  setLoading(true)
+  try {
+    const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('token='))
+    ?.split('=')[1];
+
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` })
+      
+      },
+      body: JSON.stringify(values)
+    })
+
+    if (!res.ok) throw new Error('Failed to save profile')
+    message.success('Profile saved successfully!')
+  } catch (error) {
+    console.error('Error saving profile:', error)
+    message.error('There was an error saving your profile.')
+  } finally {
+    setLoading(false)
   }
+}
+
 
   const styles = getStyles(currentTheme)
 
   return (
-    <Modal
-      title={<span style={styles.modalTitle}>User Profile - Health Data</span>}
-      open={visible}
-      onCancel={onClose}
-      footer={null}
-      styles={{
-        mask: styles.modalMask
-      }}
-      closable
-      wrapClassName="custom-modal"
-    >
+    <div style={styles.page}>
+        <div style={styles.card}>
+      <Link href="/chatBot">
+      < Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          Back
+        </Button>
+      </Link>
+      <h2 style={styles.modalTitle}>User Profile - Health Data</h2>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ activityLevel: 'moderate', name: 'John Doe', email: 'johndoe@gmail.com' }}
+        initialValues={{ activityLevel: 'moderate', firstName: '', lastName: '', email: '' }}
         style={styles.form}
       >
-        <Form.Item label={<span style={styles.label}>Name</span>} name="name" rules={[{ required: true, message: 'Please enter your name' }]}>
+        <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
+          <Input style={styles.input} />
+        </Form.Item>
+
+        <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
           <Input style={styles.input} />
         </Form.Item>
 
@@ -132,22 +158,36 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading} style={styles.primaryButton}>Save</Button>
-          <Button onClick={onClose} style={styles.cancelButton}>Cancel</Button>
+          <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
         </Form.Item>
       </Form>
-    </Modal>
+    </div>
+    </div>
   )
 }
 
 export default Profile
 
 const getStyles = (theme: 'default' | 'dark') => ({
+  page: {
+  backgroundColor: theme === 'dark' ? '#0f0f17' : '#F1F1EB',
+  minHeight: '100vh',
+  padding: '6rem'
+},
   modalTitle: {
     color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
     fontWeight: 'bold',
     fontSize: '1.1rem'
   },
-  
+  card: {
+  maxWidth: 600,
+  margin: 'auto',
+  padding: '2rem',
+  backgroundColor: theme === 'dark' ? '#252525' : '#A0B6AA',
+  borderRadius: '2rem',
+  border: '3px solid',
+  borderColor: theme === 'dark' ? '#4b5563' : '#000000'
+},
   modalMask: {
     backgroundColor: theme === 'dark'
       ? 'rgba(0, 0, 0, 0.7)'
@@ -197,5 +237,12 @@ const getStyles = (theme: 'default' | 'dark') => ({
     borderColor: theme === 'dark' ? '#4b5563' : '#203625',
     color: theme === 'dark' ? '#e0e0e0' : '#203625',
     borderRadius: '1rem'
-  }
+  },
+  backButton: {
+  marginBottom: '24px',
+  backgroundColor: theme === 'dark' ? '#4b5563' : '#203625',
+  color: '#ffffff',
+  borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+  borderRadius: '9999px'
+}
 })
