@@ -28,6 +28,7 @@ const requestMessage = async (
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({ messages }),
+    credentials: 'include',     // Include cookies for session management request
     signal: controller?.signal
   })
 
@@ -132,7 +133,13 @@ export const useChatGPT = (
       ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
       : ''
     const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
-    fetchMessage([...(currentConversation?.messages || []), fullMessage])
+    fetchMessage([
+      ...((currentConversation?.messages || []).map(msg => ({
+        ...msg,
+        timestamp: typeof msg.timestamp === 'string' ? msg.timestamp : msg.timestamp.toISOString()
+      }))),
+      fullMessage
+    ])
   }
 
   const onClear = () => {

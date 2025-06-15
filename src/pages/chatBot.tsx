@@ -39,7 +39,7 @@ const Chatbot = () => {
     try {
       const res = await fetch('http://localhost:8080/api/checkAuth', {
         method: 'GET',
-        credentials: 'include',
+        credentials: 'include',        
       });
       if (res.ok) {
         const result = await res.json();
@@ -68,28 +68,28 @@ const Chatbot = () => {
   }, [])
 
   // Load wallet address from localStorage (grad students' code)
-  useEffect(() => {
-    // const fetchUserData = async () => {
-    //   if (walletAddress) {
-    //     const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
-    //     const data = await response.json()
-    //     setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' })
-    //   }
-    // }
-    // fetchUserData()
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     if (walletAddress) {
+  //       const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+  //       const data = await response.json()
+  //       setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' })
+  //     }
+  //   }
+  //   fetchUserData()
 
-    const wallet = walletAddress || 'default-wallet'
-    const convs = getConversations(wallet)
-    if (convs.length === 0) {
-      const newId = addConversation(wallet, 'Chat 1')
-      setChatHistory(getConversations(wallet))
-      setSelectedChatId(newId)
-      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
-    } else {
-      setChatHistory(convs)
-      setSelectedChatId(convs[0].conversationId)
-    }
-  }, [walletAddress])
+  //   const wallet = walletAddress || 'default-wallet'
+  //   const convs = getConversations(wallet)
+  //   if (convs.length === 0) {
+  //     const newId = addConversation(wallet, 'Chat 1')
+  //     setChatHistory(getConversations(wallet))
+  //     setSelectedChatId(newId)
+  //     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
+  //   } else {
+  //     setChatHistory(convs)
+  //     setSelectedChatId(convs[0].conversationId)
+  //   }
+  // }, [walletAddress])
 
   // Message transfer from landing page
   useEffect(() => {

@@ -8,6 +8,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import rateLimit from 'express-rate-limit';
+import auth from '../middleware/auth.js'; // Importing auth middleware to protect the route
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const authRateLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later.' },
 });
 
-router.get('/checkAuth', authRateLimiter, async (req, res) => {
+router.get('/checkAuth', auth, authRateLimiter, async (req, res) => {
   try {
     //const cookies = cookie.parse(req.headers.cookie || ''); // parse cookies from the request headers
     //const token = cookies.token;

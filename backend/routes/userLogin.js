@@ -71,9 +71,9 @@ router.post('/login', loginLimiter, async (req, res) => {
     // Set the token in a cookie with JWT_SECRET
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 60 * 60, // 1 hour for the token to expire
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
       path: '/',
     });
 

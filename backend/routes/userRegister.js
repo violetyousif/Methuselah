@@ -52,7 +52,7 @@ router.post('/register', registerLimiter, async (req, res) => {
 
     // Create and save the user
     const user = await User.create({
-        firstName : capitalize(firstName),
+        firstName: capitalize(firstName),
         lastName: capitalize(lastName),
         email: email.toLowerCase(),
         password: hashedPassword,
