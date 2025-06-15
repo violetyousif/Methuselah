@@ -16,6 +16,7 @@ import userLogin from './routes/userLogin.js';
 import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';
 import checkAuth from './routes/checkAuth.js';
+import userSettings from './routes/userSettings.js';
 
 // Description: Set up the express app and connect to MongoDB
 const __filename = fileURLToPath(import.meta.url);
@@ -52,6 +53,7 @@ app.use('/api', userLogin);
 app.use('/api', userRegister);
 app.use('/api', userLogout);
 app.use('/api', checkAuth);
+app.use('/api', userSettings);
 
 
 
