@@ -66,17 +66,40 @@ export default function Settings() {
     localStorage.setItem('fontSize', fontSize)
   }, [fontSize])
 
-  const handleSave = () => {
-    const settings = {
-      name,
-      birthday: birthday ? birthday.toISOString() : null,
-      theme,
-      fontSize,
-      profilePic // added by Viktor Gjorgjevski - 06/03/2025
+// Modified by Mizan: 6/12/2025
+// Changed save button event handler for backend connection
+  const handleSave = async () => {
+  const settings = {
+    name,
+    birthday: birthday ? birthday.toISOString() : null,
+    theme,
+    fontSize,
+    profilePic
+  };
+
+  try {
+    const res = await fetch('/api/update-settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include', // includes JWT cookie
+      body: JSON.stringify(settings)
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem('userSettings', JSON.stringify(settings));
+      message.success('Settings saved to database!');
+    } else {
+      message.error(data.message || 'Failed to update settings');
     }
-    localStorage.setItem('userSettings', JSON.stringify(settings))
-    message.success('Settings saved!')
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    message.error('Error saving settings');
   }
+};
 
   // Modified by: Mohammad Hoque - 06/02/2025
   // Dynamically apply dark or light styles using ternary conditions
