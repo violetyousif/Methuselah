@@ -3,6 +3,7 @@
 // Violet Yousif, 06/01/2025, Edited function to fetch backend data, include error handling
 // Mohammad Hoque, 06/02/2025, Added dynamic dark mode theme support and enhanced phone formatting + form validation
 // Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
+// Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters.
 
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
@@ -226,26 +227,6 @@ function register() {
           </Form.Item>
           </div>
           
-          { /* Profile Picker */}
-            {/* <Form.Item label={<span style={styles.label}>Choose Your profile picture</span>} name="profilePic">
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                {profilePicPresets.map((url, idx) => (
-                  <img
-                    key={idx}
-                    src={url}
-                    alt={'Profile ${idx + 1}'}
-                    onClick={() =>  form.setFieldsValue({avatar: url})}
-                    style={{
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '50%',
-                      border: form.getFieldValue('profilePic') === url ? '3px solid #318182' : '2px solid transparent',
-                      cursor: 'pointer'
-                    }}
-                    />
-                ))}
-              </div>
-            </Form.Item> */}
 
           { /* Terms and Conditions Agreement */}
           <Form.Item
@@ -254,7 +235,7 @@ function register() {
             rules={[
               {
                 validator: (_, value) =>
-                  value ? Promise.resolve() : Promise.reject('You must agree to the terms'),
+                  value ? Promise.resolve() : Promise.reject('You must agree to the Terms of Service to proceed.'),
               },
             ]}
           >

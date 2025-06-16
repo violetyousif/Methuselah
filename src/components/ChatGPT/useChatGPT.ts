@@ -1,4 +1,7 @@
 // src/components/ChatGPT/useChatGPT.ts
+// Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
+// Violet Yousif, 6/16/2025, Removed Web3-specific code for a more general implementation.
+
 import { useEffect, useReducer, useRef, useState } from 'react'
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
@@ -45,9 +48,10 @@ const requestMessage = async (
 }
 
 export const useChatGPT = (
-  props: ChatGPTProps & { conversationId: string; walletAddress: string }
+  props: ChatGPTProps & { conversationId: string; walletAddress: string; isLoggedIn?: boolean }
 ) => {
-  const { fetchPath, conversationId, walletAddress } = props
+  const { fetchPath, conversationId, isLoggedIn = false } = props
+  // const { fetchPath, conversationId, walletAddress } = props  // Original Web3 version
   const [, forceUpdate] = useReducer((x) => !x, false)
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
   const [healthData, setHealthData] = useState<UserData | null>(null)
@@ -59,13 +63,31 @@ export const useChatGPT = (
 
   useEffect(() => {
     const fetchHealthData = async () => {
-      if (walletAddress) {
-        const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+      // Only fetch if user is logged in
+      if (!isLoggedIn) return;
+      
+      // Session-based health data fetching (updated for non-Web3)
+      try {
+        const response = await fetch(`http://localhost:8080/api/user-data`, {
+          credentials: 'include'
+        })
         const data = await response.json()
         setHealthData(data || null)
+      } catch (error) {
+        console.error('Error fetching health data:', error)
       }
     }
     fetchHealthData()
+
+    //// Prev code:
+    // const fetchHealthData = async () => {
+    //    if (walletAddress) {
+    //      const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+    //      const data = await response.json()
+    //      setHealthData(data || null)
+    //  }
+    // }
+    // fetchHealthData()
 
     const conv = getConversation(conversationId)
     setCurrentConversation(conv || null)
@@ -77,7 +99,32 @@ export const useChatGPT = (
       )
       setCurrentConversation(getConversation(conversationId) || null)
     }
-  }, [conversationId, walletAddress])
+  }, [conversationId, isLoggedIn])
+  // }, [conversationId, walletAddress])
+
+  //// Prev code:
+  // Original Web3 version:
+  // useEffect(() => {
+  //   const fetchHealthData = async () => {
+  //     if (walletAddress) {
+  //       const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+  //       const data = await response.json()
+  //       setHealthData(data || null)
+  //     }
+  //   }
+  //   fetchHealthData()
+  //   
+  //   const conv = getConversation(conversationId)
+  //   setCurrentConversation(conv || null)
+  //   if (conv && conv.messages.length === 0) {
+  //     addMessage(
+  //       conversationId,
+  //       ChatRole.Assistant,
+  //       'Greetings, traveler. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.'
+  //     )
+  //     setCurrentConversation(getConversation(conversationId) || null)
+  //   }
+  // }, [conversationId, walletAddress])
 
   const archiveCurrentMessage = async () => {
     const content = currentMessage.current

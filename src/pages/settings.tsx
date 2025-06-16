@@ -1,19 +1,15 @@
-// Creator: Syed Rabbey
-// Date: 5/27/25
-// Description: Created a settings page using antd, moment, and other libraries to save user settings for application.
+// Syed Rabbey, 5/27/25, Created a settings page using antd, moment, and other libraries to save user settings for application.
 
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style.
+// Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style.
 
-// Edited by: Mohammad Hoque
-// Date: 06/02/2025
-// Enhancements: Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
+// Mohammad Hoque, 06/02/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
 
-// Edited by: Viktor Gjorgjevski
-// Date: 06/03/2025
-// -Added profile picking option into settings
+// Mohammad Hoque, 06/02/2025, Sync selected theme to <body> attribute for global dark mode styling
+// Viktor Gjorgjevski, 06/03/2025, Added profile picking option into settings
+// Mizan: 6/12/2025, Changed save button event handler for backend connection
 
+// Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Settings component function parameters.
+// Violet Yousuf, 6/16/2025, Removed dateOfBirth field since it's handled by profile endpoint
 import { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -29,46 +25,60 @@ export default function Settings() {
   const [theme, setTheme] = useState('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
+  //// Prev: const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
   const [profilePic, setProfilePic] = useState('')
 
-
-  // Added by: Mohammad Hoque - 06/02/2025
-  // Restores user settings on component mount (persistent state)
+  // Load current settings from backend
   useEffect(() => {
-    const saved = localStorage.getItem('userSettings')
-    if (saved) {
-      const settings = JSON.parse(saved)
-      setFirstName(settings.firstName || '')
-      setLastName(settings.lastName || '')
-      setDateOfBirth(settings.dateOfBirth ? moment(settings.dateOfBirth) : null)
-      setProfilePic(settings.profilePic || '') // added by  Viktor Gjorgjevski - 06/03/2025
-      setFontSize(settings.fontSize || 'regular')
-      setTheme(settings.theme || 'default')
-    }
+    const loadSettings = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/settings', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (res.ok) {
+          const settings = await res.json();
+          setFirstName(settings.firstName || '');
+          setLastName(settings.lastName || '');
+          setProfilePic(settings.profilePic || '');
+          setFontSize(settings.preferences?.fontSize || 'regular');
+          setTheme(settings.preferences?.theme || 'default');
+          
+          // Apply theme and fontSize to UI immediately
+          document.body.dataset.theme = settings.preferences?.theme || 'default';
+          document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
+        } else {
+          console.warn('Failed to load settings from backend, using defaults');
+          // Don't fallback to localStorage - use defaults instead to ensure clean state
+          setFontSize('regular');
+          setTheme('default');
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        // Don't fallback to localStorage - use defaults instead to ensure clean state
+        setFontSize('regular');
+        setTheme('default');
+      }
+    };
+
+    loadSettings();
   }, [])
 
-  // Added by: Mohammad Hoque - 06/02/2025
-  // Sync selected theme to <body> attribute for global dark mode styling
   useEffect(() => {
-    document.body.dataset.theme = theme
-    localStorage.setItem('theme', theme)
+    document.body.dataset.theme = theme // Only saved once user clicks save
   }, [theme])
 
-  // Added by: Mohammad Hoque - 06/02/2025
-  // Sync selected font size to <body> attribute
+
   useEffect(() => {
     document.body.dataset.fontsize = fontSize
-    localStorage.setItem('fontSize', fontSize)
   }, [fontSize])
 
-// Modified by Mizan: 6/12/2025
-// Changed save button event handler for backend connection
   const handleSave = async () => {
   const settings = {
     firstName,
     lastName,
-    dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
+    //// Prev: dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
     profilePic,
     preferences: {
       theme,
@@ -87,8 +97,12 @@ export default function Settings() {
     const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem('userSettings', JSON.stringify(settings));
+      //// Prev: localStorage.setItem('userSettings', JSON.stringify(settings)); // Removed - data now persisted in database only
       message.success('Settings saved to database!');
+      
+      // Update localStorage for theme and fontSize for immediate UI application
+      localStorage.setItem('theme', theme);
+      localStorage.setItem('fontSize', fontSize);
     } else {
       message.error(data.message || 'Failed to update settings');
     }
@@ -120,7 +134,8 @@ export default function Settings() {
             <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="settingsInput" />
           </div>
 
-          {/* Date of Birth Field */}
+          {/* Date of Birth Field - Moved to Profile page */}
+          {/* //// Prev:
           <div>
             <div className="settingsLabel">Date of Birth:</div>
             <DatePicker
@@ -128,9 +143,9 @@ export default function Settings() {
               onChange={(date) => setDateOfBirth(date)}
               className="settingsInput"
             />
-          </div>
+          </div> */}
 
-          {/* Profile Pic selection */} {/* added by viktor gjorgjevski 6/3/2025 */}
+          {/* Profile Pic selection */}
           <div>
             <div className="settingsLabel">Profile Picture:</div>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

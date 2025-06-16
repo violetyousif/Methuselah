@@ -1,5 +1,6 @@
 // User.js: defines the structure of a User call in MongoDB.
 // Viktor Gjorgjevski, 6/3/2025, added profilePic to User schema
+// Violet Yousif, 6/16/2025, added health-related fields to User schema
 
 import mongoose from 'mongoose';
 
@@ -8,11 +9,17 @@ const UserSchema = new mongoose.Schema({
   lastName:  { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  phoneNum:  { type: String },
+  phoneNum:  { type: String, required: true },
   dateOfBirth: { type: String, required: true },
-  gender: { type: String,required: true },
+  gender: { type: String, required: true },
   profilePic: { type: String, default: '/avatars/avatar1.png' },
   agreedToTerms: { type: Boolean, default: false, required: true },
+  //// Health-related fields for profile data (add to table):
+  // age: { type: Number },
+  // weight: { type: Number }, // kg --> change to lbs
+  // height: { type: Number }, // cm --> change to ft or inches
+  // activityLevel: { type: String, enum: ['sedentary', 'moderate', 'active'], default: 'moderate' },
+  // sleepHours: { type: Number, default: 8 },
   preferences: {
     theme: { type: String, default: 'default' },
     aiMode: { type: String, default: 'short' },

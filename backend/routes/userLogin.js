@@ -3,11 +3,11 @@
 // Violet Yousif, 5/31/2025, Added express-rate-limit to prevent brute-force attacks on login
 // Viktor, 6/1/2025, session tokens are assigned to the user to only be signed in for 1 hour. Afterwhich, they will have to log back in again
 // Violet Yousif, 6/8/2025, Added error handling for token signing and set token in a cookie with JWT_SECRET
-
+// Violet Yousif, 6/16/2025, Removed cookie dependency and used res.cookie() directly from server.js and middleware
 
 import express from 'express';
 const router = express.Router();
-import User from '../models/User.js'; 
+import getUser from '../models/User.js'; 
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
 //import cookie from 'cookie'; // Don't need anymore, using res.cookie() directly from server.js and middleware
@@ -38,7 +38,7 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    const user = await User.findOne({ email: { $eq: email.trim().toLowerCase() } });
+    const user = await getUser.findOne({ email: { $eq: email.trim().toLowerCase() } });
     if (!user) {
       console.log('User not found');
       return res.status(400).json({ message: 'User not found' });

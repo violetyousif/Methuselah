@@ -3,6 +3,7 @@
 // Viktor Gjorgjevski, 6/3/2025, Edited Logout button and added profile pic
 // Mohammad Hoque, 6/2/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
 // Violet Yousif, 6/8/2025, Fixed logout functionality to clear user data using backend connection and redirect to login page.
+// Violet Yousif, 6/16/2025, Commented out the Web3Modal component as it is not used in current program.
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
@@ -22,7 +23,7 @@ const { Text } = Typography
 const Chatbot = () => {
   const router = useRouter()
 
-  const [walletAddress, setWalletAddress] = useState<string | null>(null)
+  //// Prev: const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({})
@@ -67,7 +68,26 @@ const Chatbot = () => {
     setCurrentTheme(theme as 'default' | 'dark')
   }, [])
 
-  // Load wallet address from localStorage (grad students' code)
+  // Load user data and chat history (updated for session-based auth)
+  useEffect(() => {
+    // User data is already fetched in the checkLoginStatus function above
+    // No need for separate fetch here since checkAuth already returns user data
+    
+    // Use session-based identifier for chat history (use email or fallback to default)
+    const userId = userData?.email || 'default-user'
+    const convs = getConversations(userId)
+    if (convs.length === 0) {
+      const newId = addConversation(userId, 'Chat 1')
+      setChatHistory(getConversations(userId))
+      setSelectedChatId(newId)
+      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
+    } else {
+      setChatHistory(convs)
+      setSelectedChatId(convs[0].conversationId)
+    }
+  }, [isLoggedIn, userData?.email])
+
+  //// Prev code:
   // useEffect(() => {
   //   const fetchUserData = async () => {
   //     if (walletAddress) {
@@ -77,7 +97,7 @@ const Chatbot = () => {
   //     }
   //   }
   //   fetchUserData()
-
+  //   
   //   const wallet = walletAddress || 'default-wallet'
   //   const convs = getConversations(wallet)
   //   if (convs.length === 0) {
@@ -90,6 +110,7 @@ const Chatbot = () => {
   //     setSelectedChatId(convs[0].conversationId)
   //   }
   // }, [walletAddress])
+
 
   // Message transfer from landing page
   useEffect(() => {
@@ -105,7 +126,7 @@ const Chatbot = () => {
     }
   }, [selectedChatId])
 
-  // --- Hiding this for now, as we are not using MetaMask integration. This is from the grad students. ---
+  //// Prev code: (grad students)
   /* const connectWallet = async () => {
     if (!window.ethereum) {
       message.error('MetaMask is not installed!')
@@ -122,13 +143,23 @@ const Chatbot = () => {
   }} */
 
   const handleNewChat = () => {
-    const wallet = walletAddress || 'default-wallet'
+    const userId = userData?.email || 'default-user' // Use email as user identifier, fallback to 'default-user'
     const newChatTitle = `Chat ${chatHistory.length + 1}`
-    const newId = addConversation(wallet, newChatTitle)
-    setChatHistory(getConversations(wallet))
+    const newId = addConversation(userId, newChatTitle)
+    setChatHistory(getConversations(userId))
     setSelectedChatId(newId)
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
+
+  //// Prev code:
+  // const handleNewChat = () => {
+  //   const wallet = walletAddress || 'default-wallet'
+  //   const newChatTitle = `Chat ${chatHistory.length + 1}`
+  //   const newId = addConversation(wallet, newChatTitle)
+  //   setChatHistory(getConversations(wallet))
+  //   setSelectedChatId(newId)
+  //   setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
+  // }
 
   // Styles moved to bottom, see `styles` below
   const buttonStyle = styles.buttonStyle(currentTheme)
@@ -246,17 +277,32 @@ const Chatbot = () => {
             <ChatGPT
               fetchPath="/api/chat-completion"
               conversationId={selectedChatId}
-              walletAddress={walletAddress || 'default-wallet'}
+              walletAddress={userData?.email || 'default-user'}
+              isLoggedIn={isLoggedIn}
               inputBarColor="#9AB7A9"
               assistantBubbleColor="#9AB7A9"
               userBubbleColor="#318182"
             />
           )}
+          {/* //// Prev code:
+              {selectedChatId && (
+                <ChatGPT
+                  fetchPath="/api/chat-completion"
+                  conversationId={selectedChatId}
+                  walletAddress={walletAddress || 'default-wallet'}
+                  inputBarColor="#9AB7A9"
+                  assistantBubbleColor="#9AB7A9"
+                  userBubbleColor="#318182"
+                />
+              )}
+          */}
         </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
-      <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} />
+      <Profile visible={profileVisible} onClose={() => setProfileVisible(false)} />
+      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
+      {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
+          //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
     </Layout>
   )
 }

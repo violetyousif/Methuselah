@@ -1,16 +1,11 @@
-// Creator: Syed Rabbey
-// Date: 5/26/25
-// Description: Created a popup dashboard page with static charts and pre-written messages for the user. 
-// Dashboard component function is declared, an event handler is used to close the modal, 
-// and recharts functions are pulled to render sleep/exercise activity.
+// Syed Rabbey, 5/26/25, Created a popup dashboard page with static charts and pre-written messages for the user. 
+//                       Dashboard component function is declared, an event handler is used to close the modal, 
+//                       and recharts functions are pulled to render sleep/exercise activity.
 
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
+// Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
 
-// Edited by: Syed Rabbey
-// Date: 06/02/2025
-// Reformatted the code to change colors and add new data point.
+// Syed Rabbey, 06/02/2025, Reformatted the code to change colors and add new data point.
+// Violet Yousif, 6/14/2025, Removed unused walletAddress prop from DashboardProps interface and component function parameters.
 
 import React from 'react'
 import { Modal } from 'antd'
@@ -31,7 +26,7 @@ import {
 
 interface DashboardProps {
   visible: boolean
-  walletAddress: string | null
+  //// Prev: walletAddress: string | null
   onClose: () => void
 }
 
@@ -54,7 +49,8 @@ const dietData = [
 
 const COLORS = ['#2F4F4F', '#3C6E71', '#5A8F7B', '#7FB285']
 
-const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
+const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
+//// Prev: const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
   const [currentTheme, setCurrentTheme] = React.useState<'default' | 'dark'>(() => {
   if (typeof window !== 'undefined') {
     return (document.body.dataset.theme as 'default' | 'dark') || 'default'
@@ -95,7 +91,7 @@ React.useEffect(() => {
       wrapClassName="custom-dashboard-modal" 
     >
       <div style={styles.greeting}>
-        Welcome back, <strong>{walletAddress || 'Guest'}</strong>! Here's a look at your recent health activity.
+        Welcome back, <strong>Guest</strong>! Here's a look at your recent health activity.
       </div>
 
       <div style={styles.chartSection}>

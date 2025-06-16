@@ -1,3 +1,4 @@
+// Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
 import type { ReactNode } from 'react'
 
 export enum ChatRole {
@@ -11,6 +12,7 @@ export interface ChatGPTProps {
   assistantBubbleColor?: string
   userBubbleColor?: string
   inputBarColor?: string
+  isLoggedIn?: boolean
 }
 
 export interface ChatMessage {

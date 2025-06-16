@@ -1,12 +1,8 @@
 // src/pages/profile.tsx
 
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStyle and maskStyle.
-
-// Modified by: Mohammad Hoque
-// Date: 06/02/2025
-// Added dynamic theme support for dark and default themes using localStorage
+// Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStyle and maskStyle.
+// Mohammad Hoque, 06/02/2025, Added dynamic theme support for dark and default themes using localStorage
+// Violet Yousif, 6/16/2025, Removed walletAddress prop from ProfileProps interface and component function parameters.
 
 import React, { useState, useEffect } from 'react'
 import { Modal, Form, InputNumber, Select, Button, Input } from 'antd'
@@ -14,11 +10,12 @@ import { UserData } from '../models'
 
 interface ProfileProps {
   visible: boolean
-  walletAddress: string | null
+  //// Prev: walletAddress: string | null
   onClose: () => void
 }
 
-const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
+const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
+//// Prev: const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>(() => {
@@ -34,25 +31,38 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
   }, [visible])
 
   useEffect(() => {
-    if (visible && walletAddress) {
-      fetch(`/api/user-data?walletAddress=${walletAddress}`)
+    if (visible) {
+      fetch(`http://localhost:8080/api/user-data`, {
+        credentials: 'include'
+      })
         .then((res) => res.json())
         .then((data: UserData) => {
           if (data) form.setFieldsValue(data)
         })
         .catch((error) => console.error('Error fetching user data:', error))
     }
-  }, [visible, walletAddress, form])
+  }, [visible, form])
+
+  //// Prev code:
+  // useEffect(() => {
+  //   if (visible && walletAddress) {
+  //     fetch(`/api/user-data?walletAddress=${walletAddress}`)
+  //       .then((res) => res.json())
+  //       .then((data: UserData) => {
+  //         if (data) form.setFieldsValue(data)
+  //       })
+  //       .catch((error) => console.error('Error fetching user data:', error))
+  //   }
+  // }, [visible, walletAddress, form])
 
   const onFinish = async (values: UserData) => {
-    if (!walletAddress) return
     setLoading(true)
     try {
-      const response = await fetch('/api/profile', {
+      const response = await fetch('http://localhost:8080/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ walletAddress, ...values })
+        body: JSON.stringify(values)
       })
       if (!response.ok) throw new Error('Failed to save user data')
       onClose()
@@ -62,6 +72,26 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
       setLoading(false)
     }
   }
+
+  //// Prev code:
+  // const onFinish = async (values: UserData) => {
+  //   if (!walletAddress) return
+  //   setLoading(true)
+  //   try {
+  //     const response = await fetch('/api/profile', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       credentials: 'include',
+  //       body: JSON.stringify({ walletAddress, ...values })
+  //     })
+  //     if (!response.ok) throw new Error('Failed to save user data')
+  //     onClose()
+  //   } catch (error) {
+  //     console.error('Error saving user data:', error)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   const styles = getStyles(currentTheme)
 
@@ -81,12 +111,21 @@ const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) =>
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ activityLevel: 'moderate', name: 'John Doe', email: 'johndoe@gmail.com' }}
+        initialValues={{ activityLevel: 'moderate', email: 'johndoe@gmail.com' }}
+        //// Prev: initialValues={{ activityLevel: 'moderate', name: 'John Doe', email: 'johndoe@gmail.com' }}
         style={styles.form}
       >
-        <Form.Item label={<span style={styles.label}>Name</span>} name="name" rules={[{ required: true, message: 'Please enter your name' }]}>
+        <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
           <Input style={styles.input} />
         </Form.Item>
+
+        <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
+          <Input style={styles.input} />
+        </Form.Item>
+
+        {/* //// Prev: <Form.Item label={<span style={styles.label}>Name</span>} name="name" rules={[{ required: true, message: 'Please enter your name' }]}>
+          <Input style={styles.input} />
+        </Form.Item> */}
 
         <Form.Item label={<span style={styles.label}>Email</span>} name="email" rules={[
           { required: true, message: 'Please enter your email' },

@@ -1,5 +1,6 @@
 // Viktor, 5/28/2025, Backend file that contains routes and calls to perform database functions
 // Violet Yousif, 5/31/2025, Fixed errors and converted imported CommonJS to ES module syntax
+// Violet Yousif, 6/16/2025, Added cookie-parser to handle auth cookies
 
 import dotenv from 'dotenv';
 import express from 'express';
@@ -17,6 +18,8 @@ import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';
 import checkAuth from './routes/checkAuth.js';
 import userSettings from './routes/userSettings.js';
+import userData from './routes/userData.js';
+import userProfile from './routes/userProfile.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -64,6 +67,8 @@ app.use('/api', userRegister);
 app.use('/api', userLogout);
 app.use('/api', checkAuth);
 app.use('/api', userSettings);
+app.use('/api', userData);
+app.use('/api', userProfile);
 
 
 
