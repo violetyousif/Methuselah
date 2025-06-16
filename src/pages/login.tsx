@@ -1,15 +1,13 @@
-// Name: Mizanur Mizan
-// Description: Created the login page frontend layout and input boxes for email and password
-// Date: 5/27/25
-// Modified by Mizan: 5/29/25
-// Edited by: Violet Yousif
-// Date: 06/01/2025 - Reformatted code to simplify project's coding style
-// Modified by: Mohammad Hoque
-// Date: 06/01/2025 - Added "Forgot Password?" link
-// Updated by: Mohammad Hoque
-// Date: 06/02/2025 - Added dark mode support based on saved user theme
-// Updated by: Viktor Gjrogjevski
-// Date: 06/03/2025 - Fixed token and data not being removed when logging out
+// Mizanur Mizan, 5/27/25, Created the login page frontend layout and input boxes for email and password
+// Mizanur Mizan, 5/29/25, Modified login page
+// Violet Yousif, 06/01/2025, Reformatted code to simplify project's coding style
+// Mohammad Hoque, 06/01/2025, Added "Forgot Password?" link
+// Viktor Gjrogjevski, 6/2/2025, stores user data in local storage
+// Mohammad Hoque, 06/02/2025, Added dark mode support based on saved user theme
+// Violet Yousif, 6/2/2025, Stores user's first name in local storage
+// Violet Yousif, 6/8/2025, uses the "user" object from backend/server response to get data 
+// Viktor Gjrogjevski, 06/03/2025, Fixed token and data not being removed when logging out
+// Violet Yousif, 6/16/2025, Removed walletAddress prop from Login component function parameters.
 
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
@@ -40,11 +38,10 @@ function Login() {
       });
       const data = await response.json();
       if (response.ok) {
-        // Stores user's first name in local storage - Violet 6/2/2025
-        // uses the "user" object from backend/server response to get data - Violet 6/8/2025
+        
         localStorage.setItem('usersName', data.user.firstName || 'Guest') 
             
-        localStorage.setItem('userData', JSON.stringify(data.user)); //stores user data in local storage -Viktor 6/2/2025
+        localStorage.setItem('userData', JSON.stringify(data.user)); 
         message.success('Login successful');
         // after successful login
 

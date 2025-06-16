@@ -2,6 +2,7 @@
 // PURPOSE: Reusable middleware that checks for a valid token before allowing access to a protected route.
 
 // Violet Yousif, 5/31/2025, This middleware checks if the user is authenticated by verifying the JWT token.
+// Violet Yousif, 6/14/2025, Added fixes to token call in a cookie with JWT_SECRET. Uses the cookie dependency to get the token directly from the cookie.
 
 import jwt from 'jsonwebtoken';
 

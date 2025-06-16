@@ -1,15 +1,12 @@
 // Syed Rabbey, 5/27/25, Created a settings page using antd, moment, and other libraries to save user settings for application.
-
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style.
-
 // Mohammad Hoque, 06/02/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
-
 // Mohammad Hoque, 06/02/2025, Sync selected theme to <body> attribute for global dark mode styling
 // Viktor Gjorgjevski, 06/03/2025, Added profile picking option into settings
-// Mizan: 6/12/2025, Changed save button event handler for backend connection
-
+// Mizan, 6/12/2025, Changed save button event handler for backend connection
 // Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Settings component function parameters.
 // Violet Yousuf, 6/16/2025, Removed dateOfBirth field since it's handled by profile endpoint
+
 import { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'

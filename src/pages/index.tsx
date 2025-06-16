@@ -1,6 +1,4 @@
-// Name: Mizanur Mizan
-// Description: Created the landing page to introduce users to Methuselah
-// Date: 6/2/25
+// Mizanur Mizan, 6/2/25, Created the landing page to introduce users to Methuselah
 
 // pages/index.tsx
 

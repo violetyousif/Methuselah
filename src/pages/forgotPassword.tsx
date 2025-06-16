@@ -1,6 +1,4 @@
-// Name: Mohammad Hoque
-// Description: Forgot Password page – allows users to request a reset link
-// Date: 06/01/2025
+// Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
 
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
