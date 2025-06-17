@@ -4,6 +4,7 @@
 // Mohammad Hoque, 6/2/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
 // Violet Yousif, 6/8/2025, Fixed logout functionality to clear user data using backend connection and redirect to login page.
 // Violet Yousif, 6/16/2025, Commented out the Web3Modal component as it is not used in current program.
+// Violet Yousif, 6/16/2025, Fixed logout to remove dark theme wher going to public pages like login, index, and register.
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
@@ -192,7 +193,6 @@ const Chatbot = () => {
                     </Text>
                   </div>
                   {/* Logout button */}
-                  {/* TODO: move login and registration buttons to landing page (index.tsx) */}
                   <div style={styles.authButtons}>
                     {!isLoggedIn && (
                       <>
@@ -203,7 +203,7 @@ const Chatbot = () => {
                     {isLoggedIn && (
                       <Button
                         style={styles.logoutBtn}
-                        onClick={ async () => {
+                        onClick={async () => {
                           try {
                             const res = await fetch('http://localhost:8080/api/logout', {
                               method: 'POST',
@@ -211,9 +211,24 @@ const Chatbot = () => {
                             });
 
                             if (res.ok) {
+                              // Clear user session state
                               setIsLoggedIn(false);
                               setUserData(null);
-                              router.push('/login');
+                              
+                              // Reset theme to light mode
+                              localStorage.removeItem('theme');
+                              document.body.dataset.theme = 'default';
+                              document.body.className = document.body.className.replace(/theme-\w+/g, '');
+                              
+                              // Clear any other user-specific localStorage data
+                              localStorage.removeItem('userData');
+                              localStorage.removeItem('userPreferences');
+                              
+                              // Force light mode styles
+                              document.body.style.backgroundColor = '#ffffff';
+                              document.body.style.color = '#333333';
+                              
+                              router.push('/');
                             } else {
                               message.error('Logout failed.');
                             }

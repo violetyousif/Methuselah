@@ -3,7 +3,8 @@
 // Violet Yousif, 06/01/2025, Edited function to fetch backend data, include error handling
 // Mohammad Hoque, 06/02/2025, Added dynamic dark mode theme support and enhanced phone formatting + form validation
 // Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
-// Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters.
+// Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
+
 
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
@@ -36,21 +37,11 @@ function register() {
   const [form] = Form.useForm();
   const [termsVisible, setTermsVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [theme, setTheme] = useState<'default' | 'dark'>('default')
+  //const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const router = useRouter();
 
   const onFinish = async (values: any) => {
     try {
-      // const payload = {
-      //   firstName: values.firstName.toLowerCase(),
-      //   lastName: values.lastName.toLowerCase(),
-      //   email: values.email.toLowerCase(),
-      //   phoneNum: values.phoneNum,
-      //   dateOfBirth: values.dateOfBirth,
-      //   gender: values.gender
-      //   //profilePic: values.profilePic || '/avatars/avatar1.png'
-      // }
-      
       // connect to backend API to register user
       const res = await fetch('http://localhost:8080/api/register', {
         method: 'POST',
@@ -162,48 +153,13 @@ function register() {
             <Input.Password placeholder="Verify Password" style={styles.placeholderStyle} />
           </Form.Item>
 
-          {/* Phone Number */}
-          <Form.Item
-            style={ styles.rowSpacing }
-            label={<span style={styles.label}>Phone Number</span>}
-            name="phoneNum"
-            rules={[
-              { required: true, message: 'Please enter your phone number' },
-              {
-                validator: (_, value) => {
-                  const digits = value ? value.replace(/\D/g, '') : '';
-                  if (digits.length === 10) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject('Phone number must be exactly 10 digits');
-                  }
-                }
-            ]}
-          >
-            {/* Input field for phone number with formatting */}
-            <Input
-              placeholder="000-000-0000"
-              style={styles.placeholderStyle}
-              onBlur={e => {
-                const formatted = formatPhoneNumber(e.target.value);
-                form.setFieldsValue({ phoneNum: formatted });
-              }}
-              onChange={e => {
-                // Only allow up to 10 digits
-                const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                let formatted = digits;
-                if (digits.length === 10) {
-                  formatted = formatPhoneNumber(digits);
-                }
-                form.setFieldsValue({ phoneNum: formatted });
-              }}
-            />
-          </Form.Item>
 
-          <div style={styles.shortInputContainer}>
+
+
+          {/* <div style={styles.shortInputContainer}> */}
           { /* Date of Birth */}
           <Form.Item
-            style={{ ...styles.rowSpacing, ...styles.halfWidth }} // half width for date of birth
+            style={ styles.rowSpacing }
             label={<span style={styles.label}>Date of Birth</span>}
             name="dateOfBirth"
             rules={[{ required: true, message: 'Please enter your birth date' }]}
@@ -212,7 +168,7 @@ function register() {
           </Form.Item>
 
           { /* Gender */}
-          <Form.Item
+          {/* <Form.Item
             style={{ ...styles.rowSpacing, ...styles.halfWidth }} // half width for gender
             label={<span style={styles.label}>Gender</span>}
             name="gender"
@@ -224,8 +180,8 @@ function register() {
               <Select.Option value="other">Other</Select.Option>
               <Select.Option value="prefer_not_to_say">Prefer not to say</Select.Option>
             </Select>
-          </Form.Item>
-          </div>
+          </Form.Item> 
+          </div>*/}
           
 
           { /* Terms and Conditions Agreement */}
@@ -270,7 +226,7 @@ export default register;
 const styles = {
   page: {
     backgroundColor: '#1D1E2C',
-    displauy: 'block',
+    display: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',
     left: 0,
@@ -279,6 +235,9 @@ const styles = {
     bottom: 0,
     height: '100%',
     width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    padding: '2rem',
   },
   card: {
     maxWidth: 400,

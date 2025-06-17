@@ -20,7 +20,7 @@ const authRateLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later.' },
 });
 
-router.get('/checkAuth', auth, authRateLimiter, async (req, res) => {
+router.get('/checkAuth', authRateLimiter, auth, async (req, res) => {
   try {
     //const cookies = cookie.parse(req.headers.cookie || ''); // parse cookies from the request headers
     //const token = cookies.token;
