@@ -20,6 +20,9 @@ import userLogout from './routes/userLogout.js';
 import checkAuth from './routes/checkAuth.js';
 import userSettings from './routes/userSettings.js';
 
+// Importing cookie-parser to handle auth cookies
+import cookieParser from 'cookie-parser';
+
 // Description: Set up the express app and connect to MongoDB
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
