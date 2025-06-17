@@ -1,6 +1,5 @@
-// Name: Violet Yousif
-// Date: 6/1/2025
-// Description: Created a modal component for displaying terms of service and dynamic date.
+// Violet Yousif, 6/1/2025, Created a modal component for displaying terms of service and dynamic date.
+// Violet Yousif, 6/13/2025, Added current date and edited last updated date to the terms of service modal.
 import React from 'react';
 import { Modal, Typography } from 'antd';
 

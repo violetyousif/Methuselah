@@ -1,5 +1,4 @@
-// Modified by: Mohammad Hoque (6/2/25)
-// Description: Applies global theme and font size preferences using <body> dataset attributes
+// Mohammad Hoque, 6/2/2025, Applies global theme and font size preferences using <body> dataset attributes
 
 import Head from 'next/head'
 import '@/styles/globals.css'

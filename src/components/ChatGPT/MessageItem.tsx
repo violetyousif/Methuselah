@@ -1,4 +1,5 @@
 // Modified: 6/3/25 by Syed to add timestamps to messages.
+// Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Dashboard component function parameters to prevent errors.
 import React from 'react'
 import MarkdownIt from 'markdown-it'
 import mdHighlight from 'markdown-it-highlightjs'
