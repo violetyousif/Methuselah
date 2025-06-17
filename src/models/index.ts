@@ -1,6 +1,5 @@
 // src/models/index.ts
-
-// This is not for personal User db calling! It pertains to AI-related calls only!
+// Violet Yousif, 6/10,2025, Changed the UserData interface to include firstName, lastName instead of name.
 
 import { ChatRole } from '../components/ChatGPT/interface'
 

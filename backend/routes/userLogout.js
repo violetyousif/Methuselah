@@ -4,19 +4,18 @@
 
 
 import express from 'express';
-import cookie from 'cookie';
 
 const router = express.Router();
 
 // Description: handles user logout by clearing the authentication cookie that's holding the JWT token
 router.post('/logout', (req, res) => {
-  res.setHeader('Set-Cookie', cookie.serialize('token', '', {
+  res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'Strict',
-    expires: new Date(0), // Forces cookie to expire
+    //expires: new Date(0), // Forces cookie to expire -- update: not needed as clearCookie from express does this automatically
     path: '/',
-  }));
+  });
   res.status(200).json({ message: 'Logged out successfully' });
 });
 

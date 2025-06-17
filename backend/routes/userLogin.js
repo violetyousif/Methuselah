@@ -3,21 +3,22 @@
 // Violet Yousif, 5/31/2025, Added express-rate-limit to prevent brute-force attacks on login
 // Viktor, 6/1/2025, session tokens are assigned to the user to only be signed in for 1 hour. Afterwhich, they will have to log back in again
 // Violet Yousif, 6/8/2025, Added error handling for token signing and set token in a cookie with JWT_SECRET
-
+// Violet Yousif, 6/16/2025, Removed cookie dependency and used res.cookie() directly from server.js and middleware
 
 import express from 'express';
 const router = express.Router();
-import User from '../models/User.js'; 
+import getUser from '../models/User.js'; 
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
-import cookie from 'cookie';
+//import cookie from 'cookie'; // Don't need anymore, using res.cookie() directly from server.js and middleware
 
 // prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
 import rateLimit from 'express-rate-limit';
 
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15,   // Limit to 5 login attempts per IP per windowMs
+  max: 15,   // Limit to 15 login attempts per IP per windowMs
   message: {
     message: 'Too many login attempts, please try again after 15 minutes',
   },
@@ -37,7 +38,7 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    const user = await User.findOne({ email: { $eq: email.trim().toLowerCase() } });
+    const user = await getUser.findOne({ email: { $eq: email.trim().toLowerCase() } });
     if (!user) {
       console.log('User not found');
       return res.status(400).json({ message: 'User not found' });
@@ -68,13 +69,13 @@ router.post('/login', loginLimiter, async (req, res) => {
       );
     }
     // Set the token in a cookie with JWT_SECRET
-    res.setHeader('Set-Cookie', cookie.serialize('token', token, {
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 60 * 60, // 1 hour for the token to expire
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
       path: '/',
-    }));
+    });
 
     const {password: _, ...userWithoutPassword} = user.toObject(); // Send user data (excluding password) in response
     
