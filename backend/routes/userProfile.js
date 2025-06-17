@@ -1,52 +1,44 @@
-// routes/userProfile.js
-// Created: 6/13/2025 by Mohammad Hoque
-// Description: Secure Express route to fetch and update user profiles
+// Violet Yousif, 6/16/2025, Created profile endpoint for saving user profile data
 
 import express from 'express';
-import User from '../models/User.js';
+import getUser from '../models/User.js';
 import auth from '../middleware/auth.js';
-import mongoose from 'mongoose';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 
-// GET /profile — Securely fetch user profile using JWT
-router.get('/profile', auth, async (req, res) => {
-  try {
-    console.log('GET /profile — Decoded user:', req.user);
-
-    const user = await User.findById(req.user._id).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    res.json(user);
-  } catch (err) {
-    console.error('Error fetching profile:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
+// Define rate limiter: maximum of 20 requests per 15 minutes
+const profileRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per windowMs
+  message: { message: 'Too many requests, please try again later.' },
 });
 
-// PATCH /profile — Securely update partial user profile data using JWT
-router.patch('/profile', auth, async (req, res) => {
+router.post('/profile', auth, profileRateLimiter, async (req, res) => {
   try {
-    const updates = req.body;
+    const { firstName, lastName, email, age, weight, height, activityLevel, sleepHours } = req.body;
+    
+    const user = await getUser.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    console.log('PATCH /profile — Decoded user:', req.user);
-    console.log('PATCH /profile — Incoming data:', updates);
+    // Update user profile data
+    if (firstName !== undefined) user.firstName = firstName;
+    if (lastName !== undefined) user.lastName = lastName;
+    if (email !== undefined) user.email = email;
+    if (age !== undefined) user.age = age;
+    if (weight !== undefined) user.weight = weight;
+    if (height !== undefined) user.height = height;
+    if (activityLevel !== undefined) user.activityLevel = activityLevel;
+    if (sleepHours !== undefined) user.sleepHours = sleepHours;
 
-    const result = await User.findByIdAndUpdate(
-      req.user._id,
-      { $set: updates },
-      { new: true }
-    ).select('-password');
+    await user.save();
 
-    if (!result) {
-      return res.status(404).json({ message: 'User not found or not updated' });
-    }
-
-    res.status(200).json({ message: 'Profile updated', result });
-  } catch (err) {
-    console.error('Error updating profile:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(200).json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
 export default router;
+

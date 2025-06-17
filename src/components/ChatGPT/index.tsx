@@ -1,8 +1,8 @@
 // src/components/ChatGPT/index.tsx
 
-// Edited by: Violet Yousif
-// Date: 06/01/2025
-// Reformatted the code to simplify project's coding style and fixed ChatGPTProps missing properties in interface.ts.
+// Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed ChatGPTProps missing properties in interface.ts.
+// Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
+
 import React from 'react'
 import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
 import MessageItem from './MessageItem'
@@ -18,9 +18,13 @@ const ChatGPT = ({
   assistantBubbleColor = '#9AB7A9',
   userBubbleColor = '#318182',
   inputBarColor = '#9AB7A9',
+  isLoggedIn = false,
   ...props
 }: ChatGPTProps & { conversationId: string; walletAddress: string }) => {
-  const { loading, disabled, messages, currentMessage, onSend, onClear, onStop } = useChatGPT(props)
+  const { loading, disabled, messages, currentMessage, onSend, onClear, onStop } = useChatGPT({
+    ...props,
+    isLoggedIn
+  })
 
   return (
     <div className="chat-wrapper">
@@ -39,7 +43,13 @@ const ChatGPT = ({
         {messages.map((message, index) => (
           <MessageItem
             key={index}
-            message={message as ChatMessage}
+            // Converts message.timestamp into a string for chat display
+            message={{
+              ...message,
+              timestamp: typeof message.timestamp === 'string'
+                ? message.timestamp
+                : message.timestamp?.toISOString?.() ?? ''
+            } as ChatMessage}
             assistantColor={assistantBubbleColor}
             userColor={userBubbleColor}
           />
@@ -60,7 +70,7 @@ const ChatGPT = ({
         onSend={onSend}
         onClear={onClear}
         onStop={onStop}
-        inputColor={inputBarColor}
+        //inputColor={inputBarColor}
       />
     </div>
   )
