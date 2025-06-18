@@ -12,7 +12,7 @@ import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import Profile from './profile' // CHECK IF NEED TO BE ./userProfile
+import Profile from './profile' // Checked by Mohammad, 06/18/2025
 import Dashboard from './dashboard'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
@@ -277,6 +277,11 @@ const Chatbot = () => {
               </div>
               {/* Bottom buttons */}
               <div style={styles.bottomButtons}>
+                <Link href="/profile">
+                  <Button style={buttonStyle} icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}>
+                  Profile
+                  </Button>
+                </Link>
                 <Link href="/settings">
                   <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
@@ -315,7 +320,6 @@ const Chatbot = () => {
         </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Profile visible={profileVisible} onClose={() => setProfileVisible(false)} />
       <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}

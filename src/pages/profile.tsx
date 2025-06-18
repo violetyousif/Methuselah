@@ -10,19 +10,19 @@
 // Refactored to standalone page layout with back button to /chatBot.
 
 import React, { useState, useEffect } from 'react'
-import { Form, InputNumber, Select, Button, Input, message } from 'antd'
+import { Form, InputNumber, Select, Button, Input, message} from 'antd'
 import { UserData } from '../models'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 
-
+/* Old Code
 interface ProfileProps {
   visible: boolean
   //// Prev: walletAddress: string | null
   onClose: () => void
-}
+}*/
 
-const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
+const Profile: React.FC = () => {
 //// Prev: const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
@@ -36,20 +36,18 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'default'
     setCurrentTheme(storedTheme as 'default' | 'dark')
-  }, [visible])
+  }, [])
 
   useEffect(() => {
-    if (visible) {
-      fetch(`http://localhost:8080/api/user-data`, {
-        credentials: 'include'
+    fetch(`http://localhost:8080/api/user-data`, {
+      credentials: 'include'
+    })
+      .then((res) => res.json())
+      .then((data: UserData) => {
+        if (data) form.setFieldsValue(data)
       })
-        .then((res) => res.json())
-        .then((data: UserData) => {
-          if (data) form.setFieldsValue(data)
-        })
-        .catch((error) => console.error('Error fetching user data:', error))
-    }
-  }, [visible, form])
+      .catch((error) => console.error('Error fetching user data:', error))
+  }, [form])
 
   //// Prev code:
   // useEffect(() => {
@@ -73,9 +71,10 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
         body: JSON.stringify(values)
       })
       if (!response.ok) throw new Error('Failed to save user data')
-      onClose()
     } catch (error) {
       console.error('Error saving user data:', error)
+      message.error('There was an error saving your profile.')
+
     } finally {
       setLoading(false)
     }
@@ -116,15 +115,10 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ activityLevel: 'moderate', email: 'johndoe@gmail.com' }}
+        initialValues={{ activityLevel: 'moderate'}}
         //// Prev: initialValues={{ activityLevel: 'moderate', name: 'John Doe', email: 'johndoe@gmail.com' }}
         style={styles.form}
       >
-        <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
-          <Input style={styles.input} />
-        </Form.Item>
-
-        <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
         <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
           <Input style={styles.input} />
         </Form.Item>
@@ -158,7 +152,7 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
           name="gender"
           rules={[{ required: true, message: 'Select Gender' }]}
         >
-          <Select placeholder="Select Gender" style={styles.placeholderStyle}>
+          <Select placeholder="Select Gender" style={styles.select}>
             <Select.Option value="female">Female</Select.Option>
             <Select.Option value="male">Male</Select.Option>
             <Select.Option value="other">Other</Select.Option>
