@@ -39,7 +39,7 @@ router.get('/profile', auth, profileRateLimiter, async (req, res) => {
     res.status(500).json({ message: 'Server error fetching profile', error: error.message });
   }
 });
-router.post('/profile', auth, profileRateLimiter, async (req, res) => {
+router.patch('/profile', auth, profileRateLimiter, async (req, res) => {
   try {
     const { firstName, lastName, email, age, weight, height, activityLevel, sleepHours } = req.body;
     
@@ -56,6 +56,7 @@ router.post('/profile', auth, profileRateLimiter, async (req, res) => {
     if (activityLevel !== undefined) user.activityLevel = activityLevel;
     if (sleepHours !== undefined) user.sleepHours = sleepHours;
 
+    user.updatedAt = new Date();
     await user.save();
 
     res.status(200).json({ message: 'Profile updated successfully' });
