@@ -277,3 +277,41 @@ const getStyles = (theme: 'default' | 'dark') => ({
   borderRadius: '9999px'
 }
 })
+
+// For phone number input, you can use the following code snippet:
+// (potentially for 2 factor authentication)
+// <Form.Item
+//   style={styles.rowSpacing}
+//   label={<span style={styles.label}>Phone Number</span>}
+//   name="phoneNum"
+//   rules={[
+//     { required: true, message: 'Please enter your phone number' },
+//     {
+//       validator: (_, value) => {
+//         const digits = value ? value.replace(/\D/g, '') : '';
+//         if (digits.length === 10) {
+//           return Promise.resolve();
+//         }
+//         return Promise.reject('Phone number must be exactly 10 digits');
+//       }
+//     }
+//   ]}
+// >
+//   <Input
+//     placeholder="000-000-0000"
+//     style={styles.placeholderStyle}
+//     onBlur={e => {
+//       const formatted = formatPhoneNumber(e.target.value);
+//       form.setFieldsValue({ phoneNum: formatted });
+//     }}
+//     onChange={e => {
+//       // Only allow up to 10 digits
+//       const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+//       let formatted = digits;
+//       if (digits.length === 10) {
+//         formatted = formatPhoneNumber(digits);
+//       }
+//       form.setFieldsValue({ phoneNum: formatted });
+//     }}
+//   />
+// </Form.Item>

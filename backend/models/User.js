@@ -9,18 +9,11 @@ const UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName:  { type: String, required: false },
   email: { type: String, required: true, unique: true },
-  walletAddress: { type: String, unique: true, sparse: true },
   password: { type: String, required: true },
   phoneNum:  { type: String, required: false },
   dateOfBirth: { type: String, required: true },
   gender: { type: String, required: false },
   profilePic: { type: String, default: '/avatars/avatar1.png' },
-  age: { type: Number },
-  weight: { type: Number },
-  height: { type: Number },
-  activityLevel: { type: String, enum: ['sedentary', 'moderate', 'active'] },
-  sleepHours: { type: Number },
-
   agreedToTerms: { type: Boolean, default: false, required: true },
   // Health-related fields for profile data (add to table):
   age: { type: Number },
