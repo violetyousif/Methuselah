@@ -275,90 +275,89 @@ export default Profile
 
 const getStyles = (theme: 'default' | 'dark') => ({
   page: {
-  backgroundColor: theme === 'dark' ? '#0f0f17' : '#F1F1EB',
-  minHeight: '100vh',
-  padding: '6rem'
-},
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB', // Only dark changed
+    minHeight: '100vh',
+    padding: '6rem'
+  },
   modalTitle: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     fontWeight: 'bold',
     fontSize: '1.1rem'
   },
   card: {
-  maxWidth: 600,
-  margin: 'auto',
-  padding: '2rem',
-  backgroundColor: theme === 'dark' ? '#252525' : '#A0B6AA',
-  borderRadius: '2rem',
-  border: '3px solid',
-  borderColor: theme === 'dark' ? '#4b5563' : '#000000'
-},
+    maxWidth: 600,
+    margin: 'auto',
+    padding: '2rem',
+    backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA', // Only dark changed
+    borderRadius: '2rem',
+    border: '3px solid',
+    borderColor: theme === 'dark' ? '#318182' : '#000000' // Only dark changed
+  },
   modalMask: {
     backgroundColor: theme === 'dark'
       ? 'rgba(0, 0, 0, 0.7)'
       : 'rgba(0, 0, 0, 0.1)'
   },
   form: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C'
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
   },
   label: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     fontWeight: 'bold',
     marginBottom: 4
   },
   input: {
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     borderRadius: '8px'
   },
   inputNumber: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     borderRadius: '8px'
   },
   select: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     borderRadius: '8px'
   },
   option: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff'
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff'
   },
   primaryButton: {
-    backgroundColor: theme === 'dark' ? '#4b5563' : '#203625',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
     color: '#ffffff',
     borderRadius: '1rem',
     marginRight: '8px'
   },
   cancelButton: {
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#F1F1EB',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#203625',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#203625',
     borderRadius: '1rem'
   },
   backButton: {
-  marginBottom: '24px',
-  backgroundColor: theme === 'dark' ? '#4b5563' : '#203625',
-  color: '#ffffff',
-  borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-  borderRadius: '9999px'
- },
- rowSpacing: {
+    marginBottom: '24px',
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: '#ffffff',
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    borderRadius: '9999px'
+  },
+  rowSpacing: {
     marginBottom: '0.6px'
-  },  
+  },
   placeholderStyle: {
-    opacity: 0.8,     // Text transparency in input fields
+    opacity: 0.8,
     color: '#1D1E2C'
   }
 })
-
 // For phone number input, you can use the following code snippet:
 // (potentially for 2 factor authentication)
 // <Form.Item
