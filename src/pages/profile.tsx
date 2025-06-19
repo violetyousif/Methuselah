@@ -136,11 +136,47 @@ const Profile: React.FC = () => {
           <Input style={styles.input} />
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Age (years)</span>} name="age" rules={[
+        {/*<Form.Item label={<span style={styles.label}>Age (years)</span>} name="age" rules={[
           { required: true, message: 'Please enter your age' },
           { type: 'number', min: 0, message: 'Age must be positive' }
         ]}>
           <InputNumber min={0} style={styles.inputNumber} />
+        </Form.Item> */}
+        {/* Date of Birth */}
+        <Form.Item
+          style={styles.rowSpacing}
+          label={<span style={styles.label}>Date of Birth</span>}
+          name="dateOfBirth"
+          rules={[
+            { required: true, message: 'Please enter your birth date' },
+            {
+              validator: (_, value) => {
+          if (!value) return Promise.resolve();
+          const dob = new Date(value);
+          const today = new Date();
+          const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+          if (dob > minDate) {
+            return Promise.reject('You must be at least 18 years old');
+          }
+          return Promise.resolve();
+              }
+            }
+          ]}
+        >
+          <Input
+            type="date"
+            style={styles.input}
+            min={(() => {
+              const today = new Date();
+              return `${today.getFullYear() - 120}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            })()}
+            max={(() => {
+              const today = new Date();
+              return `${today.getFullYear() - 18}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            })()}
+            placeholder="YYYY-MM-DD"
+            allowClear
+          />
         </Form.Item>
 
         {/* Gender */}
@@ -275,7 +311,14 @@ const getStyles = (theme: 'default' | 'dark') => ({
   color: '#ffffff',
   borderColor: theme === 'dark' ? '#4b5563' : '#203625',
   borderRadius: '9999px'
-}
+ },
+ rowSpacing: {
+    marginBottom: '0.6px'
+  },  
+  placeholderStyle: {
+    opacity: 0.8,     // Text transparency in input fields
+    color: '#1D1E2C'
+  }
 })
 
 // For phone number input, you can use the following code snippet:
