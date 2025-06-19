@@ -2,6 +2,7 @@
 // Violet Yousif, 6/1/2025, handles user registration; checks if email exists, hashes password, and saves new user to db
 // Violet Yousif, 6/1/2025, added rate limiting to prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
 // Violet Yousif, 6/16/2025, added error handling for registration and removed unnecessary fields from response (gender, phoneNum, confirmPassword). 
+// Violet Yousif, 6/18/2025, removed last name from registraton field
 
 import express from 'express';
 import getUser from '../models/User.js';
@@ -31,24 +32,19 @@ router.post('/register', registerLimiter, async (req, res) => {
   try {
     let {
         firstName,
-        lastName,
         email,
         password,
         confirmPassword, // Frontend sends this but we don't need it in backend
-        //phoneNum,
         dateOfBirth,
-        //gender,
         agreedToTerms,
     } = req.body;
 
     // Log incoming data for debugging
     console.log('Registration attempt:', { 
       firstName, 
-      lastName, 
+      //lastName, 
       email, 
-      //phoneNum, 
       dateOfBirth, 
-      //gender, 
       agreedToTerms,
       hasPassword: !!password
     });
@@ -71,16 +67,14 @@ router.post('/register', registerLimiter, async (req, res) => {
     // Create and save the user
     const user = await getUser.create({
         firstName: capitalize(firstName),
-        lastName: capitalize(lastName),
+        // lastName: capitalize(lastName),
         email: email.toLowerCase(),
         password: hashedPassword,
-        phoneNum,
         dateOfBirth,
-        gender,
         agreedToTerms
     });
 
-    // Remove password from the response
+    // Remove password from the response that is sent back to the client
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     res.status(201).json({ 
