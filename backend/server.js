@@ -19,6 +19,8 @@ import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';
 import checkAuth from './routes/checkAuth.js';
 import userSettings from './routes/userSettings.js';
+import userData from './routes/userData.js';
+import userProfile from './routes/userProfile.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -64,6 +66,8 @@ app.use('/api', userRegister);
 app.use('/api', userLogout);
 app.use('/api', checkAuth);
 app.use('/api', userSettings);
+app.use('/api', userData);
+app.use('/api', userProfile);
 
 
 
