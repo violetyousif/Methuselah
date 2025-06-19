@@ -1,4 +1,5 @@
 // Violet Yousif, 6/16/2025, Created user data endpoint for ChatGPT component health data fetching
+// Mohammad Hoque, 6/18/2025, Added gender field to user data response
 
 import express from 'express';
 import getUser from '../models/User.js';

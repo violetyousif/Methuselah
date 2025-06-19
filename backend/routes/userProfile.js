@@ -1,4 +1,5 @@
 // Violet Yousif, 6/16/2025, Created profile endpoint for saving user profile data
+// Mohammad Hoque, 6/18/2025, Added gender field to the profile endpoint 
 
 import express from 'express';
 import getUser from '../models/User.js';

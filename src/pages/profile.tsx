@@ -4,10 +4,8 @@
 // Mohammad Hoque, 06/02/2025, Added dynamic theme support for dark and default themes using localStorage
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from ProfileProps interface and component function parameters.
 // Violet Yousif, 6/16/25, Added commented out phone number to end of page if we want to use it. Added gender to list of options.
-
-// Updated by: Mohammad Hoque
-// Date: 06/13/2025
-// Refactored to standalone page layout with back button to /chatBot.
+// Mohammad Hoque, 06/13/2025, Refactored to standalone page layout with back button to /chatBot.
+// Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, inch) instead of metric (kg, cm).
 
 import React, { useState, useEffect } from 'react'
 import { Form, InputNumber, Select, Button, Input, message} from 'antd'
@@ -65,7 +63,7 @@ const Profile: React.FC = () => {
     setLoading(true)
     try {
       const response = await fetch('http://localhost:8080/api/profile', {
-        method: 'PATCH',
+        method: 'PATCH', // Changed from POST to PATCH - Mohammad
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(values)
