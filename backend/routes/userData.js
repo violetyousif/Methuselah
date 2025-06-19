@@ -28,6 +28,7 @@ router.get('/user-data', auth, userDataRateLimiter, async (req, res) => {
       age: user.age || 0,
       weight: user.weight || 0,
       height: user.height || 0,
+      gender: user.gender || '', // Added gender field
       activityLevel: user.activityLevel || 'moderate',
       sleepHours: user.sleepHours || 8,
       profilePic: user.profilePic
