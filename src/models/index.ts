@@ -27,6 +27,7 @@ export interface UserData {
   firstName?: string
   lastName?: string
   email?: string
+  gender?: 'female' | 'male' | 'other' | 'prefer not to say'
   age: number
   weight: number // kg
   height: number // cm

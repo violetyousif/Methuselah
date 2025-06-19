@@ -44,20 +44,7 @@ const Profile: React.FC = () => {
     })
       .then((res) => res.json())
       .then((data: UserData) => {
-        if (data) {
-        // Normalize gender value if needed
-        if (data.gender) {
-          const genderMap: Record<string, string> = {
-            'Male': 'male',
-            'Female': 'female',
-            'Other': 'other',
-            'Prefer not to say': 'prefer_not_to_say',
-            // add more mappings if needed
-          }
-          data.gender = genderMap[data.gender] || data.gender
-        }
-        form.setFieldsValue(data)
-      }
+        if (data) form.setFieldsValue(data)
       })
       .catch((error) => console.error('Error fetching user data:', error))
   }, [form])
