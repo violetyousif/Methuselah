@@ -160,14 +160,14 @@ const Profile: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Weight (kg)</span>} name="weight" rules={[
+        <Form.Item label={<span style={styles.label}>Weight (lb)</span>} name="weight" rules={[
           { required: true, message: 'Please enter your weight' },
           { type: 'number', min: 0, message: 'Weight must be positive' }
         ]}>
           <InputNumber min={0} step={0.1} style={styles.inputNumber} />
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Height (cm)</span>} name="height" rules={[
+        <Form.Item label={<span style={styles.label}>Height (inch)</span>} name="height" rules={[
           { required: true, message: 'Please enter your height' },
           { type: 'number', min: 0, message: 'Height must be positive' }
         ]}>
