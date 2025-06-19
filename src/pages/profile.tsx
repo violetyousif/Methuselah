@@ -6,12 +6,15 @@
 // Violet Yousif, 6/16/25, Added commented out phone number to end of page if we want to use it. Added gender to list of options.
 // Mohammad Hoque, 06/13/2025, Refactored to standalone page layout with back button to /chatBot.
 // Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, inch) instead of metric (kg, cm).
+// Mohammad Hoque, 06/19/2025, Switched Activity Level to modal selection with dropdown icon and helper text.
 
 import React, { useState, useEffect } from 'react'
 import { Form, InputNumber, Select, Button, Input, message} from 'antd'
 import { UserData } from '../models'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
+import ActivityLevelModal from '../components/ActivityLevelModal'; // Import the new ActivityLevelModal component
+import { DownOutlined } from '@ant-design/icons'; // For dropdown arrow icon
 
 /* Old Code
 interface ProfileProps {
@@ -24,6 +27,8 @@ const Profile: React.FC = () => {
 //// Prev: const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  const [activityModalVisible, setActivityModalVisible] = useState(false);
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState<string>('moderate');
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       return (document.body.dataset.theme as 'default' | 'dark') || 'default'
@@ -42,7 +47,8 @@ const Profile: React.FC = () => {
     })
       .then((res) => res.json())
       .then((data: UserData) => {
-        if (data) form.setFieldsValue(data)
+        form.setFieldsValue(data);
+          if (data.activityLevel) setSelectedActivityLevel(data.activityLevel); //for the Activity Level button text
       })
       .catch((error) => console.error('Error fetching user data:', error))
   }, [form])
@@ -208,19 +214,41 @@ const Profile: React.FC = () => {
           <InputNumber min={0} step={0.1} style={styles.inputNumber} />
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Activity Level</span>} name="activityLevel" rules={[{ required: true, message: 'Please select an activity level' }]}>
-          <Select style={styles.select} className="custom-select">
-            <Select.Option value="sedentary" style={styles.option}>Sedentary</Select.Option>
-            <Select.Option value="moderate" style={styles.option}>Moderate</Select.Option>
-            <Select.Option value="active" style={styles.option}>Active</Select.Option>
-          </Select>
+        <Form.Item
+          label={<span style={styles.label}>Activity Level</span>}
+          name="activityLevel"
+          rules={[{ required: true, message: 'Please select an activity level' }]}
+        >
+          <Button
+            style={{ width: '100%', textAlign: 'left', ...styles.input, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            onClick={() => setActivityModalVisible(true)}
+            type="default"
+          >
+            <span>
+              {selectedActivityLevel
+                ? selectedActivityLevel.charAt(0).toUpperCase() + selectedActivityLevel.slice(1)
+                : 'Select Activity Level'}
+            </span>
+            <DownOutlined />
+          </Button>
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Sleep Hours (per night)</span>} name="sleepHours" rules={[
-          { required: true, message: 'Please enter sleep hours' },
-          { type: 'number', min: 0, max: 24, message: 'Sleep must be between 0–24 hours' }
-        ]}>
-          <InputNumber min={0} max={24} step={0.5} style={styles.inputNumber} />
+        <Form.Item
+          label={<span style={styles.label}>Sleep Hours (per night)</span>}
+          name="sleepHours"
+          rules={[
+            { required: true, message: 'Please enter sleep hours' },
+            { type: 'number', min: 0, max: 24, message: 'Sleep must be between 0–24 hours' }
+          ]}
+        >
+          <InputNumber
+            min={0}
+            max={24}
+            step={0.5}
+            style={styles.inputNumber}
+            addonAfter="hours"
+            placeholder="Hours"
+          />
         </Form.Item>
 
         <Form.Item>
@@ -229,6 +257,16 @@ const Profile: React.FC = () => {
         </Form.Item>
       </Form>
     </div>
+    <ActivityLevelModal
+        visible={activityModalVisible}
+        onClose={() => setActivityModalVisible(false)}
+        selected={selectedActivityLevel}
+        onSelect={(level: string) => {
+          setSelectedActivityLevel(level);
+          form.setFieldsValue({ activityLevel: level });
+          setActivityModalVisible(false);
+        }}
+      />
     </div>
   )
 }
