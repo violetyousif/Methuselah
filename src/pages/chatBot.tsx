@@ -246,7 +246,7 @@ const Chatbot = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                   <div style={styles.menuSection}>
                     <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
-                    <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
+                    <Text strong style={styles.chatHistoryText(currentTheme)}>Chat History</Text>
                   </div>
                   <div style={{ flexGrow: 1 }} />
                   <div style={styles.footerButtons}>
@@ -393,6 +393,11 @@ const styles = {
     fontSize: '12px',
     padding: '4px 12px',
     height: '28px'
+  }),
+  chatHistoryText: (theme: 'default' | 'dark'): React.CSSProperties => ({
+    display: 'block',
+    margin: '16px 0 8px',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
   }),
   chatItem: {
     padding: '8px 12px',
