@@ -3,9 +3,9 @@
 // Viktor Gjorgjevski, 6/3/2025, Edited Logout button and added profile pic
 // Mohammad Hoque, 6/2/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
 // Violet Yousif, 6/8/2025, Fixed logout functionality to clear user data using backend connection and redirect to login page.
+// Mohammad Hoque, 6/13/2025, Converted profile modal to redirect to a standalone /profile route for user data entry
 // Violet Yousif, 6/16/2025, Commented out the Web3Modal component as it is not used in current program.
 // Violet Yousif, 6/16/2025, Fixed logout to remove dark theme wher going to public pages like login, index, and register.
-// Mohammad Hoque, 6/13/2025, Converted profile modal to redirect to a standalone /profile route for user data entry
 
 
 import ChatGPT from '@/components/ChatGPT'
@@ -292,11 +292,11 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
-      <Layout style={styles.contentArea(collapsed, currentTheme)}>
+       <Layout style={styles.contentArea(collapsed, currentTheme)}>
         <Content style={styles.content}>
           {selectedChatId && (
             <ChatGPT
-              fetchPath="/api/chat-completion"
+              fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
               conversationId={selectedChatId}
               walletAddress={userData?.email || 'default-user'}
               isLoggedIn={isLoggedIn}
@@ -305,7 +305,7 @@ const Chatbot = () => {
               userBubbleColor="#318182"
             />
           )}
-          {/* //// Prev code:
+          {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT
                   fetchPath="/api/chat-completion"
@@ -316,8 +316,8 @@ const Chatbot = () => {
                   userBubbleColor="#318182"
                 />
               )}
-          */}
-        </Content>
+         }*/}
+         </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
       <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />

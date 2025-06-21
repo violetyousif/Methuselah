@@ -94,9 +94,7 @@ export default function Settings() {
     const data = await res.json();
 
     if (res.ok) {
-      //// Prev: localStorage.setItem('userSettings', JSON.stringify(settings)); // Removed - data now persisted in database only
-      message.success('Settings saved to database!');
-      
+      message.success('Settings updated successfully!');
       // Update localStorage for theme and fontSize for immediate UI application
       localStorage.setItem('theme', theme);
       localStorage.setItem('fontSize', fontSize);
