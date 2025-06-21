@@ -36,6 +36,26 @@ export default function Home() {
   // }
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/checkAuth', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (res.ok) {
+        // Optional: Redirect logged-in users to dashboard or chatbot
+          router.push('/chatBot');
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+
+  useEffect(() => {
     const handleKey = () => {
       try {
         inputRef.current?.focus()

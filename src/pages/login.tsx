@@ -17,6 +17,10 @@ import Link from 'next/link';
 import { ArrowLeftOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 
+//test account
+//username: mothergothel@example.com
+//password: MotherIsDisney11!
+
 
 
 function Login() {
