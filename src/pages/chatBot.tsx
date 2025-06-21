@@ -5,12 +5,14 @@
 // Violet Yousif, 6/8/2025, Fixed logout functionality to clear user data using backend connection and redirect to login page.
 // Violet Yousif, 6/16/2025, Commented out the Web3Modal component as it is not used in current program.
 // Violet Yousif, 6/16/2025, Fixed logout to remove dark theme wher going to public pages like login, index, and register.
+// Mohammad Hoque, 6/13/2025, Converted profile modal to redirect to a standalone /profile route for user data entry
+
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import Profile from './profile'
+import Profile from './profile' // Checked by Mohammad, 06/18/2025
 import Dashboard from './dashboard'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
@@ -28,7 +30,6 @@ const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({})
-  const [profileVisible, setProfileVisible] = useState(false)
   const [dashboardVisible, setDashboardVisible] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [collapsed, setCollapsed] = useState(false)
@@ -186,7 +187,7 @@ const Chatbot = () => {
                     onClick={() => setCollapsed(true)}
                     style={styles.menuButton}
                   />
-                  <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
+                  <div onClick={() => router.push('/profile')} style={{ cursor: 'pointer' }}>
                     <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={styles.avatar} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
                       {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')}
@@ -276,6 +277,11 @@ const Chatbot = () => {
               </div>
               {/* Bottom buttons */}
               <div style={styles.bottomButtons}>
+                <Link href="/profile">
+                  <Button style={buttonStyle} icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}>
+                  Profile
+                  </Button>
+                </Link>
                 <Link href="/settings">
                   <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
@@ -314,7 +320,6 @@ const Chatbot = () => {
         </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Profile visible={profileVisible} onClose={() => setProfileVisible(false)} />
       <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
