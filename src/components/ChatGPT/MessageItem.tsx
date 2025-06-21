@@ -24,7 +24,7 @@ const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, us
 
   return (
     <div style={{ marginBottom: '16px' }}>
-      <div style={{ fontStyle: 'italic', fontSize: '12px', color: '#000', marginBottom: '4px', textAlign: isUser ? 'right' : 'left' }}>
+      <div className={`timestamp ${isUser ? 'align-right' : 'align-left'}`}>
         {timestamp}
     </div>
     <div
@@ -38,7 +38,15 @@ const MessageItem = (props: ChatMessageItemProps & { assistantColor?: string, us
     >
       {!isUser && (
         <div style={{ marginRight: 8 }}>
-          <Image src="/methuselah_tree.png" alt="Methuselah" width={36} height={36} />
+          <div className="methuselah-icon-wrapper">
+            <Image
+              src="/methuselah_tree.png"
+              alt="Methuselah"
+              width={36}
+              height={36}
+              style={{ borderRadius: '50%' }}
+            />
+          </div>
         </div>
       )}
 

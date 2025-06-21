@@ -208,6 +208,15 @@ export default function Settings() {
         body[data-fontsize='extra-large'] .ant-select-selector {
           font-size: 2.5em !important;
         }
+        /* Fix for the Select dropdown arrow visibility in dark mode */
+        body[data-theme='dark'] .ant-select-arrow {
+        color: #F1F1EA !important; /* light color for dark bg */
+        }
+        body[data-theme='dark'] .ant-select-selector {
+        background-color: #1D1E2C !important;
+        color: #F1F1EA !important;
+        border-color: #318182 !important;
+        }
       `}</style>
       <style jsx>{`
         .settingsPage {
@@ -221,7 +230,6 @@ export default function Settings() {
         .settingsCard {
           background-color: ${theme === 'dark' ? '#27293d' : '#A0B6AA'};
           border-radius: 2rem;
-          border: 3px solid ${theme === 'dark' ? '#318182' : '#000000'};
           padding: 40px;
           width: 100%;
           max-width: 480px;
