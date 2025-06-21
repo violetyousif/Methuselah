@@ -1,6 +1,4 @@
-// Name: Mohammad Hoque
-// Description: Forgot Password page – allows users to request a reset link
-// Date: 06/01/2025
+// Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
 
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
@@ -15,6 +13,7 @@ function ForgotPassword() {
       const response = await fetch('http://localhost:8080/api/forgotpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(values),
       });
       const data = await response.json();

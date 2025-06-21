@@ -1,7 +1,8 @@
 .landing {
   height: 100vh;
   width: 100%;
-  background: url('/background.jpg') center/cover no-repeat fixed;
+  /* background: url('/background.jpg') center/cover no-repeat fixed; */
+  background-color: #1D1E2C;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,11 +12,10 @@
 
 .overlay {
   backdrop-filter: blur(6px);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: #F1F1EB;
   border-radius: 24px;
   padding: 48px;
   text-align: center;
-  color: #f1f1ea;
   max-width: 720px;
   width: 90%;
   animation: fadeIn 2s ease;
@@ -24,11 +24,11 @@
 .title {
   font-size: 2.5rem;
   margin-bottom: 12px;
-  color: #fff;
+  color: #1D1E2C;
 }
 
 .name {
-  color: #9ab7a9;
+  color: #8AA698;
 }
 
 .subtitle {
@@ -36,13 +36,13 @@
   margin-bottom: 16px;
 }
 
-.prompt {
+/* .prompt {
   font-style: italic;
   margin-bottom: 32px;
   color: #dcdcd8;
-}
+} */
 
-.input {
+/* .input {
   width: 100%;
   padding: 16px;
   font-size: 1rem;
@@ -51,6 +51,29 @@
   outline: none;
   background-color: #fff;
   color: #203625;
+} */
+
+.navButton {
+  gap: 12px;
+  color:#8AA698;
+  display: inline-flex;
+  height: 40px;
+  padding: 5px 16px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background: none;
+  border: none;
+  text-decoration: none;
+  font-size: 1rem;
+  border-radius: 4px;
+}
+.navButton:hover {
+  /* background-color: #3a3a3a; */
+  color: #3a3a3a;
+  font-weight: 600;
+  font-size: 1.15rem;
+  transition: font-size 0.2s ease;
 }
 
 
