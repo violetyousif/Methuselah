@@ -1,0 +1,37 @@
+// Name: Mohammad Hoque
+// Date: 6/13/2025
+// Description: Script updates all Users documents in the MongoDB Longevity database
+// to add default health-related fields for Profile page support.
+
+use('Longevity');
+
+(async () => {
+  const users = await db.Users.find({}).toArray();
+  console.log(`Found ${users.length} users`);
+
+  let updatedCount = 0;
+
+  for (const user of users) {
+    const result = await db.Users.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          age: user.age ?? null,
+          weight: user.weight ?? null,
+          height: user.height ?? null,
+          activityLevel: user.activityLevel ?? 'moderate',
+          sleepHours: user.sleepHours ?? null
+        }
+      }
+    );
+
+    if (result?.modifiedCount) {
+      updatedCount++;
+      console.log(`Updated ${user._id}: Success`);
+    } else {
+      console.log(`Updated ${user._id}: Already set`);
+    }
+  }
+
+  console.log(`Batch update complete. ${updatedCount} users modified.`);
+})();
