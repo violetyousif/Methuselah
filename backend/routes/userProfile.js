@@ -1,4 +1,6 @@
 // Violet Yousif, 6/16/2025, Created profile endpoint for saving user profile data
+// Mohammad Hoque, 6/18/2025, Added gender field to the profile endpoint 
+// Mohammad Hoque, 6/19/2025, Replaced age with dateOfBirth in profile endpoint
 
 import express from 'express';
 import getUser from '../models/User.js';
@@ -14,9 +16,9 @@ const profileRateLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later.' },
 });
 
-router.post('/profile', auth, profileRateLimiter, async (req, res) => {
+router.patch('/profile', auth, profileRateLimiter, async (req, res) => {
   try {
-    const { firstName, lastName, email, age, weight, height, activityLevel, sleepHours } = req.body;
+    const { firstName, lastName, email, dateOfBirth, gender, weight, height, activityLevel, sleepHours } = req.body;
     
     const user = await getUser.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -25,12 +27,15 @@ router.post('/profile', auth, profileRateLimiter, async (req, res) => {
     if (firstName !== undefined) user.firstName = firstName;
     if (lastName !== undefined) user.lastName = lastName;
     if (email !== undefined) user.email = email;
-    if (age !== undefined) user.age = age;
+    if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
+    if (gender !== undefined) user.gender = gender;
     if (weight !== undefined) user.weight = weight;
     if (height !== undefined) user.height = height;
     if (activityLevel !== undefined) user.activityLevel = activityLevel;
     if (sleepHours !== undefined) user.sleepHours = sleepHours;
 
+
+    user.updatedAt = new Date();
     await user.save();
 
     res.status(200).json({ message: 'Profile updated successfully' });
@@ -41,3 +46,4 @@ router.post('/profile', auth, profileRateLimiter, async (req, res) => {
 });
 
 export default router;
+
