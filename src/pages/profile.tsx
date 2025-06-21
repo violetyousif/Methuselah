@@ -2,11 +2,12 @@
 
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStyle and maskStyle.
 // Mohammad Hoque, 06/02/2025, Added dynamic theme support for dark and default themes using localStorage
+// Mohammad Hoque, 06/13/2025, Refactored to standalone page layout with back button to /chatBot.
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from ProfileProps interface and component function parameters.
 // Violet Yousif, 6/16/25, Added commented out phone number to end of page if we want to use it. Added gender to list of options.
-// Mohammad Hoque, 06/13/2025, Refactored to standalone page layout with back button to /chatBot.
 // Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, inch) instead of metric (kg, cm).
 // Mohammad Hoque, 06/19/2025, Switched Activity Level to modal selection with dropdown icon and helper text.
+// Violet Yousif, 06/21/2025, Added confirmation message on successful profile update.
 
 import React, { useState, useEffect } from 'react'
 import { Form, InputNumber, Select, Button, Input, message} from 'antd'
@@ -68,13 +69,20 @@ const Profile: React.FC = () => {
   const onFinish = async (values: UserData) => {
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:8080/api/profile', {
-        method: 'PATCH', // Changed from POST to PATCH - Mohammad
+      const res = await fetch('http://localhost:8080/api/profile', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(values)
       })
-      if (!response.ok) throw new Error('Failed to save user data')
+      if (res.ok) {
+        message.success('Profile updated successfully!')
+
+      } else {
+        const errorData = await res.json()
+        message.error(errorData.message || 'Failed to save profile')
+      }
+      //if (!res.ok) throw new Error('Failed to save user data')
     } catch (error) {
       console.error('Error saving user data:', error)
       message.error('There was an error saving your profile.')
@@ -358,6 +366,8 @@ const getStyles = (theme: 'default' | 'dark') => ({
     color: '#1D1E2C'
   }
 })
+
+// LEAVE THIS! WE NEED IT FOR 2-FACTOR AUTHENTICATION LATER!
 // For phone number input, you can use the following code snippet:
 // (potentially for 2 factor authentication)
 // <Form.Item

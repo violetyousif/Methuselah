@@ -147,23 +147,6 @@ function register() {
             <Input type="date" style={styles.placeholderStyle} />
           </Form.Item>
 
-          { /* Gender */}
-          {/* <Form.Item
-            style={{ ...styles.rowSpacing, ...styles.halfWidth }} // half width for gender
-            label={<span style={styles.label}>Gender</span>}
-            name="gender"
-            rules={[{ required: true, message: 'Select Gender' }]}
-          >
-            <Select placeholder="Select Gender" style={styles.placeholderStyle}>
-              <Select.Option value="female">Female</Select.Option>
-              <Select.Option value="male">Male</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
-              <Select.Option value="prefer_not_to_say">Prefer not to say</Select.Option>
-            </Select>
-          </Form.Item> 
-          </div>*/}
-          
-
           { /* Terms and Conditions Agreement */}
           <Form.Item
             name="agreedToTerms"
