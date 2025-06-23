@@ -23,7 +23,7 @@ const feedbackLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
   max: 1, // Limit to 1 submission per IP every 24 hours
   message: {
-    message: 'Too many feedback submissions from this IP, please try again later.',
+    message: 'Feedback is limited to one submission every 24 hours. Please try again later.',
   },
   standardHeaders: true,
   legacyHeaders: false,
