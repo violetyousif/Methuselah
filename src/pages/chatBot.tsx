@@ -3,17 +3,19 @@
 // Viktor Gjorgjevski, 6/3/2025, Edited Logout button and added profile pic
 // Mohammad Hoque, 6/2/2025, Added persistent theme and font settings, synced with <body> attributes, enabled dark mode UI styles dynamically
 // Violet Yousif, 6/8/2025, Fixed logout functionality to clear user data using backend connection and redirect to login page.
+// Mohammad Hoque, 6/13/2025, Converted profile modal to redirect to a standalone /profile route for user data entry
 // Violet Yousif, 6/16/2025, Commented out the Web3Modal component as it is not used in current program.
 // Violet Yousif, 6/16/2025, Fixed logout to remove dark theme wher going to public pages like login, index, and register.
 // Edited by: Viktor Gjorgjevski
 // Date: 06/13/2025
 // added link to button for feedback page
 
+
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import Profile from './profile'
+import Profile from './profile' // Checked by Mohammad, 06/18/2025
 import Dashboard from './dashboard'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
@@ -31,7 +33,6 @@ const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [fadeTriggers, setFadeTriggers] = useState<Record<string, number>>({})
-  const [profileVisible, setProfileVisible] = useState(false)
   const [dashboardVisible, setDashboardVisible] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [collapsed, setCollapsed] = useState(false)
@@ -189,7 +190,7 @@ const Chatbot = () => {
                     onClick={() => setCollapsed(true)}
                     style={styles.menuButton}
                   />
-                  <div onClick={() => setProfileVisible(true)} style={{ cursor: 'pointer' }}>
+                  <div onClick={() => router.push('/profile')} style={{ cursor: 'pointer' }}>
                     <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={styles.avatar} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
                       {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')}
@@ -249,7 +250,7 @@ const Chatbot = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                   <div style={styles.menuSection}>
                     <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
-                    <Text strong style={{ display: 'block', margin: '16px 0 8px' }}>Chat History</Text>
+                    <Text strong style={styles.chatHistoryText(currentTheme)}>Chat History</Text>
                   </div>
                   <div style={{ flexGrow: 1 }} />
                   <div style={styles.footerButtons}>
@@ -279,6 +280,11 @@ const Chatbot = () => {
               </div>
               {/* Bottom buttons */}
               <div style={styles.bottomButtons}>
+                <Link href="/profile">
+                  <Button style={buttonStyle} icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}>
+                  Profile
+                  </Button>
+                </Link>
                 <Link href="/settings">
                   <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
@@ -293,11 +299,11 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
-      <Layout style={styles.contentArea(collapsed, currentTheme)}>
+       <Layout style={styles.contentArea(collapsed, currentTheme)}>
         <Content style={styles.content}>
           {selectedChatId && (
             <ChatGPT
-              fetchPath="/api/chat-completion"
+              fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
               conversationId={selectedChatId}
               walletAddress={userData?.email || 'default-user'}
               isLoggedIn={isLoggedIn}
@@ -306,7 +312,7 @@ const Chatbot = () => {
               userBubbleColor="#318182"
             />
           )}
-          {/* //// Prev code:
+          {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT
                   fetchPath="/api/chat-completion"
@@ -317,11 +323,10 @@ const Chatbot = () => {
                   userBubbleColor="#318182"
                 />
               )}
-          */}
-        </Content>
+         }*/}
+         </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Profile visible={profileVisible} onClose={() => setProfileVisible(false)} />
       <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
@@ -400,6 +405,11 @@ const styles = {
     fontSize: '12px',
     padding: '4px 12px',
     height: '28px'
+  }),
+  chatHistoryText: (theme: 'default' | 'dark'): React.CSSProperties => ({
+    display: 'block',
+    margin: '16px 0 8px',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
   }),
   chatItem: {
     padding: '8px 12px',

@@ -106,6 +106,41 @@ footer {
   object-fit: cover;
 }
 
+/* Methuselah tree icon styling for dark mode */
+.methuselah-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
+
+body[data-theme='dark'] .methuselah-icon-wrapper {
+  background-color: white;
+}
+
+/* Chat time stamp */
+.timestamp {
+  font-style: italic;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #000;
+}
+
+[data-theme='dark'] .timestamp {
+  color: #F1F1EA;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-left {
+  text-align: left;
+}
+
 /* Send bar */
 .send-bar .button {
   background-color: #F1F1EA !important;
@@ -323,17 +358,17 @@ a:hover {
   scrollbar-color: #318182 #0f0f17;
 }
 
-[data-theme='dark'] .chat-icon-black-outline {
+/* Commented out because it makes send bar icons disappear */
+/* [data-theme='dark'] .chat-icon-black-outline {
   color: #F1F1EA;
   stroke: #F1F1EA;
-}
+} */
 
 /* Default theme (light mode) modal fix */
 body[data-theme='default'] .custom-modal .ant-modal-content {
   background-color: #A0B6AA !important;
   color: #1D1E2C !important;
   border-radius: 2rem !important;
-  border: 2px solid #203625 !important;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1) !important;
 }
 

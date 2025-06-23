@@ -15,20 +15,15 @@ import { useRouter } from 'next/router'
 //import { profilePicPresets } from '../components/profilePicker'; //imports users choice on profile image
 
 
-// Dark mode theme state
-// function getThemeFromBody(): 'default' | 'dark' {
-//   return (document?.body?.dataset?.theme as 'default' | 'dark') || 'default'
-// }
-
 // Format US-style phone number
-function formatPhoneNumber(value: string) {  
-  const digits = value.replace(/\D/g, '')   // Remove all non-digit characters
-  // Format: 000-000-0000
-  if (digits.length === 10) {
-    return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
-  }
-  return value; // Return as is if not 10 digits
-}
+// function formatPhoneNumber(value: string) {  
+//   const digits = value.replace(/\D/g, '')   // Remove all non-digit characters
+//   // Format: 000-000-0000
+//   if (digits.length === 10) {
+//     return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
+//   }
+//   return value; // Return as is if not 10 digits
+// }
 
 
   // Edited function to fetch backend data with error handling 
@@ -78,7 +73,7 @@ function register() {
           { /* First Name */ }
           <Form.Item
             style={ styles.rowSpacing }
-            label={<span style={ styles.label }>First Name</span>}
+            label={<span style={ styles.label }>Name</span>}
             name="firstName"
             rules={[
               { required: true, message: 'Please enter your first name' },
@@ -86,19 +81,6 @@ function register() {
             ]}
           >
             <Input placeholder="Jane" style={styles.placeholderStyle} />
-          </Form.Item>
-
-          { /* Last Name */ }
-          <Form.Item
-            style={ styles.rowSpacing }
-            label={<span style={styles.label}>Last Name</span>}
-            name="lastName"
-            rules={[
-              { required: true, message: 'Please enter your last name' },
-              { pattern: /^[A-Za-z\s'-]+$/, message: "Only letters, dashes, spaces, and apostrophes are allowed" }
-            ]}
-          >
-            <Input placeholder="Doe" style={styles.placeholderStyle} />
           </Form.Item>
 
           {/* Valid Email */}
@@ -154,8 +136,6 @@ function register() {
           </Form.Item>
 
 
-
-
           {/* <div style={styles.shortInputContainer}> */}
           { /* Date of Birth */}
           <Form.Item
@@ -166,23 +146,6 @@ function register() {
           >
             <Input type="date" style={styles.placeholderStyle} />
           </Form.Item>
-
-          { /* Gender */}
-          {/* <Form.Item
-            style={{ ...styles.rowSpacing, ...styles.halfWidth }} // half width for gender
-            label={<span style={styles.label}>Gender</span>}
-            name="gender"
-            rules={[{ required: true, message: 'Select Gender' }]}
-          >
-            <Select placeholder="Select Gender" style={styles.placeholderStyle}>
-              <Select.Option value="female">Female</Select.Option>
-              <Select.Option value="male">Male</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
-              <Select.Option value="prefer_not_to_say">Prefer not to say</Select.Option>
-            </Select>
-          </Form.Item> 
-          </div>*/}
-          
 
           { /* Terms and Conditions Agreement */}
           <Form.Item

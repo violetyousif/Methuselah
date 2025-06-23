@@ -11,24 +11,29 @@ export default function Home() {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
   const [fadeOut, setFadeOut] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const userMessage = e.target.value
-  //   if (userMessage.trim() === '') return
+  //   try {
+  //     const userMessage = e.target.value
+  //     if (userMessage.trim() === '') return
 
-  //   // Save input message to local storage
-  //   localStorage.setItem('initialMessage', userMessage)
+  //     // Save input message to local storage
+  //     localStorage.setItem('initialMessage', userMessage)
 
-  //   // Wait 2 seconds before starting fade animation
-  //   setTimeout(() => {
-  //       setFadeOut(true)
+  //     // Wait 2 seconds before starting fade animation
+  //     setTimeout(() => {
+  //         setFadeOut(true)
 
-  //   // wait for fade animation to complete (0.6s), then route
-  //   setTimeout(() => {
-  //     router.push('/chatBot')
-  //   }, 600)
-  //   }, 2000)
+  //     // wait for fade animation to complete (0.6s), then route
+  //     setTimeout(() => {
+  //       router.push('/chatBot')
+  //     }, 600)
+  //     }, 2000)
+  //   } catch (err) {
+  //     setError('An unexpected error occurred. Please try again.')
   //   }
+  // }
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -52,7 +57,11 @@ export default function Home() {
 
   useEffect(() => {
     const handleKey = () => {
-      inputRef.current?.focus()
+      try {
+        inputRef.current?.focus()
+      } catch {
+        // Swallow focus errors silently
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -70,6 +79,7 @@ export default function Home() {
           className={styles.input}
           placeholder="Ask Methuselah anything..."
         /> */}
+        {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
         <div className={styles.navButtons}>
           <a href="/login" className={styles.navButton}>
             LOGIN
