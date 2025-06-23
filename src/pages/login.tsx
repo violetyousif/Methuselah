@@ -17,8 +17,6 @@ import Link from 'next/link';
 import { ArrowLeftOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 
-
-
 function Login() {
   const router = useRouter();
   const [form] = Form.useForm();
