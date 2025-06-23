@@ -6,16 +6,33 @@
 // Date: 06/18/2025
 // Future proofed incase structure ever changes. CHanged middle ware by using auth instead of old authmiddleware
 
+// Edited by: Viktor Gjorgjevski
+// Date: 06/22/2025
+// Added rate limiting to prevent abuse of the API
+
 import express from 'express';
 const router = express.Router();
+import rateLimit from 'express-rate-limit';
+
 
 import Feedback from '../models/Feedback.js';
 import User from '../models/User.js';
 import auth from '../middleware/auth.js';
 
+const feedbackLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 1, // Limit to 1 submission per IP every 24 hours
+  message: {
+    message: 'Too many feedback submissions from this IP, please try again later.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+
 // POST /submit-feedback
 // This route accepts feedback from logged-in users and stores it in the database
-router.post('/submit-feedback', auth, async (req, res) => {
+router.post('/submit-feedback', feedbackLimiter, auth, async (req, res) => {
     try{
         // Destructure feedback data from request body
         const {rating, comments, sessionID, conversationID} = req.body;
