@@ -43,3 +43,9 @@ backend/.env
 #backend dependencies
 backend/node_modules
 backend/.env.example
+
+# Python virtual environments
+backend/python/venv/
+.venv/
+*.pyc
+__pycache__/

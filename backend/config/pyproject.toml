@@ -1,0 +1,19 @@
+[project]
+name = "aiAgent"
+version = "0.1.0"
+description = "Methuselah, a health and wellness advisor to help you live longer and better"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask==3.0.0",
+    "openai==1.35.0",
+    "pymongo==4.11.3",
+    "python-dotenv==1.0.0",
+    # Health-specific libraries
+    "scispacy==0.5.4",              # Scientific text processing
+    "datasets==2.14.0",             # Health datasets
+    # Data validation for health metrics
+    "pydantic==2.5.0",              # Data validation
+    "numpy==1.24.3",                # Health calculations
+    "pandas==2.0.3",                # Health data processing
+]
