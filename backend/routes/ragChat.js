@@ -1,4 +1,4 @@
-// Viktor, 6/24/2025 retrieval + HF chat generation (free tier)
+// Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
 
 
 // What happens inside:
@@ -19,7 +19,7 @@ await vectorClient.connect();
 const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
 const hf = new HfInference(process.env.HF_API_KEY);
-// 100 % free chat-tuned model
+// 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
 const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
 // Helper builds the system instruction for the LLM

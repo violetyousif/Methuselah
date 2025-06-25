@@ -1,4 +1,4 @@
-// Viktor, 6/24/2025 minimal vector-retrieval endpoint
+// Viktor Gjorgjevski, 6/23/2025 minimal vector-retrieval endpoint
 
 // Steps
 // 1. Embed the question with Mini-LM (Hugging Face free tier).

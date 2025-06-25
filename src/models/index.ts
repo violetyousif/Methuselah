@@ -1,5 +1,6 @@
 // src/models/index.ts
 // Violet Yousif, 6/10,2025, Changed the UserData interface to include firstName, lastName instead of name.
+// Mohammad Hoque, 6/18/2025, Added gender to UserData interface.
 
 import { ChatRole } from '../components/ChatGPT/interface'
 
@@ -27,6 +28,7 @@ export interface UserData {
   firstName?: string
   lastName?: string
   email?: string
+  gender?: 'female' | 'male' | 'other' | 'prefer not to say'
   age: number
   weight: number // kg
   height: number // cm

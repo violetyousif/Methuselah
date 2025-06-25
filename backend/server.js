@@ -1,5 +1,6 @@
 // Viktor, 5/28/2025, Backend file that contains routes and calls to perform database functions
 // Violet Yousif, 5/31/2025, Fixed errors and converted imported CommonJS to ES module syntax
+// Mohammad Hoque, 6/13/2025, Added userProfile route to handle profile fetch and update
 // Violet Yousif, 6/16/2025, Added cookie-parser to handle auth cookies
 
 // Edited by: Viktor Gjorgjevski
@@ -9,6 +10,10 @@
 // Edited by: Viktor Gjorgjevski
 // Date: 06/18/2025
 // updated feedback and route api
+
+// Edited by: Viktor Gjorgjevski
+// Date: 06/23/2025
+// Added RAG and LLM
 
 
 import dotenv from 'dotenv';
@@ -36,8 +41,6 @@ import ragChat   from './routes/ragChat.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
-
-
 
 // Description: Set up the express app and connect to MongoDB
 const __filename = fileURLToPath(import.meta.url);

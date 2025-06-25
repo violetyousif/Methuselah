@@ -1,3 +1,5 @@
+
+// Viktor Gjorgjevski, 6/23/2025
 // ingest.js  – one-time loader
 // Run this file to put starter passages + their vectors into MongoDB.
 
