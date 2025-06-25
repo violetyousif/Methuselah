@@ -6,6 +6,7 @@
 // Mizan, 6/12/2025, Changed save button event handler for backend connection
 // Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Settings component function parameters.
 // Violet Yousuf, 6/16/2025, Removed dateOfBirth field since it's handled by profile endpoint
+// Mizanur Mizan, 6/24/2025, Added upload handler for custom avatar image
 
 import { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message } from 'antd'
@@ -13,6 +14,9 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import moment from 'moment'
 import { profilePicPresets } from '../components/profilePicker'
+import { Upload, Avatar } from 'antd'
+import { UploadOutlined } from '@ant-design/icons'
+import ImgCrop from 'antd-img-crop'
 
 
 const { Option } = Select
@@ -61,6 +65,34 @@ export default function Settings() {
 
     loadSettings();
   }, [])
+
+  // Upload handler for custom avatar image
+  const handleImageChange = async (file: File) => {
+  const reader = new FileReader()
+  reader.onloadend = async () => {
+    const base64 = reader.result as string
+    try {
+      const res = await fetch('http://localhost:8080/api/updateSettings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profilePic: base64 }),
+        credentials: 'include',
+      })
+
+      if (res.ok) {
+        setProfilePic(base64)
+        message.success('Profile picture updated!')
+      } else {
+        const data = await res.json()
+        message.error(data.message || 'Failed to update profile picture')
+      }
+    } catch (err) {
+      console.error('Upload failed', err)
+      message.error('Failed to update profile picture')
+    }
+  }
+  reader.readAsDataURL(file)
+  }
 
   useEffect(() => {
     document.body.dataset.theme = theme // Only saved once user clicks save
@@ -143,6 +175,31 @@ export default function Settings() {
           {/* Profile Pic selection */}
           <div>
             <div className="settingsLabel">Profile Picture:</div>
+            {/* Custom Image Upload Option */}
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <Avatar
+                size={100}
+                src={profilePic || '/avatars/avatar1.png'}
+                style={{ borderRadius: 12, marginTop: '10px', marginRight: '10px' }}
+              />
+              <ImgCrop>
+                <Upload
+                  showUploadList={false}
+                  beforeUpload={(file) => {
+                    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+                    if (!isJpgOrPng) {
+                      message.error('Only JPG and PNG images are allowed!')
+                      return Upload.LIST_IGNORE
+                    }
+                    handleImageChange(file)
+                    return false
+                  }}
+                  accept="image/*"
+                >
+                  <Button icon={<UploadOutlined />}>Upload Custom Profile Pic</Button>
+                </Upload>
+              </ImgCrop>
+            </div>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {profilePicPresets.map((pic, index) => (
                 <img

@@ -19,8 +19,9 @@ const ChatGPT = ({
   userBubbleColor = '#318182',
   inputBarColor = '#9AB7A9',
   isLoggedIn = false,
+  userAvatar = '/avatars/avatar1.png',
   ...props
-}: ChatGPTProps & { conversationId: string; walletAddress: string }) => {
+}: ChatGPTProps & { conversationId: string; walletAddress: string; userAvatar?: string }) => {
   const { loading, disabled, messages, currentMessage, onSend, onClear, onStop } = useChatGPT({
     ...props,
     isLoggedIn
@@ -52,6 +53,7 @@ const ChatGPT = ({
             } as ChatMessage}
             assistantColor={assistantBubbleColor}
             userColor={userBubbleColor}
+            userAvatar={userAvatar}
           />
         ))}
 
@@ -60,6 +62,7 @@ const ChatGPT = ({
             message={{ content: currentMessage.current, role: ChatRole.Assistant }}
             assistantColor={assistantBubbleColor}
             userColor={userBubbleColor}
+            userAvatar={userAvatar}
           />
         )}
       </div>
