@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@huggingface/inference": "^4.0.6",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
@@ -22,6 +23,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
+    "langchain": "^0.3.29",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.2"
   },

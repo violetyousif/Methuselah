@@ -11,6 +11,10 @@
 // Date: 06/18/2025
 // updated feedback and route api
 
+// Edited by: Viktor Gjorgjevski
+// Date: 06/23/2025
+// Added RAG and LLM
+
 
 import dotenv from 'dotenv';
 import express from 'express';
@@ -31,6 +35,9 @@ import userSettings from './routes/userSettings.js';
 import userData from './routes/userData.js';
 import userProfile from './routes/userProfile.js';
 import feedbackRoutes from './routes/feedback.js';
+import ragSearch from './routes/ragSearch.js';
+import ragChat   from './routes/ragChat.js';
+
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -79,6 +86,8 @@ app.use('/api', userSettings);
 app.use('/api', userData);
 app.use('/api', userProfile);
 app.use('/api', feedbackRoutes);
+app.use('/api', ragSearch);
+app.use('/api', ragChat);
 
 
 
