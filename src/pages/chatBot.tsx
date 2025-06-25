@@ -310,6 +310,7 @@ const Chatbot = () => {
               inputBarColor="#9AB7A9"
               assistantBubbleColor="#9AB7A9"
               userBubbleColor="#318182"
+              userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
             />
           )}
           {/*//// Prev code:
