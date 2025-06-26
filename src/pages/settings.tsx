@@ -215,7 +215,6 @@ export default function Settings() {
         body[data-theme='dark'] .ant-select-selector {
         background-color: #1D1E2C !important;
         color: #F1F1EA !important;
-        border-color: #318182 !important;
         }
       `}</style>
       <style jsx>{`

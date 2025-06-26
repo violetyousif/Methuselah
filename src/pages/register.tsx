@@ -139,12 +139,32 @@ function register() {
           {/* <div style={styles.shortInputContainer}> */}
           { /* Date of Birth */}
           <Form.Item
-            style={ styles.rowSpacing }
+            style={styles.rowSpacing}
             label={<span style={styles.label}>Date of Birth</span>}
             name="dateOfBirth"
-            rules={[{ required: true, message: 'Please enter your birth date' }]}
+            rules={[
+              { required: true, message: 'Please enter your birth date' },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  const today = new Date();
+                  const selected = new Date(value);
+                  // Remove time portion for accurate comparison
+                  today.setHours(0, 0, 0, 0);
+                  selected.setHours(0, 0, 0, 0);
+                  if (selected > today) {
+                    return Promise.reject('Birth date cannot be in the future');
+                  }
+                  return Promise.resolve();
+                }
+              }
+            ]}
           >
-            <Input type="date" style={styles.placeholderStyle} />
+            <Input
+              type="date"
+              style={styles.placeholderStyle}
+              max={new Date().toISOString().split('T')[0]}
+            />
           </Form.Item>
 
           { /* Terms and Conditions Agreement */}
