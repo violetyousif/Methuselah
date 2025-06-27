@@ -1,6 +1,7 @@
 // src/components/ChatGPT/useChatGPT.ts
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
 // Violet Yousif, 6/16/2025, Removed Web3-specific code for a more general implementation.
+// Mizanur Mizan, 6/25/2025, Connected backend llm question response to chatbot frontend
 
 import { useEffect, useReducer, useRef, useState } from 'react'
 import ClipboardJS from 'clipboard'
@@ -25,33 +26,37 @@ const scrollDown = throttle(
 
 const requestMessage = async (
   url: string,
-  messages: ChatMessage[],
+  query: string,
+  // messages: ChatMessage[],
   controller: AbortController | null
 ) => {
   const response = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ query }),
     credentials: 'include',     // Include cookies for session management request
+    headers: { 'Content-Type': 'application/json' },
     signal: controller?.signal
-  })
+  });
 
   if (!response.ok) {
-    throw new Error(response.statusText)
+    throw new Error(response.statusText);
   }
-  const data = response.body
+  /* const data = response.body
 
   if (!data) {
     throw new Error('No data')
   }
 
-  return data.getReader()
-}
+  return data.getReader() */
+  return response.json(); // ragChat returns JSON { answer, contextDocs }
+};
 
 export const useChatGPT = (
   props: ChatGPTProps & { conversationId: string; walletAddress: string; isLoggedIn?: boolean }
 ) => {
-  const { fetchPath, conversationId, isLoggedIn = false } = props
+  const { /* fetchPath, */ conversationId, isLoggedIn = false } = props
   // const { fetchPath, conversationId, walletAddress } = props  // Original Web3 version
+  const fetchPath = 'http://localhost:8080/api/ragChat'
   const [, forceUpdate] = useReducer((x) => !x, false)
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
   const [healthData, setHealthData] = useState<UserData | null>(null)
@@ -139,13 +144,25 @@ export const useChatGPT = (
     }
   }
 
-  const fetchMessage = async (messages: ChatMessage[]) => {
+  const fetchMessage = async (query: string) => {
     try {
-      currentMessage.current = ''
+      // currentMessage.current = ''
       controller.current = new AbortController()
-      setLoading(true)
+      setLoading(true);
+      
+      const data = await requestMessage(fetchPath, query, controller.current);
+      const assistantReply = data.answer;
 
-      const reader = await requestMessage(fetchPath, messages, controller.current)
+      addMessage(conversationId, ChatRole.Assistant, assistantReply);
+      setCurrentConversation(getConversation(conversationId) || null);
+
+      setLoading(false);
+      scrollDown();
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+      /* const reader = await requestMessage(fetchPath, messages, controller.current)
       const decoder = new TextDecoder('utf-8')
       let done = false
 
@@ -169,24 +186,27 @@ export const useChatGPT = (
     } catch (e) {
       console.error(e)
       setLoading(false)
-    }
+    } */
   }
 
   const onSend = (message: ChatMessage) => {
-    addMessage(conversationId, message.role, message.content)
-    setCurrentConversation(getConversation(conversationId) || null)
+    addMessage(conversationId, message.role, message.content);
+    setCurrentConversation(getConversation(conversationId) || null);
 
     const healthPrompt = healthData
       ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
-      : ''
-    const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
+      : '' ;
+
+    const fullQuery = `${healthPrompt}${message.content}`;
+    fetchMessage(fullQuery);
+    /* const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
     fetchMessage([
       ...((currentConversation?.messages || []).map(msg => ({
         ...msg,
         timestamp: typeof msg.timestamp === 'string' ? msg.timestamp : msg.timestamp.toISOString()
       }))),
       fullMessage
-    ])
+    ]) */
   }
 
   const onClear = () => {

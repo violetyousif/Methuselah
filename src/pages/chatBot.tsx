@@ -6,6 +6,9 @@
 // Mohammad Hoque, 6/13/2025, Converted profile modal to redirect to a standalone /profile route for user data entry
 // Violet Yousif, 6/16/2025, Commented out the Web3Modal component as it is not used in current program.
 // Violet Yousif, 6/16/2025, Fixed logout to remove dark theme wher going to public pages like login, index, and register.
+// Edited by: Viktor Gjorgjevski
+// Date: 06/13/2025
+// added link to button for feedback page
 
 
 import ChatGPT from '@/components/ChatGPT'
@@ -286,7 +289,11 @@ const Chatbot = () => {
                   <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
                 <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
-                <Button style={buttonStyle} icon={<BulbOutlined />}>Feedback</Button>
+                <Link href="/feedback">
+                  <Button style={buttonStyle} icon={<BulbOutlined />}>
+                    Feedback
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -303,6 +310,7 @@ const Chatbot = () => {
               inputBarColor="#9AB7A9"
               assistantBubbleColor="#9AB7A9"
               userBubbleColor="#318182"
+              userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
             />
           )}
           {/*//// Prev code:
