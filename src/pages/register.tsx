@@ -152,8 +152,19 @@ function register() {
                   // Remove time portion for accurate comparison
                   today.setHours(0, 0, 0, 0);
                   selected.setHours(0, 0, 0, 0);
+
                   if (selected > today) {
                     return Promise.reject('Birth date cannot be in the future');
+                  }
+
+                  // Calculate age
+                  let age = today.getFullYear() - selected.getFullYear();
+                  const m = today.getMonth() - selected.getMonth();
+                  if (m < 0 || (m === 0 && today.getDate() < selected.getDate())) {
+                    age--;
+                  }
+                  if (age < 18) {
+                    return Promise.reject('You must be 18 or older to register.');
                   }
                   return Promise.resolve();
                 }
