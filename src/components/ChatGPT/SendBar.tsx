@@ -57,7 +57,7 @@ const SendBar = (props: SendBarProps) => {
     ]
 
     if (!acceptedTypes.includes(file.type)) {
-      alert('Unsupported file type. Please upload a PDF, CSV, TXT, or XLSX file.')
+      alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON or XLSX file.')
       return
     }
 
