@@ -2,23 +2,34 @@
 
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStyle and maskStyle.
 // Mohammad Hoque, 06/02/2025, Added dynamic theme support for dark and default themes using localStorage
+// Mohammad Hoque, 06/13/2025, Refactored to standalone page layout with back button to /chatBot.
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from ProfileProps interface and component function parameters.
 // Violet Yousif, 6/16/25, Added commented out phone number to end of page if we want to use it. Added gender to list of options.
+// Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, inch) instead of metric (kg, cm).
+// Mohammad Hoque, 06/19/2025, Switched Activity Level to modal selection with dropdown icon and helper text.
+// Violet Yousif, 06/21/2025, Added confirmation message on successful profile update.
 
 import React, { useState, useEffect } from 'react'
-import { Modal, Form, InputNumber, Select, Button, Input } from 'antd'
+import { Form, InputNumber, Select, Button, Input, message} from 'antd'
 import { UserData } from '../models'
+import Link from 'next/link'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import ActivityLevelModal from '../components/ActivityLevelModal'; // Import the new ActivityLevelModal component
+import { DownOutlined } from '@ant-design/icons'; // For dropdown arrow icon
 
+/* Old Code
 interface ProfileProps {
   visible: boolean
   //// Prev: walletAddress: string | null
   onClose: () => void
-}
+}*/
 
-const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
+const Profile: React.FC = () => {
 //// Prev: const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  const [activityModalVisible, setActivityModalVisible] = useState(false);
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState<string>('moderate');
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       return (document.body.dataset.theme as 'default' | 'dark') || 'default'
@@ -29,20 +40,19 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'default'
     setCurrentTheme(storedTheme as 'default' | 'dark')
-  }, [visible])
+  }, [])
 
   useEffect(() => {
-    if (visible) {
-      fetch(`http://localhost:8080/api/user-data`, {
-        credentials: 'include'
+    fetch(`http://localhost:8080/api/user-data`, {
+      credentials: 'include'
+    })
+      .then((res) => res.json())
+      .then((data: UserData) => {
+        form.setFieldsValue(data);
+          if (data.activityLevel) setSelectedActivityLevel(data.activityLevel); //for the Activity Level button text
       })
-        .then((res) => res.json())
-        .then((data: UserData) => {
-          if (data) form.setFieldsValue(data)
-        })
-        .catch((error) => console.error('Error fetching user data:', error))
-    }
-  }, [visible, form])
+      .catch((error) => console.error('Error fetching user data:', error))
+  }, [form])
 
   //// Prev code:
   // useEffect(() => {
@@ -59,16 +69,24 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
   const onFinish = async (values: UserData) => {
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:8080/api/profile', {
-        method: 'POST',
+      const res = await fetch('http://localhost:8080/api/profile', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(values)
       })
-      if (!response.ok) throw new Error('Failed to save user data')
-      onClose()
+      if (res.ok) {
+        message.success('Profile updated successfully!')
+
+      } else {
+        const errorData = await res.json()
+        message.error(errorData.message || 'Failed to save profile')
+      }
+      //if (!res.ok) throw new Error('Failed to save user data')
     } catch (error) {
       console.error('Error saving user data:', error)
+      message.error('There was an error saving your profile.')
+
     } finally {
       setLoading(false)
     }
@@ -97,22 +115,19 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
   const styles = getStyles(currentTheme)
 
   return (
-    <Modal
-      title={<span style={styles.modalTitle}>User Profile - Health Data</span>}
-      open={visible}
-      onCancel={onClose}
-      footer={null}
-      styles={{
-        mask: styles.modalMask
-      }}
-      closable
-      wrapClassName="custom-modal"
-    >
+    <div style={styles.page}>
+        <div style={styles.card}>
+      <Link href="/chatBot">
+      < Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          Back
+        </Button>
+      </Link>
+      <h2 style={styles.modalTitle}>User Profile - Health Data</h2>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ activityLevel: 'moderate', email: 'johndoe@gmail.com' }}
+        initialValues={{ activityLevel: 'moderate'}}
         //// Prev: initialValues={{ activityLevel: 'moderate', name: 'John Doe', email: 'johndoe@gmail.com' }}
         style={styles.form}
       >
@@ -135,11 +150,47 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
           <Input style={styles.input} />
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Age (years)</span>} name="age" rules={[
+        {/*<Form.Item label={<span style={styles.label}>Age (years)</span>} name="age" rules={[
           { required: true, message: 'Please enter your age' },
           { type: 'number', min: 0, message: 'Age must be positive' }
         ]}>
           <InputNumber min={0} style={styles.inputNumber} />
+        </Form.Item> */}
+        {/* Date of Birth */}
+        <Form.Item
+          style={styles.rowSpacing}
+          label={<span style={styles.label}>Date of Birth</span>}
+          name="dateOfBirth"
+          rules={[
+            { required: true, message: 'Please enter your birth date' },
+            {
+              validator: (_, value) => {
+          if (!value) return Promise.resolve();
+          const dob = new Date(value);
+          const today = new Date();
+          const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+          if (dob > minDate) {
+            return Promise.reject('You must be at least 18 years old');
+          }
+          return Promise.resolve();
+              }
+            }
+          ]}
+        >
+          <Input
+            type="date"
+            style={styles.input}
+            min={(() => {
+              const today = new Date();
+              return `${today.getFullYear() - 120}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            })()}
+            max={(() => {
+              const today = new Date();
+              return `${today.getFullYear() - 18}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            })()}
+            placeholder="YYYY-MM-DD"
+            allowClear
+          />
         </Form.Item>
 
         {/* Gender */}
@@ -149,7 +200,7 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
           name="gender"
           rules={[{ required: true, message: 'Select Gender' }]}
         >
-          <Select placeholder="Select Gender" style={styles.placeholderStyle}>
+          <Select placeholder="Select Gender" style={styles.select}>
             <Select.Option value="female">Female</Select.Option>
             <Select.Option value="male">Male</Select.Option>
             <Select.Option value="other">Other</Select.Option>
@@ -157,113 +208,166 @@ const Profile: React.FC<ProfileProps> = ({ visible, onClose }) => {
           </Select>
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Weight (kg)</span>} name="weight" rules={[
+        <Form.Item label={<span style={styles.label}>Weight (lb)</span>} name="weight" rules={[
           { required: true, message: 'Please enter your weight' },
           { type: 'number', min: 0, message: 'Weight must be positive' }
         ]}>
           <InputNumber min={0} step={0.1} style={styles.inputNumber} />
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Height (cm)</span>} name="height" rules={[
+        <Form.Item label={<span style={styles.label}>Height (inch)</span>} name="height" rules={[
           { required: true, message: 'Please enter your height' },
           { type: 'number', min: 0, message: 'Height must be positive' }
         ]}>
           <InputNumber min={0} step={0.1} style={styles.inputNumber} />
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Activity Level</span>} name="activityLevel" rules={[{ required: true, message: 'Please select an activity level' }]}>
-          <Select style={styles.select} className="custom-select">
-            <Select.Option value="sedentary" style={styles.option}>Sedentary</Select.Option>
-            <Select.Option value="moderate" style={styles.option}>Moderate</Select.Option>
-            <Select.Option value="active" style={styles.option}>Active</Select.Option>
-          </Select>
+        <Form.Item
+          label={<span style={styles.label}>Activity Level</span>}
+          name="activityLevel"
+          rules={[{ required: true, message: 'Please select an activity level' }]}
+        >
+          <Button
+            style={{ width: '100%', textAlign: 'left', ...styles.input, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            onClick={() => setActivityModalVisible(true)}
+            type="default"
+          >
+            <span>
+              {selectedActivityLevel
+                ? selectedActivityLevel.charAt(0).toUpperCase() + selectedActivityLevel.slice(1)
+                : 'Select Activity Level'}
+            </span>
+            <DownOutlined />
+          </Button>
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Sleep Hours (per night)</span>} name="sleepHours" rules={[
-          { required: true, message: 'Please enter sleep hours' },
-          { type: 'number', min: 0, max: 24, message: 'Sleep must be between 0–24 hours' }
-        ]}>
-          <InputNumber min={0} max={24} step={0.5} style={styles.inputNumber} />
+        <Form.Item
+          label={<span style={styles.label}>Sleep Hours (per night)</span>}
+          name="sleepHours"
+          rules={[
+            { required: true, message: 'Please enter sleep hours' },
+            { type: 'number', min: 0, max: 24, message: 'Sleep must be between 0–24 hours' }
+          ]}
+        >
+          <InputNumber
+            min={0}
+            max={24}
+            step={0.5}
+            style={styles.inputNumber}
+            addonAfter="hours"
+            placeholder="Hours"
+          />
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading} style={styles.primaryButton}>Save</Button>
-          <Button onClick={onClose} style={styles.cancelButton}>Cancel</Button>
+          <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
         </Form.Item>
       </Form>
-    </Modal>
+    </div>
+    <ActivityLevelModal
+        visible={activityModalVisible}
+        onClose={() => setActivityModalVisible(false)}
+        selected={selectedActivityLevel}
+        onSelect={(level: string) => {
+          setSelectedActivityLevel(level);
+          form.setFieldsValue({ activityLevel: level });
+          setActivityModalVisible(false);
+        }}
+      />
+    </div>
   )
 }
 
 export default Profile
 
 const getStyles = (theme: 'default' | 'dark') => ({
+  page: {
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB', // Only dark changed
+    minHeight: '100vh',
+    padding: '6rem'
+  },
   modalTitle: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     fontWeight: 'bold',
     fontSize: '1.1rem'
   },
-  
+  card: {
+    maxWidth: 600,
+    margin: 'auto',
+    padding: '2rem',
+    backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA', // Only dark changed
+    borderRadius: '2rem',
+    border: '3px solid',
+    borderColor: theme === 'dark' ? '#318182' : '#000000' // Only dark changed
+  },
   modalMask: {
     backgroundColor: theme === 'dark'
       ? 'rgba(0, 0, 0, 0.7)'
       : 'rgba(0, 0, 0, 0.1)'
   },
   form: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C'
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
   },
   label: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     fontWeight: 'bold',
     marginBottom: 4
   },
   input: {
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     borderRadius: '8px'
   },
   inputNumber: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     borderRadius: '8px'
   },
   select: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     borderRadius: '8px'
   },
   option: {
-    color: theme === 'dark' ? '#e0e0e0' : '#1D1E2C',
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#ffffff'
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff'
   },
   primaryButton: {
-    backgroundColor: theme === 'dark' ? '#4b5563' : '#203625',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
     color: '#ffffff',
     borderRadius: '1rem',
     marginRight: '8px'
   },
   cancelButton: {
-    backgroundColor: theme === 'dark' ? '#2f2f2f' : '#F1F1EB',
-    borderColor: theme === 'dark' ? '#4b5563' : '#203625',
-    color: theme === 'dark' ? '#e0e0e0' : '#203625',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: theme === 'dark' ? '#F1F1EA' : '#203625',
     borderRadius: '1rem'
   },
-    rowSpacing: {
+  backButton: {
+    marginBottom: '24px',
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    color: '#ffffff',
+    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    borderRadius: '9999px'
+  },
+  rowSpacing: {
     marginBottom: '0.6px'
   },
-    placeholderStyle: {
-    opacity: 0.8,     // Text transparency in input fields
+  placeholderStyle: {
+    opacity: 0.8,
     color: '#1D1E2C'
-  },
+  }
 })
 
-
+// LEAVE THIS! WE NEED IT FOR 2-FACTOR AUTHENTICATION LATER!
 // For phone number input, you can use the following code snippet:
 // (potentially for 2 factor authentication)
 // <Form.Item

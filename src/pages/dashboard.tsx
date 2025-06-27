@@ -137,8 +137,7 @@ React.useEffect(() => {
             </Pie>
             <Tooltip contentStyle={{
               background: isDark ? '#232323' : '#fff',
-              color: isDark ? '#5eead4' : '#203625',
-              border: isDark ? '1px solid #318182' : '1px solid #203625'
+              color: isDark ? '#5eead4' : '#203625'
             }} />
 
           </PieChart>
@@ -172,7 +171,6 @@ const getStyles = (theme: 'default' | 'dark') => ({
   modalContainer: {
     backgroundColor: theme === 'dark' ? '#252525' :'#9AB7A9',
     borderRadius: '16px',
-    border: `3px solid ${theme === 'dark' ? '#4b5563' : '#203625'}`,
     overflow: 'hidden',
     marginTop: 24
   },
