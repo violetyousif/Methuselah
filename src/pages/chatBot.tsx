@@ -17,7 +17,7 @@ import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@an
 import Link from 'next/link'
 import Profile from './profile' // Checked by Mohammad, 06/18/2025
 import Dashboard from './dashboard'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ethers } from 'ethers'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
@@ -46,6 +46,17 @@ const Chatbot = () => {
   const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState<string>('')
+  const editInputRef = useRef<HTMLInputElement>(null)
+
+  // Handle input focus when editing starts
+  useEffect(() => {
+    if (editingChatId && editInputRef.current) {
+      editInputRef.current.focus()
+      // Position cursor at the end of the text
+      const length = editInputRef.current.value.length
+      editInputRef.current.setSelectionRange(length, length)
+    }
+  }, [editingChatId])
 
   // Check login status on initial render
   useEffect(() => {
@@ -327,7 +338,7 @@ const handleDeleteChat = (chatId: string) => {
                           {editingChatId === chat.conversationId ? (
                             <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                               <input
-                              ref={input => input && editingChatId === chat.conversationId && input.select()}
+                              ref={editInputRef}
                               value={editingTitle}
                               onChange={handleEditTitleChange}
                               onClick={e => e.stopPropagation()}
