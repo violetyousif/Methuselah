@@ -1,5 +1,5 @@
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
-
+// Mohammad Hoque, 6/23/2025 Personalization logic added
 
 // What happens inside:
 // 1. Embed the user’s question.
@@ -10,6 +10,8 @@ import { Router } from 'express';
 import { MongoClient } from 'mongodb';
 import { HfInference } from '@huggingface/inference';
 import 'dotenv/config';
+import auth from '../middleware/auth.js';
+import User from '../models/User.js';
 
 const router = Router();
 
@@ -28,7 +30,7 @@ function buildSystemPrompt() {
 }
 
 // POST /api/ragChat
-router.post('/ragChat', async (req, res) => {
+router.post('/ragChat', auth, async (req, res) => {
   console.log('🔵  ragChat hit');
   try {
     //Grab and sanity-check the question
@@ -55,12 +57,36 @@ router.post('/ragChat', async (req, res) => {
     ]).toArray();
 
     const context = docs.map(d => d.text).join('\n---\n');
-
+    
+    // Mohammad: 
+    // Fetch the authenticated user's profile for personalization
+    const user = await User.findById(req.user.id).select('-password');
+    let userContext = '';
+    // Mohammad: Below is the the age calculation logic from the user.dateOfBirth
+    if (user) {
+      // Mohammad: Below is the the age calculation logic from the user.dateOfBirth
+      let age = '';
+      if (user.dateOfBirth) {
+        const dob = new Date(user.dateOfBirth);
+        const diff = Date.now() - dob.getTime();
+        age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+      }
+      userContext = [
+        `User info:`,
+        user.firstName ? `Name: ${user.firstName}` : '',
+        user.gender ? `Gender: ${user.gender}` : '',
+        user.age ? `Age: ${user.age}` : '',
+        user.activityLevel ? `Activity Level: ${user.activityLevel}` : '',
+        user.weight ? `Weight: ${user.weight}kg` : '',
+        user.height ? `Height: ${user.height}cm` : ''
+      ].filter(Boolean).join(', ');
+    }
     // generate answer with Zephyr-7B 
     const chatResp = await hf.chatCompletion({
       model: HF_MODEL,
       messages: [
-        { role: 'system',    content: buildSystemPrompt() },
+        // Mohammad: Add userContext to the system prompt for personalization
+        { role: 'system',    content: buildSystemPrompt() + (userContext ? `\n${userContext}` : '') },
         { role: 'assistant', content: `Context:\n${context}` },
         { role: 'user',      content: question }
       ],
