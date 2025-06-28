@@ -11,6 +11,8 @@
   .message-list {
     flex: 1; // Take up available space
     overflow-y: auto; // Make the message list scrollable
+    max-height: 100%;
+    word-break: 16px;
     padding-bottom: 16px; // Add some padding at the bottom for spacing
     // Webkit scrollbar styles (Chrome, Safari, Edge)
     &::-webkit-scrollbar {
