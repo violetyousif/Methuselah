@@ -9,7 +9,7 @@
 // Edited by: Viktor Gjorgjevski
 // Date: 06/13/2025
 // added link to button for feedback page
-
+// Mohammad Hoque, 6/27/2025, Implemented chat editing and deletion functionality in Chatbot component
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message } from 'antd'
@@ -23,11 +23,13 @@ import { getConversations, addConversation, Conversation, UserData } from '../mo
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
 import ChatModeToggle from './ChatModeToggle';
-
+import { EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons' //For renaming and deleting chats
+import { Modal } from 'antd' // For renaming and deleting chats
 
 
 const { Sider, Content } = Layout
 const { Text } = Typography
+
 
 const Chatbot = () => {
   const router = useRouter()
@@ -42,7 +44,8 @@ const Chatbot = () => {
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
-
+  const [editingChatId, setEditingChatId] = useState<string | null>(null)
+  const [editingTitle, setEditingTitle] = useState<string>('')
 
   // Check login status on initial render
   useEffect(() => {
@@ -160,7 +163,49 @@ const Chatbot = () => {
     setSelectedChatId(newId)
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
+const handleEditChat = (chat: Conversation) => {
+  setEditingChatId(chat.conversationId)
+  setEditingTitle(chat.title)
+}
 
+const handleEditTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setEditingTitle(e.target.value)
+}
+
+const handleEditTitleSave = (chatId: string) => {
+  if (!editingTitle.trim()) {
+    message.warning('Chat name cannot be empty.');
+    return;
+  }
+  const userId = userData?.email || 'default-user'
+  const updated = chatHistory.map(chat =>
+    chat.conversationId === chatId ? { ...chat, title: editingTitle } : chat
+  )
+  setChatHistory(updated)
+  setEditingChatId(null)
+}
+
+const handleEditTitleCancel = () => {
+  setEditingChatId(null)
+  setEditingTitle('')
+}
+
+const handleDeleteChat = (chatId: string) => {
+  Modal.confirm({
+    title: 'Delete Chat',
+    content: 'Are you sure you want to delete this chat?',
+    okText: 'Delete',
+    okType: 'danger',
+    cancelText: 'Cancel',
+    onOk: () => {
+      const updated = chatHistory.filter(chat => chat.conversationId !== chatId)
+      setChatHistory(updated)
+      if (selectedChatId === chatId) {
+        setSelectedChatId(updated[0]?.conversationId || null)
+      }
+    }
+  })
+}
   //// Prev code:
   // const handleNewChat = () => {
   //   const wallet = walletAddress || 'default-wallet'
@@ -272,11 +317,71 @@ const Chatbot = () => {
                           key={chat.conversationId}
                           style={{
                             ...styles.chatItem,
-                            backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent'
+                            backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
                           }}
                           onClick={() => setSelectedChatId(chat.conversationId)}
                         >
-                          {chat.summary || chat.title}
+                          {editingChatId === chat.conversationId ? (
+                            <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                              <input
+                              ref={input => input && editingChatId === chat.conversationId && input.select()}
+                              value={editingTitle}
+                              onChange={handleEditTitleChange}
+                              onClick={e => e.stopPropagation()}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault()
+                                  handleEditTitleSave(editingChatId!)
+                                } else if (e.key === 'Escape') {
+                                  e.preventDefault()
+                                  handleEditTitleCancel()
+                                }
+                              }}
+                              onBlur={() => handleEditTitleSave(editingChatId!)}
+                              style={{ flex: 1, marginRight: 8, borderRadius: 4, border: '1px solid #ccc', padding: '2px 6px' }}
+                              autoFocus
+                            />
+                              <CheckOutlined
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  handleEditTitleSave(chat.conversationId)
+                                }}
+                                style={{ color: '#318182', marginRight: 8, cursor: 'pointer' }}
+                              />
+                              <CloseOutlined
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  handleEditTitleCancel()
+                                }}
+                                style={{ color: '#888', cursor: 'pointer' }}
+                              />
+                            </span>
+                          ) : (
+                            <>
+                              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {chat.summary || chat.title}
+                              </span>
+                              <span style={{ marginLeft: 8, display: 'flex', gap: 4 }}>
+                                <EditOutlined
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    handleEditChat(chat)
+                                  }}
+                                  style={{ color: '#318182', cursor: 'pointer' }}
+                                />
+                                <DeleteOutlined
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    handleDeleteChat(chat.conversationId)
+                                  }}
+                                  style={{ color: '#c0392b', cursor: 'pointer' }}
+                                />
+                              </span>
+                            </>
+                          )}
                         </div>
                       ))}
                     </div>
