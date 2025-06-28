@@ -22,13 +22,16 @@ import { ethers } from 'ethers'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
+import ChatModeToggle from './ChatModeToggle';
+
+
 
 const { Sider, Content } = Layout
 const { Text } = Typography
 
 const Chatbot = () => {
   const router = useRouter()
-
+  
   //// Prev: const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [chatHistory, setChatHistory] = useState<Conversation[]>([])
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
@@ -38,6 +41,8 @@ const Chatbot = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
+
 
   // Check login status on initial render
   useEffect(() => {
@@ -311,8 +316,12 @@ const Chatbot = () => {
               assistantBubbleColor="#9AB7A9"
               userBubbleColor="#318182"
               userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
+              chatMode={chatMode}
             />
           )}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
+            <ChatModeToggle mode={chatMode} onChange={setChatMode} />
+          </div>
           {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT

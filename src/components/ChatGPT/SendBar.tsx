@@ -53,11 +53,13 @@ const SendBar = (props: SendBarProps) => {
       'text/csv',
       'application/json',
       'text/plain',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'image/png',
+      'image/jpeg'
     ]
 
     if (!acceptedTypes.includes(file.type)) {
-      alert('Unsupported file type. Please upload a PDF, CSV, TXT, or XLSX file.')
+      alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON or XLSX file, OR Image (PNG, JPG, JPEG) file.')
       return
     }
 

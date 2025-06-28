@@ -2,6 +2,7 @@
 
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed ChatGPTProps missing properties in interface.ts.
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
+// Syed Rabbey, 6/26/2025, Added streamed message functionality to display the assistant's response as it is being generated.
 
 import React from 'react'
 import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
@@ -22,7 +23,7 @@ const ChatGPT = ({
   userAvatar = '/avatars/avatar1.png',
   ...props
 }: ChatGPTProps & { conversationId: string; walletAddress: string; userAvatar?: string }) => {
-  const { loading, disabled, messages, currentMessage, onSend, onClear, onStop } = useChatGPT({
+  const { loading, disabled, messages, currentMessage, streamedMessage, onSend, onClear, onStop } = useChatGPT({
     ...props,
     isLoggedIn
   })
@@ -57,9 +58,12 @@ const ChatGPT = ({
           />
         ))}
 
-        {currentMessage.current && (
+        {(currentMessage.current || streamedMessage) && (
           <MessageItem
-            message={{ content: currentMessage.current, role: ChatRole.Assistant }}
+            message={{
+              content: streamedMessage || currentMessage.current,
+              role: ChatRole.Assistant
+            }}
             assistantColor={assistantBubbleColor}
             userColor={userBubbleColor}
             userAvatar={userAvatar}
