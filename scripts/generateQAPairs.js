@@ -74,7 +74,7 @@ async function generateQAPairs(topic, n = 5) {
 
     return parsed;
   } catch (err) {
-    console.error(`❌ Failed to parse Zephyr output for topic: ${topic}`, err);
+    console.error(`Failed to parse Zephyr output for topic: ${topic}`, err);
     return [];
   }
 }
@@ -96,6 +96,6 @@ async function generateQAPairs(topic, n = 5) {
   });
 
   await csvWriter.writeRecords(allPairs);
-  console.log(`✅ Saved ${allPairs.length} Q&A pairs to qa_training_data_zephyr.csv`);
+  console.log(`Saved ${allPairs.length} Q&A pairs to qa_training_data_zephyr.csv`);
 })();
 
