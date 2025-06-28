@@ -19,6 +19,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
+import { MongoClient } from 'mongodb';
 import cors from 'cors';          // for cross origin requests
 import bcrypt from 'bcrypt';      // to encrypt passwords
 import jwt from 'jsonwebtoken';   // security: make sure user is logged in to access app session
@@ -62,10 +63,7 @@ app.use(logger);  // Logs all incoming requests
 
 
 // Description: MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.error("MongoDB Connecontion Error:", err));
 

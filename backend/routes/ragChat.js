@@ -10,7 +10,7 @@
 // 3. Feed those passages + the question to the free Zephyr-7B chat model.
 // 4. Return the model’s answer and the passages we used.
 import { Router } from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { InferenceClient } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
 import 'dotenv/config';
@@ -52,7 +52,7 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
 // POST /api/ragChat
 router.post('/ragChat', chatLimiter, auth, async (req, res) => {
-  console.log('🔵  ragChat hit');
+  console.log('ragChat HIT');
   try {
     //Grab and sanity-check the question
     const question = req.body.query?.trim();
@@ -61,7 +61,7 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
 
     // Grab user first name from MongoDB
     const userId = req.user.id;
-    const userProfile = await vectorClient.db('Longevity').collection('Users').findOne({ _id: new ObjectId(userId) });
+    const userProfile = await vectorClient.db('Longevity').collection('Users').findOne({ _id: ObjectId.createFromHexString(userId) });
     const firstName = userProfile?.firstName || 'traveler';
 
     //Turn the question into a vector
@@ -128,7 +128,7 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
       .trim();
     res.json({ answer, contextDocs: docs }); //Send answer + the passages we used
   } catch (err) {
-    console.error('🔴 ragChat error', err);
+    console.error('ragChat ERROR', err);
     res.status(500).json({ error: err.message || 'ragChat failed' });
   }
 });
