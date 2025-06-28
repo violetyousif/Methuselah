@@ -1,5 +1,4 @@
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
-// Mohammad Hoque, 6/23/2025 Personalization logic added
 // Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
 
@@ -10,10 +9,9 @@
 // 4. Return the model’s answer and the passages we used.
 import { Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
-import { InferenceClient } from '@huggingface/inference';
+import { HfInference } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
 import 'dotenv/config';
-import User from '../models/User.js';
 import rateLimit from 'express-rate-limit';
 
 const chatLimiter = rateLimit({
@@ -29,7 +27,7 @@ const vectorClient = new MongoClient(process.env.MONGODB_URI);
 await vectorClient.connect();
 const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
-const hf = new InferenceClient(process.env.HF_API_KEY);
+const hf = new HfInference(process.env.HF_API_KEY);
 // 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
 const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
@@ -51,7 +49,7 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
   }
 
 // POST /api/ragChat
-router.post('/ragChat', auth, chatLimiter, auth, async (req, res) => {
+router.post('/ragChat', chatLimiter, auth, async (req, res) => {
   console.log('🔵  ragChat hit');
   try {
     //Grab and sanity-check the question
@@ -85,7 +83,7 @@ router.post('/ragChat', auth, chatLimiter, auth, async (req, res) => {
     ]).toArray();
 
     const context = docs.map(d => d.text).join('\n---\n');
-    
+
     // Error handling for vague user input
     const vagueInputs = ['help', 'help me', 'what should I do', 'idk', 'unsure', 'no idea'];
     const isVague = vagueInputs.some(v => question.toLowerCase().includes(v));
@@ -102,35 +100,17 @@ router.post('/ragChat', auth, chatLimiter, auth, async (req, res) => {
 
     const systemPrompt = buildSystemPrompt(firstName, mode);
 
-    // Mohammad: 
-    // Fetch the authenticated user's profile for personalization
-    const user = await User.findById(req.user.id).select('-password');
-    let userContext = '';
-    if (user) {
-      // Mohammad: Below is the the age calculation logic from the user.dateOfBirth
-      let age = '';
-      if (user.dateOfBirth) {
-        const dob = new Date(user.dateOfBirth);
-        const diff = Date.now() - dob.getTime();
-        age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-      }
-      userContext = [
-        `User info:`,
-        user.firstName ? `Name: ${user.firstName}` : '',
-        user.gender ? `Gender: ${user.gender}` : '',
-        user.age ? `Age: ${user.age}` : '',
-        user.activityLevel ? `Activity Level: ${user.activityLevel}` : '',
-        user.weight ? `Weight: ${user.weight}kg` : '',
-        user.height ? `Height: ${user.height}cm` : ''
-      ].filter(Boolean).join(', ');
-    }
     // generate answer with Zephyr-7B 
     const chatResp = await hf.chatCompletion({
       model: HF_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
-        //{ role: 'assistant', content: `Context:\n${context}` },
-        //{ role: 'user',      content: question }
+        // { role: 'assistant', content: `Context:\n${context}` },
+        // { role: 'user',      content: question }
+        {
+          role: 'user',
+          content: `Here is some relevant context:\n${context}\n\nBased on this, answer the following question:\n${question}`
+        }
       ],
       max_tokens: 800,
       temperature: 0.2,
