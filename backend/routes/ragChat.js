@@ -13,7 +13,6 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { HfInference } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
 import 'dotenv/config';
-import auth from '../middleware/auth.js';
 import User from '../models/User.js';
 import rateLimit from 'express-rate-limit';
 
