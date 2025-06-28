@@ -11,7 +11,6 @@ export enum ChatRole {
 export interface ChatGPTProps {
   fetchPath: string;
   conversationId: string;
-  walletAddress: string;
   isLoggedIn: boolean;
   inputBarColor: string;
   assistantBubbleColor: string;

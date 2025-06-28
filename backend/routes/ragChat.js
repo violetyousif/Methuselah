@@ -12,6 +12,13 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { HfInference } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
 import 'dotenv/config';
+import rateLimit from 'express-rate-limit';
+
+const chatLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, 
+  max: 20,                  
+  message: 'Too many chat requests from this IP. Please slow down and try again later.',
+});
 
 const router = Router();
 
@@ -42,7 +49,7 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
   }
 
 // POST /api/ragChat
-router.post('/ragChat', auth, async (req, res) => {
+router.post('/ragChat', chatLimiter, auth, async (req, res) => {
   console.log('🔵  ragChat hit');
   try {
     //Grab and sanity-check the question
