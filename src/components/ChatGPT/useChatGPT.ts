@@ -2,6 +2,7 @@
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
 // Violet Yousif, 6/16/2025, Removed Web3-specific code for a more general implementation.
 // Mizanur Mizan, 6/25/2025, Connected backend llm question response to chatbot frontend
+// Syed Rabbey, 6/27/2025, Integrated user's first name into chat greeting and question prompts.
 
 import { useEffect, useReducer, useRef, useState } from 'react'
 import ClipboardJS from 'clipboard'
@@ -27,12 +28,13 @@ const scrollDown = throttle(
 const requestMessage = async (
   url: string,
   query: string,
+  chatMode: 'direct' | 'conversational',
   // messages: ChatMessage[],
   controller: AbortController | null
 ) => {
   const response = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({ query, mode: chatMode }),
     credentials: 'include',     // Include cookies for session management request
     headers: { 'Content-Type': 'application/json' },
     signal: controller?.signal
@@ -52,9 +54,9 @@ const requestMessage = async (
 };
 
 export const useChatGPT = (
-  props: ChatGPTProps & { conversationId: string; walletAddress: string; isLoggedIn?: boolean }
+  props: ChatGPTProps & { conversationId: string; walletAddress: string; isLoggedIn?: boolean; chatMode: 'direct' | 'conversational' }
 ) => {
-  const { /* fetchPath, */ conversationId, isLoggedIn = false } = props
+  const { conversationId, isLoggedIn = false, chatMode } = props;
   // const { fetchPath, conversationId, walletAddress } = props  // Original Web3 version
   const fetchPath = 'http://localhost:8080/api/ragChat'
   const [, forceUpdate] = useReducer((x) => !x, false)
@@ -62,6 +64,10 @@ export const useChatGPT = (
   const [healthData, setHealthData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [disabled] = useState<boolean>(false)
+  const [greetingSent, setGreetingSent] = useState(false);
+  const [streamedMessage, setStreamedMessage] = useState<string>('');
+
+
 
   const controller = useRef<AbortController | null>(null)
   const currentMessage = useRef<string>('')
@@ -96,16 +102,31 @@ export const useChatGPT = (
 
     const conv = getConversation(conversationId)
     setCurrentConversation(conv || null)
-    if (conv && conv.messages.length === 0) {
+
+  }, [conversationId, isLoggedIn])
+
+  // }, [conversationId, walletAddress])
+
+  useEffect(() => {
+    if (!healthData || greetingSent) return;
+
+    const conv = getConversation(conversationId);
+    const hasNoMessages = conv?.messages.length === 0;
+
+    if (hasNoMessages) {
+      const userName = healthData.firstName || 'traveler';
       addMessage(
         conversationId,
         ChatRole.Assistant,
-        'Greetings, traveler. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.'
-      )
-      setCurrentConversation(getConversation(conversationId) || null)
+        `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
+      );
+      setCurrentConversation(getConversation(conversationId) || null);
+      setGreetingSent(true);
     }
-  }, [conversationId, isLoggedIn])
-  // }, [conversationId, walletAddress])
+  }, [healthData, greetingSent, conversationId]);
+
+
+
 
   //// Prev code:
   // Original Web3 version:
@@ -150,8 +171,19 @@ export const useChatGPT = (
       controller.current = new AbortController()
       setLoading(true);
       
-      const data = await requestMessage(fetchPath, query, controller.current);
+      const data = await requestMessage(fetchPath, query, chatMode, controller.current);
       const assistantReply = data.answer;
+      // Fake message typing effect
+      let currentText = '';
+      const words = assistantReply.split(' ');
+
+      for (let i = 0; i < words.length; i++) {
+        currentText += words[i] + ' ';
+        setStreamedMessage(currentText);
+        await new Promise((resolve) => setTimeout(resolve, 5)); // Speed: 20ms per word
+    }
+
+      setStreamedMessage('');  //  Clears the streamed message after it's done
 
       addMessage(conversationId, ChatRole.Assistant, assistantReply);
       setCurrentConversation(getConversation(conversationId) || null);
@@ -230,8 +262,11 @@ export const useChatGPT = (
     disabled,
     messages: currentConversation?.messages || [],
     currentMessage,
+    streamedMessage,
     onSend,
     onClear,
     onStop
-  }
+} 
+
 }
+
