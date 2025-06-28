@@ -1,6 +1,8 @@
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
 // Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
+// Violet Yousif, 6/27/2025 - Fixed the deprecated inference client import
+
 
 // What happens inside:
 // 1. Embed the user’s question.
@@ -8,8 +10,8 @@
 // 3. Feed those passages + the question to the free Zephyr-7B chat model.
 // 4. Return the model’s answer and the passages we used.
 import { Router } from 'express';
-import { MongoClient, ObjectId } from 'mongodb';
-import { HfInference } from '@huggingface/inference';
+import { MongoClient } from 'mongodb';
+import { InferenceClient } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
 import 'dotenv/config';
 import rateLimit from 'express-rate-limit';
@@ -27,7 +29,7 @@ const vectorClient = new MongoClient(process.env.MONGODB_URI);
 await vectorClient.connect();
 const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
-const hf = new HfInference(process.env.HF_API_KEY);
+const hf = new InferenceClient(process.env.HF_API_KEY);
 // 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
 const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
@@ -64,7 +66,9 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
 
     //Turn the question into a vector
     const qEmb = await hf.featureExtraction({
-      model: 'sentence-transformers/all-MiniLM-L6-v2',
+      //model: 'sentence-transformers/all-MiniLM-L6-v2',
+      provide: 'default', // use the default model for feature extraction
+      model: 'BAAI/bge-small-en-v1.5',
       inputs: question,
     });
 
