@@ -1,5 +1,6 @@
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
 // Mohammad Hoque, 6/23/2025 Personalization logic added
+// Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 
 // What happens inside:
 // 1. Embed the user’s question.
@@ -85,10 +86,9 @@ router.post('/ragChat', auth, async (req, res) => {
     const chatResp = await hf.chatCompletion({
       model: HF_MODEL,
       messages: [
-        // Mohammad: Add userContext to the system prompt for personalization
-        { role: 'system',    content: buildSystemPrompt() + (userContext ? `\n${userContext}` : '') },
-        { role: 'assistant', content: `Context:\n${context}` },
-        { role: 'user',      content: question }
+        { role: 'system',    content: buildSystemPrompt() },
+        //{ role: 'assistant', content: `Context:\n${context}` },
+        //{ role: 'user',      content: question }
       ],
       max_tokens: 256,
       temperature: 0.2,
@@ -96,7 +96,10 @@ router.post('/ragChat', auth, async (req, res) => {
       options: { wait_for_model: true }   // waits if model is cold
     });
 
-    const answer = chatResp.choices?.[0]?.message?.content ?? '';
+    let answer = chatResp.choices?.[0]?.message?.content ?? '';
+    answer = answer
+      .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/i, '')
+      .trim();
     res.json({ answer, contextDocs: docs }); //Send answer + the passages we used
   } catch (err) {
     console.error('🔴 ragChat error', err);
