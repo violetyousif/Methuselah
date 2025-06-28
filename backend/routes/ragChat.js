@@ -9,7 +9,7 @@
 // 4. Return the model’s answer and the passages we used.
 import { Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
-import { HfInference } from '@huggingface/inference';
+import { InferenceClient } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
 import 'dotenv/config';
 import rateLimit from 'express-rate-limit';
@@ -27,7 +27,7 @@ const vectorClient = new MongoClient(process.env.MONGODB_URI);
 await vectorClient.connect();
 const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
-const hf = new HfInference(process.env.HF_API_KEY);
+const hf = new InferenceClient(process.env.HF_API_KEY);
 // 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
 const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
