@@ -107,7 +107,6 @@ router.post('/ragChat', auth, chatLimiter, auth, async (req, res) => {
     // Fetch the authenticated user's profile for personalization
     const user = await User.findById(req.user.id).select('-password');
     let userContext = '';
-    // Mohammad: Below is the the age calculation logic from the user.dateOfBirth
     if (user) {
       // Mohammad: Below is the the age calculation logic from the user.dateOfBirth
       let age = '';
