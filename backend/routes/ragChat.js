@@ -1,6 +1,8 @@
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
 // Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
+// Violet Yousif, 6/27/2025 - Fixed the deprecated inference client import
+
 
 // What happens inside:
 // 1. Embed the user’s question.
@@ -50,7 +52,7 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
 // POST /api/ragChat
 router.post('/ragChat', chatLimiter, auth, async (req, res) => {
-  console.log('🔵  ragChat hit');
+  console.log('ragChat HIT');
   try {
     //Grab and sanity-check the question
     const question = req.body.query?.trim();
@@ -59,12 +61,14 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
 
     // Grab user first name from MongoDB
     const userId = req.user.id;
-    const userProfile = await vectorClient.db('Longevity').collection('Users').findOne({ _id: new ObjectId(userId) });
+    const userProfile = await vectorClient.db('Longevity').collection('Users').findOne({ _id: ObjectId.createFromHexString(userId) });
     const firstName = userProfile?.firstName || 'traveler';
 
     //Turn the question into a vector
     const qEmb = await hf.featureExtraction({
-      model: 'sentence-transformers/all-MiniLM-L6-v2',
+      //model: 'sentence-transformers/all-MiniLM-L6-v2',
+      provide: 'default', // use the default model for feature extraction
+      model: 'BAAI/bge-small-en-v1.5',
       inputs: question,
     });
 
@@ -124,7 +128,7 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
       .trim();
     res.json({ answer, contextDocs: docs }); //Send answer + the passages we used
   } catch (err) {
-    console.error('🔴 ragChat error', err);
+    console.error('ragChat ERROR', err);
     res.status(500).json({ error: err.message || 'ragChat failed' });
   }
 });
