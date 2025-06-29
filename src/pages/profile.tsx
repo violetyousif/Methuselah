@@ -16,6 +16,8 @@ import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ActivityLevelModal from '../components/ActivityLevelModal'; // Import the new ActivityLevelModal component
 import { DownOutlined } from '@ant-design/icons'; // For dropdown arrow icon
+import { Calendar, Modal, DatePicker } from 'antd';
+import dayjs from 'dayjs';
 
 /* Old Code
 interface ProfileProps {
@@ -36,6 +38,81 @@ const Profile: React.FC = () => {
     }
     return 'default'
   })
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>(dayjs().format('YYYY-MM-DD'));
+  const [sleepHours, setSleepHours] = useState<number>(0);
+  const [exerciseHours, setExerciseHours] = useState<number>(0);
+  const [calories, setCalories] = useState<number>(0);
+  const [allMetrics, setAllMetrics] = useState<Record<string, any>>({});
+
+  // Calendar cell click
+  /* const onSelectDate = (date: dayjs.Dayjs) => {
+    setSelectedDate(date.format('YYYY-MM-DD'));
+    setModalVisible(true);
+  }; */
+
+  const onSelectDate = (date: dayjs.Dayjs) => {
+    const formatted = date.format('YYYY-MM-DD');
+    setSelectedDate(formatted);
+    const existing = allMetrics[formatted];
+
+    if (existing) {
+      setSleepHours(existing.sleepHours ?? 0);
+      setExerciseHours(existing.exerciseHours ?? 0);
+      setCalories(existing.calories ?? 0);
+    } else {
+      setSleepHours(0);
+      setExerciseHours(0);
+      setCalories(0);
+    }
+    setModalVisible(true);
+  };
+
+  const submitHealthMetric = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/health-metrics', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          date: selectedDate,
+          sleepHours,
+          exerciseHours,
+          calories
+        })
+      });
+
+      if (!res.ok) throw new Error('Submission failed');
+      message.success('Health metrics saved!');
+      setModalVisible(false);
+      // Update local metrics state so it's available immediately
+      setAllMetrics(prev => ({
+        ...prev,
+        [selectedDate]: {
+          sleepHours,
+          exerciseHours,
+          calories
+        }
+      }));
+    } catch (err) {
+      console.error(err);
+      message.error('Error saving health metrics');
+    }
+  };
+
+  useEffect(() => {
+  fetch('http://localhost:8080/api/health-metrics', {
+    credentials: 'include',
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      setAllMetrics(data.dates || {});
+    })
+    .catch((err) => {
+      console.error('Error fetching health metrics:', err);
+    });
+  }, []);
+
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'default'
@@ -275,6 +352,35 @@ const Profile: React.FC = () => {
           setActivityModalVisible(false);
         }}
       />
+  <div style={{ marginTop: '3rem' }}>
+  <h3 style={styles.modalTitle}>Log Daily Health Metrics</h3>
+  <Calendar
+    fullscreen={false}
+    onSelect={onSelectDate}
+    disabledDate={(current) => current && current > dayjs().endOf('day')}
+  />
+  </div>
+
+  <Modal
+    title={`Enter Health Data for ${selectedDate}`}
+    visible={modalVisible}
+    onCancel={() => setModalVisible(false)}
+    onOk={submitHealthMetric}
+    okText="Submit"
+  >
+    <Form layout="vertical">
+      <Form.Item label="Sleep Hours">
+        {/* <InputNumber min={0} max={24} value={sleepHours} onChange={setSleepHours} style={{ width: '100%' }} /> */}
+        <InputNumber min={0} max={12} value={sleepHours} onChange={(value) => value !== null && setSleepHours(value)} style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="Exercise Hours">
+        <InputNumber min={0} max={12} value={exerciseHours} onChange={(value) => value !== null && setExerciseHours(value)} style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="Calories">
+        <InputNumber min={0} value={calories} onChange={(value) => value !== null && setCalories(value)} style={{ width: '100%' }} />
+      </Form.Item>
+    </Form>
+  </Modal>
     </div>
   )
 }
