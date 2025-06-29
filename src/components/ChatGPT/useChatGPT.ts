@@ -225,8 +225,26 @@ export const useChatGPT = (
     addMessage(conversationId, message.role, message.content);
     setCurrentConversation(getConversation(conversationId) || null);
 
+    // Calculate age from dateOfBirth if available
+    const calculateAge = (dateOfBirth: string): number => {
+      const today = new Date();
+      const birthDate = new Date(dateOfBirth);
+      
+      // Check if the date is valid
+      if (isNaN(birthDate.getTime())) {
+        return 0; // Return 0 for invalid dates
+      }
+      
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return Math.max(0, age); // Ensure age is not negative
+    };
+
     const healthPrompt = healthData
-      ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
+      ? `User: ${healthData.dateOfBirth ? calculateAge(healthData.dateOfBirth) : 'unknown'} years, ${healthData.weight || 'unknown'}lb, ${healthData.height || 'unknown'}in, ${healthData.activityLevel || 'unknown'} activity, ${healthData.sleepHours || 'unknown'}h sleep—`
       : '' ;
 
     const fullQuery = `${healthPrompt}${message.content}`;

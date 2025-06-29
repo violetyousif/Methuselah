@@ -29,9 +29,9 @@ export interface UserData {
   lastName?: string
   email?: string
   gender?: 'female' | 'male' | 'other' | 'prefer not to say'
-  age: number
-  weight: number // kg
-  height: number // cm
+  dateOfBirth?: string // Backend sends dateOfBirth, not age
+  weight: number // lb (backend uses imperial units)
+  height: number // inches (backend uses imperial units)
   activityLevel: 'sedentary' | 'moderate' | 'active'
   sleepHours: number
   profilePic?: string
