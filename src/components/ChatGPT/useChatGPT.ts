@@ -61,7 +61,7 @@ export const useChatGPT = (
   const fetchPath = 'http://localhost:8080/api/ragChat'
   const [, forceUpdate] = useReducer((x) => !x, false)
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
-  const [healthData, setHealthData] = useState<UserData | null>(null)
+  const [healthData, setHealthData] = useState<UserData | null>(null) // Only used for greeting personalization now
   const [loading, setLoading] = useState<boolean>(false)
   const [disabled] = useState<boolean>(false)
   const [greetingSent, setGreetingSent] = useState(false);
@@ -225,38 +225,8 @@ export const useChatGPT = (
     addMessage(conversationId, message.role, message.content);
     setCurrentConversation(getConversation(conversationId) || null);
 
-    // Calculate age from dateOfBirth if available
-    const calculateAge = (dateOfBirth: string): number => {
-      const today = new Date();
-      const birthDate = new Date(dateOfBirth);
-      
-      // Check if the date is valid
-      if (isNaN(birthDate.getTime())) {
-        return 0; // Return 0 for invalid dates
-      }
-      
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return Math.max(0, age); // Ensure age is not negative
-    };
-
-    const healthPrompt = healthData
-      ? `User: ${healthData.dateOfBirth ? calculateAge(healthData.dateOfBirth) : 'unknown'} years, ${healthData.weight || 'unknown'}lb, ${healthData.height || 'unknown'}in, ${healthData.activityLevel || 'unknown'} activity, ${healthData.sleepHours || 'unknown'}h sleep—`
-      : '' ;
-
-    const fullQuery = `${healthPrompt}${message.content}`;
-    fetchMessage(fullQuery);
-    /* const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
-    fetchMessage([
-      ...((currentConversation?.messages || []).map(msg => ({
-        ...msg,
-        timestamp: typeof msg.timestamp === 'string' ? msg.timestamp : msg.timestamp.toISOString()
-      }))),
-      fullMessage
-    ]) */
+    // Send the message directly to backend - health personalization now happens on backend
+    fetchMessage(message.content);
   }
 
   const onClear = () => {
