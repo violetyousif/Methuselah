@@ -43,3 +43,14 @@ backend/.env
 #backend dependencies
 backend/node_modules
 backend/.env.example
+backend/config
+backend/config/pyproject.toml
+backend/python/main.py
+
+# Python virtual environments
+backend/python/venv/
+.venv/
+*.pyc
+__pycache__/
+
+.env

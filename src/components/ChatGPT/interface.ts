@@ -1,4 +1,5 @@
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
+// Syed Rabbey, 6/26/2025, Added chatmode interface and props for toggling between direct and conversational modes.
 import type { ReactNode } from 'react'
 
 export enum ChatRole {
@@ -8,11 +9,15 @@ export enum ChatRole {
 }
 
 export interface ChatGPTProps {
-  fetchPath: string
-  assistantBubbleColor?: string
-  userBubbleColor?: string
-  inputBarColor?: string
-  isLoggedIn?: boolean
+  fetchPath: string;
+  conversationId: string;
+  isLoggedIn: boolean;
+  inputBarColor: string;
+  assistantBubbleColor: string;
+  userBubbleColor: string;
+  userAvatar?: string;
+  chatMode: 'direct' | 'conversational';
+
 }
 
 export interface ChatMessage {
