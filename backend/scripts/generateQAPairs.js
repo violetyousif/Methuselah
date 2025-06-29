@@ -3,8 +3,11 @@
 import { InferenceClient } from '@huggingface/inference';
 import { config } from 'dotenv';
 import { createObjectCsvWriter } from 'csv-writer';
+import { connectDB } from './lib/db.js';
+import { QAPair } from './models/QAPair.js';
 
-config();
+config({ path: '.env.local' });
+
 const hf = new InferenceClient(process.env.HF_API_KEY);
 
 const TOPICS = [
@@ -13,22 +16,22 @@ const TOPICS = [
   "sleep optimization",
   "mitochondrial health",
   "telomere lengthening",
-  "metformin for aging",
+  "metformin",
   "senolytics",
-  "biomarkers of aging",
+  "aging biomarkers",
   "caloric restriction",
   "cold exposure",
-  "rapamycin and longevity",
+  "rapamycin",
   "sauna therapy",
   "longevity diet",
-  "gut microbiome and aging",
-  "smart supplements",
-  "maintainging muscle mass with age",
-  "maintaining cognitive function with age",
-  "balancing hormones",
+  "gut microbiome",
+  "supplements",
+  "muscle mass and aging",
+  "cognitive function and aging",
+  "hormone balance",
   "exercise and longevity",
-  "balancing stress and longevity",
-  "maintaining healthy skin with age",
+  "stress and longevity",
+  "skin health and aging",
   "diabetes and aging",
   "cardiovascular health and aging",
 ];
@@ -39,6 +42,36 @@ const SYSTEM_PROMPT = `You are a longevity and wellness expert. Create high-qual
   ...
 ]`;
 
+// Before main()
+await connectDB();
+
+(async () => {
+  const allPairs = [];
+
+  for (const topic of TOPICS) {
+    const pairs = await generateQAPairs(topic, 5);
+    allPairs.push(...pairs.map(p => ({ ...p, topic })));
+
+    // Save to MongoDB
+    await QAPair.insertMany(pairs.map(p => ({ ...p, topic })));
+    console.log(`Saved ${pairs.length} pairs for topic "${topic}"`);
+  }
+
+  // Optionally also write CSV
+  const csvWriter = createObjectCsvWriter({
+    path: 'qa_training_data_zephyr.csv',
+    header: [
+      { id: 'query', title: 'query' },
+      { id: 'answer', title: 'answer' },
+      { id: 'topic', title: 'topic' }
+    ]
+  });
+
+  await csvWriter.writeRecords(allPairs);
+})();
+
+
+
 async function generateQAPairs(topic, n = 5) {
   const userPrompt = `Generate ${n} realistic Q&A pairs about: "${topic}". Follow the format exactly.`;
 
@@ -48,11 +81,12 @@ async function generateQAPairs(topic, n = 5) {
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'user', content: userPrompt }
     ],
-    max_tokens: 30,
+    max_tokens: 200, // or change to 300 for more detailed answers
     temperature: 0.7,
     top_p: 0.9,
     options: { wait_for_model: true }
   });
+
 
   try {
    const raw = response.choices?.[0]?.message?.content.trim();

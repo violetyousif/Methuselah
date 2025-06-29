@@ -14,7 +14,6 @@ const __dirname = dirname(__filename);
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: false,
-  swcMinify: true,
   transpilePackages: [
   'antd',
   'antd-mobile',
