@@ -1,4 +1,6 @@
 //Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
+//Mohammad Hoque, 6/29/2025, Reordered buttons to make conversational default and appear first
+
 import React from 'react';
 
 interface ChatModeToggleProps {
@@ -17,16 +19,16 @@ const ChatModeToggle: React.FC<ChatModeToggleProps> = ({ mode, onChange }) => {
     <div className="chat-mode-toggle">
       <div className={`toggle-container ${mode}`}>
         <button
-          className={`toggle-option ${mode === 'direct' ? 'active' : ''}`}
-          onClick={() => handleClick('direct')}
-        >
-          Direct
-        </button>
-        <button
           className={`toggle-option ${mode === 'conversational' ? 'active' : ''}`}
           onClick={() => handleClick('conversational')}
         >
           Conversational
+        </button>
+        <button
+          className={`toggle-option ${mode === 'direct' ? 'active' : ''}`}
+          onClick={() => handleClick('direct')}
+        >
+          Direct
         </button>
       </div>
       <style jsx>{`

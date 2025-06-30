@@ -43,7 +43,7 @@ const Chatbot = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
+  const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('conversational'); // Default to conversational mode
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState<string>('')
   const editInputRef = useRef<HTMLInputElement>(null)

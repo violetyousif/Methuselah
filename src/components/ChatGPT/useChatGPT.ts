@@ -3,6 +3,7 @@
 // Violet Yousif, 6/16/2025, Removed Web3-specific code for a more general implementation.
 // Mizanur Mizan, 6/25/2025, Connected backend llm question response to chatbot frontend
 // Syed Rabbey, 6/27/2025, Integrated user's first name into chat greeting and question prompts.
+// Mohammad Hoque, 6/29/2025, Updated for personalized health data integration and new chat mode routing
 
 import { useEffect, useReducer, useRef, useState } from 'react'
 import ClipboardJS from 'clipboard'
@@ -115,15 +116,16 @@ export const useChatGPT = (
 
     if (hasNoMessages) {
       const userName = healthData.firstName || 'traveler';
+      
       addMessage(
         conversationId,
         ChatRole.Assistant,
-        `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
+        `Greetings, ${userName}. I am Methuselah, your wise longevity coach. I have access to your health profile, so my advice will be personalized just for you. I can engage with you in either a conversational, detailed style or provide direct, actionable guidance - whichever you prefer. What would you like to explore today?`
       );
       setCurrentConversation(getConversation(conversationId) || null);
       setGreetingSent(true);
     }
-  }, [healthData, greetingSent, conversationId]);
+  }, [healthData, greetingSent, conversationId]); // Removed chatMode dependency to prevent regeneration
 
 
 
@@ -167,32 +169,47 @@ export const useChatGPT = (
 
   const fetchMessage = async (query: string) => {
     try {
-      // currentMessage.current = ''
       controller.current = new AbortController()
       setLoading(true);
+      setStreamedMessage(''); // Clear any previous streamed message
       
       const data = await requestMessage(fetchPath, query, chatMode, controller.current);
       const assistantReply = data.answer;
-      // Fake message typing effect
+      
+      // Only proceed if we have a valid response
+      if (!assistantReply) {
+        throw new Error('No response received from server');
+      }
+      
+      // Simple typing effect - but shorter and more controlled
       let currentText = '';
       const words = assistantReply.split(' ');
 
       for (let i = 0; i < words.length; i++) {
+        if (controller.current?.signal.aborted) {
+          break; // Stop if user cancels
+        }
         currentText += words[i] + ' ';
         setStreamedMessage(currentText);
-        await new Promise((resolve) => setTimeout(resolve, 5)); // Speed: 20ms per word
-    }
+        await new Promise((resolve) => setTimeout(resolve, 8)); // Slightly slower for better UX
+      }
 
-      setStreamedMessage('');  //  Clears the streamed message after it's done
-
+      setStreamedMessage(''); // Clear the streamed message
+      
+      // Add the complete message to conversation
       addMessage(conversationId, ChatRole.Assistant, assistantReply);
       setCurrentConversation(getConversation(conversationId) || null);
 
       setLoading(false);
       scrollDown();
     } catch (e) {
-      console.error(e);
+      console.error('fetchMessage error:', e);
       setLoading(false);
+      setStreamedMessage(''); // Clear streamed message on error
+      
+      // Add error message to conversation
+      addMessage(conversationId, ChatRole.Assistant, 'I apologize, but I encountered an error. Please try asking your question again.');
+      setCurrentConversation(getConversation(conversationId) || null);
     }
       /* const reader = await requestMessage(fetchPath, messages, controller.current)
       const decoder = new TextDecoder('utf-8')
@@ -225,12 +242,9 @@ export const useChatGPT = (
     addMessage(conversationId, message.role, message.content);
     setCurrentConversation(getConversation(conversationId) || null);
 
-    const healthPrompt = healthData
-      ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
-      : '' ;
-
-    const fullQuery = `${healthPrompt}${message.content}`;
-    fetchMessage(fullQuery);
+    // Health data is now handled server-side through user authentication
+    // No need to manually append health context to the query
+    fetchMessage(message.content);
     /* const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
     fetchMessage([
       ...((currentConversation?.messages || []).map(msg => ({
@@ -266,6 +280,6 @@ export const useChatGPT = (
     onSend,
     onClear,
     onStop
-} 
+  } 
 
 }

@@ -21,11 +21,16 @@ const ChatGPT = ({
   inputBarColor = '#9AB7A9',
   isLoggedIn = false,
   userAvatar = '/avatars/avatar1.png',
+  chatMode = 'conversational',
   ...props
-}: ChatGPTProps & { conversationId: string; walletAddress: string; userAvatar?: string }) => {
+}: ChatGPTProps & { conversationId: string; walletAddress: string; userAvatar?: string; chatMode: 'direct' | 'conversational' }) => {
   const { loading, disabled, messages, currentMessage, streamedMessage, onSend, onClear, onStop } = useChatGPT({
     ...props,
-    isLoggedIn
+    isLoggedIn,
+    chatMode,
+    inputBarColor,
+    assistantBubbleColor,
+    userBubbleColor
   })
 
   return (
