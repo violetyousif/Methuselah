@@ -18,7 +18,7 @@ import Link from 'next/link'
 import Profile from './profile' // Checked by Mohammad, 06/18/2025
 import Dashboard from './dashboard'
 import { useState, useEffect, useRef } from 'react'
-import { ethers } from 'ethers'
+//import { ethers } from 'ethers'
 import { getConversations, addConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
