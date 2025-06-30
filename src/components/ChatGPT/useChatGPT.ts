@@ -61,7 +61,7 @@ export const useChatGPT = (
   const fetchPath = 'http://localhost:8080/api/ragChat'
   const [, forceUpdate] = useReducer((x) => !x, false)
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
-  const [healthData, setHealthData] = useState<UserData | null>(null) // Only used for greeting personalization now
+  const [healthData, setHealthData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [disabled] = useState<boolean>(false)
   const [greetingSent, setGreetingSent] = useState(false);
@@ -225,8 +225,20 @@ export const useChatGPT = (
     addMessage(conversationId, message.role, message.content);
     setCurrentConversation(getConversation(conversationId) || null);
 
-    // Send the message directly to backend - health personalization now happens on backend
-    fetchMessage(message.content);
+    const healthPrompt = healthData
+      ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
+      : '' ;
+
+    const fullQuery = `${healthPrompt}${message.content}`;
+    fetchMessage(fullQuery);
+    /* const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
+    fetchMessage([
+      ...((currentConversation?.messages || []).map(msg => ({
+        ...msg,
+        timestamp: typeof msg.timestamp === 'string' ? msg.timestamp : msg.timestamp.toISOString()
+      }))),
+      fullMessage
+    ]) */
   }
 
   const onClear = () => {
@@ -257,4 +269,3 @@ export const useChatGPT = (
 } 
 
 }
-
