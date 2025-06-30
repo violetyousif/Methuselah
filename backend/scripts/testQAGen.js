@@ -2,12 +2,14 @@
 
 ///// Directions:
 // To run this, verify you added the HF_API_KEY to your .env file on root directory.
-// Run with: `node scripts/testQAGen.js`
+// Run with: `node scripts/testQAGen.js` or `npm run dev:test`
 import { InferenceClient } from '@huggingface/inference';
 import { config } from 'dotenv';
 import stripJsonComments from 'strip-json-comments';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-config();
+config({ path: '.env.local' });
 
 const HF_API_KEY = process.env.HF_API_KEY;
 if (!HF_API_KEY || typeof HF_API_KEY !== 'string') {
@@ -49,30 +51,42 @@ function attemptToFixAndParse(raw) {
       .replace(/\n/g, ' ')
       .replace(/\s+/g, ' ');
 
-    // Fix bad formatted Q&A: no "answer" key
+    // Bad key logic: this regex captures the "query" and any missing "answer" key, replacing it
     jsonLike = jsonLike.replace(
-      /("query":\s*"[^"]*")\s*,\s*"([^"]+)":\s*"([^"]*)"/g,
-      (_, query, badKey, answer) => `${query}, "answer": "${badKey}: ${answer}"`
-    ).replace(
-      /("query":\s*"[^"]*")\s*,\s*"([^"]+)"/g,
-      (_, query, answer) => `${query}, "answer": "${answer}"`
+      /"query":\s*"([^"]+)",\s*"([^"]+)"\s*:\s*"([^"]+)"/g,
+      (_, query, missingKey, answerText) => {
+        return `"query": "${query}", "answer": "${missingKey}: ${answerText}"`;
+      }
     );
 
-    // Fix missing quotes around keys
+
+  // Parsing implementation: fix missing quotes around keys
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonLike);
+  } catch (jsonErr) {
+    console.warn('JSON.parse failed. Attempting eval() fallback...');
     try {
-      const parsed = JSON.parse(jsonLike);
-      parsedArrays.push(...parsed); // Merge into one array
-    } catch (e) {
-      // If parsing fails, log the error but continue processing
-      console.warn('SKIPPING INVALID JSON BLOCK:', e.message);
+      // Eval() needs to wrap in parentheses to return the object properly
+      parsed = eval('(' + jsonLike + ')');
+    } catch (evalErr) {
+      console.error('Both JSON.parse and eval() failed:', {
+        jsonError: jsonErr.message,
+        evalError: evalErr.message,
+        input: jsonLike.slice(0, 300) // truncate to avoid flooding logs
+      });
+      return []; // Skip this block
     }
   }
 
-  if (parsedArrays.length === 0) throw new Error('No valid Q&A blocks were parsed.');
+  if (Array.isArray(parsed)) {
+    parsedArrays.push(...parsed);
+  } else {
+    console.warn('Parsed result is not an array. Skipping block.');
+  }
+  }
 
-  return parsedArrays;
 }
-
 
 //// Function to test the Q&A generation
 async function testQAGeneration() {
@@ -105,7 +119,7 @@ async function testQAGeneration() {
       top_p: 0.9,
       options: { wait_for_model: true }
     });
-
+    
     // Log the raw response from the model
     const raw = response.choices?.[0]?.message?.content.trim();
     console.log(`\nRaw output from Zephyr:\n${raw}`);
