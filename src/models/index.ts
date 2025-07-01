@@ -1,6 +1,7 @@
 // src/models/index.ts
 // Violet Yousif, 6/10,2025, Changed the UserData interface to include firstName, lastName instead of name.
 // Mohammad Hoque, 6/18/2025, Added gender to UserData interface.
+// Mohammad Hoque, 7/1/2025, Added functions for updating conversation title and deleting conversations.
 
 import { ChatRole } from '../components/ChatGPT/interface'
 
@@ -73,6 +74,18 @@ export const addMessage = (conversationId: string, role: ChatRole, content: stri
     conversation.messages.push(message)
     conversation.updatedAt = new Date()
   }
+}
+
+export const updateConversationTitle = (conversationId: string, newTitle: string): void => {
+  const conversation = inMemoryConversations[conversationId]
+  if (conversation) {
+    conversation.title = newTitle
+    conversation.updatedAt = new Date()
+  }
+}
+
+export const deleteConversation = (conversationId: string): void => {
+  delete inMemoryConversations[conversationId]
 }
 
 export const clearConversation = (conversationId: string): void => {
