@@ -1,3 +1,5 @@
+/* Mohammad Hoque, 7/1/2025, Fixed double scrollbar issue by removing internal container scrolling and allowing natural page scrolling */
+
 @border-radius: 1rem;
 
 .chat-wrapper {
@@ -7,31 +9,10 @@
   background-color: transparent;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px); // Full height minus padding/footer
+  min-height: calc(100vh - 180px); // Minimum height to account for header and footer
   .message-list {
-    flex: 1; // Take up available space
-    overflow-y: auto; // Make the message list scrollable
-    max-height: 100%;
-    word-break: 16px;
+    flex: 1;
     padding-bottom: 16px; // Add some padding at the bottom for spacing
-    // Webkit scrollbar styles (Chrome, Safari, Edge)
-    &::-webkit-scrollbar {
-      width: 8px; // Slimmer scrollbar
-    }
-    &::-webkit-scrollbar-track {
-      background: #2a2a2a; // Dark track
-      border-radius: 4px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: #4b5563; // Dark thumb
-      border-radius: 4px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background: #6b7280; // Lighter on hover
-    }
-    // Firefox scrollbar styles
-    scrollbar-width: thin;
-    scrollbar-color: #4b5563 #2a2a2a;
   }
   .welcome-message {
     text-align: center;

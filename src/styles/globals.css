@@ -1,6 +1,7 @@
 /* Modified: Syed Rabbey (6/1/25), - Added custom scrollbar, modal styling, and dark theme styles */
 /* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
 /* Modified: Violet Yousif (6/2/25), added new styling for global footer */
+/* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
 
 /* Modal Styling - Dark themed */
 .custom-modal .ant-modal-content {
@@ -205,76 +206,6 @@ a:hover {
 
 /* ------------------ DARK THEME STYLES ------------------ */
 /* Added by: Mohammad Hoque - 06/02/25 */
-/* [data-theme='dark'] {
-  background-color: #0f0f17;
-  color: #F1F1EA;
-}
-
-[data-theme='dark'] .card,
-[data-theme='dark'] .container,
-[data-theme='dark'] .ant-card {
-  background-color: #0f0f17 !important;
-  border-color: #318182 !important;
-  color: #F1F1EA !important;
-}
-
-[data-theme='dark'] .ant-btn-primary {
-  background-color: #318182 !important;
-  border-color: #318182 !important;
-  color: #ffffff !important;
-}
-[data-theme='dark'] .ant-btn-primary:hover {
-  background-color: #256c6f !important;
-  border-color: #256c6f !important;
-}
-
-[data-theme='dark'] .ant-input,
-[data-theme='dark'] .ant-select-selector,
-[data-theme='dark'] .ant-picker {
-  background-color: #0f0f17 !important;
-  border-color: #318182 !important;
-  color: #F1F1EA !important;
-}
-
-[data-theme='dark'] .ant-input:focus,
-[data-theme='dark'] .ant-select-selector:focus,
-[data-theme='dark'] .ant-picker-focused {
-  border-color: #42a9aa !important;
-  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
-}
-
-[data-theme='dark'] .ant-select-item-option-selected {
-  background-color: #318182 !important;
-  color: #ffffff !important;
-}
-
-[data-theme='dark'] footer {
-  background-color: #0f0f17 !important;
-  color: #F1F1EA !important;
-}
-
-[data-theme='dark'] .sider {
-  background-color: #318182 !important;
-}
-
-[data-theme='dark'] ::-webkit-scrollbar-thumb {
-  background-color: #318182;
-}
-[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
-  background-color: #0f0f17;
-}
-
-[data-theme='dark'] * {
-  scrollbar-color: #318182 #0f0f17;
-}
-
-[data-theme='dark'] .chat-icon-black-outline {
-  color: #F1F1EA;
-  stroke: #F1F1EA;
-} */
-
-/* ------------------ DARK THEME STYLES ------------------ */
-/* Added by: Mohammad Hoque - 06/02/25 */
 [data-theme='dark'] {
   background-color: #0f0f17;
   color: #F1F1EA;
@@ -443,24 +374,6 @@ body[data-fontsize='extra-large'] .ant-select-selector {
   font-size: 2.5em !important;
 }
 
-/* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
-body[data-fontsize='regular'] { font-size: 16px; }
-body[data-fontsize='large'] { font-size: 17px; }
-body[data-fontsize='extra-large'] { font-size: 18px; }
-
-body[data-fontsize='large'] h1,
-body[data-fontsize='large'] h2,
-body[data-fontsize='large'] input,
-body[data-fontsize='large'] .ant-select-selector {
-  font-size: 2em !important;
-}
-body[data-fontsize='extra-large'] h1,
-body[data-fontsize='extra-large'] h2,
-body[data-fontsize='extra-large'] input,
-body[data-fontsize='extra-large'] .ant-select-selector {
-  font-size: 2.5em !important;
-}
-
 /* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */
 [data-theme='dark'] a {
@@ -557,5 +470,22 @@ body[data-theme='dark'] .chat-list-container {
     min-width: auto;
     min-height: auto;
   }
+}
+
+/* Global styles for proper scrolling behavior */
+html, body {
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Ensure the main content area doesn't create unnecessary scrollbars */
+.content-area-responsive {
+  height: 100vh;
+  overflow-y: auto; /* Let the main content area handle vertical scrolling */
+}
+
+/* Remove any fixed height constraints that might cause double scrollbars */
+.ant-layout {
+  min-height: 100vh;
 }
 

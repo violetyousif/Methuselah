@@ -10,6 +10,7 @@
 // Date: 06/13/2025
 // added link to button for feedback page
 // Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality
+// Mohammad Hoque, 7/1/2025, Updated content area styles to fix double scrollbar issue in chat interface
 
 
 import ChatGPT from '@/components/ChatGPT'
@@ -677,14 +678,18 @@ const styles = {
   contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
     marginLeft: collapsed ? 48 : 250,
     backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
-    transition: 'margin-left 0.3s ease' // Smooth transition for responsive behavior
+    transition: 'margin-left 0.3s ease', // Smooth transition for responsive behavior
+    height: '100vh',
+    overflow: 'hidden' // Let the content handle its own scrolling
   }),
   content: {
     padding: '24px',
     maxWidth: '960px',
     margin: '0 auto',
     width: '100%',
-    paddingBottom: '60px'
+    paddingBottom: '60px',
+    height: '100%',
+    overflow: 'auto' // Enable scrolling for the content area
   },
   footer: {
     position: 'fixed',
