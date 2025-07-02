@@ -9,15 +9,19 @@
 // Edited by: Viktor Gjorgjevski
 // Date: 06/13/2025
 // added link to button for feedback page
+<<<<<<< HEAD
 // Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality
 // Mohammad Hoque, 7/1/2025, Updated content area styles to fix double scrollbar issue in chat interface
+=======
+// Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality. Added improvements to UI repsonsiveness.
+>>>>>>> bb0a238093310332eb09902b3d9ac2ff5b3f1865
 
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import Profile from './profile' // Checked by Mohammad, 06/18/2025
+import Profile from './profile'
 import Dashboard from './dashboard'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
@@ -44,11 +48,8 @@ const Chatbot = () => {
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
-  // Mohammad Hoque, 7/1/2025: Added state for inline edit chat functionality
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
-  const [editingChatTitle, setEditingChatTitle] = useState('')
-  
-  // Mohammad Hoque, 7/1/2025: Added responsive sidebar state management
+  const [editingChatTitle, setEditingChatTitle] = useState('')  
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
 
@@ -80,7 +81,6 @@ const Chatbot = () => {
   checkLoginStatus();
 }, []);
 
-  // Mohammad Hoque, 7/1/2025: Window resize handler for responsive sidebar
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth
@@ -196,7 +196,6 @@ const Chatbot = () => {
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
 
-  // Mohammad Hoque, 7/1/2025: Handle manual sidebar toggle for responsive behavior
   const handleSidebarToggle = (newCollapsedState: boolean) => {
     setCollapsed(newCollapsedState)
     setIsManuallyCollapsed(newCollapsedState)
@@ -213,7 +212,6 @@ const Chatbot = () => {
     }
   }
 
-  // Mohammad Hoque, 7/1/2025: Added functions for inline edit and delete chat functionality
   const handleEditChat = (chatId: string, currentTitle: string) => {
     setEditingChatId(chatId)
     setEditingChatTitle(currentTitle)
@@ -417,7 +415,6 @@ const Chatbot = () => {
                         alignItems: 'center'
                       }}
                     >
-                      {/* Mohammad Hoque, 7/1/2025: Modified chat item to include inline edit and delete options */}
                       {editingChatId === chat.conversationId ? (
                         <Input
                           value={editingChatTitle}
@@ -537,10 +534,7 @@ const Chatbot = () => {
          </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
-      
-      {/* Mohammad Hoque, 7/1/2025: Removed edit modal - now using inline editing */}
-      
+      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />      
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
     </Layout>
