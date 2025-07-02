@@ -32,7 +32,6 @@ const ChatModeToggle: React.FC<ChatModeToggleProps> = ({ mode, onChange }) => {
       <style jsx>{`
         .chat-mode-toggle {
           display: inline-block;
-          margin-left: 12px;
         }
 
         .toggle-container {

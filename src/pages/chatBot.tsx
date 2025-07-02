@@ -24,6 +24,7 @@ import { getConversations, addConversation, updateConversationTitle, deleteConve
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
 import ChatModeToggle from './ChatModeToggle';
+import ChatHeaderBar from '../components/ChatHeaderBar'
 
 
 
@@ -496,6 +497,12 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
+      <ChatHeaderBar 
+        collapsed={collapsed}
+        chatMode={chatMode}
+        onChatModeChange={setChatMode}
+        theme={currentTheme}
+      />
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
@@ -511,9 +518,6 @@ const Chatbot = () => {
               chatMode={chatMode}
             />
           )}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
-            <ChatModeToggle mode={chatMode} onChange={setChatMode} />
-          </div>
           {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT
@@ -669,6 +673,7 @@ const styles = {
     backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
     transition: 'margin-left 0.3s ease', // Smooth transition for responsive behavior
     height: '100vh',
+    paddingTop: '56px', // Account for header height
     overflow: 'hidden' // Let the content handle its own scrolling
   }),
   content: {
@@ -677,7 +682,7 @@ const styles = {
     margin: '0 auto',
     width: '100%',
     paddingBottom: '60px',
-    height: '100%',
+    height: 'calc(100% - 56px)', // Subtract header height
     overflow: 'auto' // Enable scrolling for the content area
   },
   footer: {

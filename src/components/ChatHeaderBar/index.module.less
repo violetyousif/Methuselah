@@ -1,0 +1,44 @@
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 250px; /* Default sidebar width */
+  height: 56px;
+  z-index: 100;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  transition: left 0.3s ease;
+}
+
+.header.collapsed {
+  left: 48px; /* Collapsed sidebar width */
+}
+
+.header.dark {
+  background-color: #0f0f17;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .header {
+    left: 48px; /* Always use collapsed width on mobile */
+  }
+  
+  .header.collapsed {
+    left: 48px;
+  }
+}
