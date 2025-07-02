@@ -9,12 +9,7 @@
 // Edited by: Viktor Gjorgjevski
 // Date: 06/13/2025
 // added link to button for feedback page
-<<<<<<< HEAD
-// Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality
-// Mohammad Hoque, 7/1/2025, Updated content area styles to fix double scrollbar issue in chat interface
-=======
 // Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality. Added improvements to UI repsonsiveness.
->>>>>>> bb0a238093310332eb09902b3d9ac2ff5b3f1865
 
 
 import ChatGPT from '@/components/ChatGPT'
