@@ -2,7 +2,7 @@
 // Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
 // Violet Yousif, 6/27/2025 - Fixed the deprecated inference client import
-
+// Viktor Gjorgjevski, 7/1/2025 Fixed issue where LLM response was including user response and replying to itself
 
 // What happens inside:
 // 1. Embed the user’s question.
@@ -37,16 +37,18 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 // Each mode has a different prompt to guide the LLM's behavior
   function buildSystemPrompt(username, mode) {
     if (mode === 'conversational') {
-      return `You are a warm, friendly longevity wellness coach talking to ${username}.
-  You enjoy storytelling, elaboration, and conversational style responses.
-  Refer to ${username} by name occasionally.
-  Be detailed and human-like, even if it takes several paragraphs.`;
+      return `You are Methuselah, a friendly longevity wellness coach. 
+      You are only allowed to answer as Methuselah, the coach. 
+      Never create or simulate responses for the user.
+      Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
+      Stop speaking as soon as you finish your reply.
+      Do not ask for or expect a user reply in your output.`;
     } else {
       // Default = Direct mode
-      return `You are a longevity wellness coach speaking to ${username}.
-  Do not include any role tags like USER:, ASSISTANT:, [USER], or [ASSISTANT] in your responses.
-  Occasionally include ${username}'s name in your replies for personalization.
-  Keep answers short, actionable, and easy to follow, no more than 200 words. Do not cut yourself off mid-sentence.`;
+      return `You are a longevity wellness coach named Methuselah speaking to ${username}.
+      ONLY reply as the coach. Never include any role tags or generate responses as the user.
+      Keep answers short, actionable, and easy to follow (max 200 words). Never cut yourself off mid-sentence.
+      Wait for the user's reply before continuing.`;
     }
   }
 
@@ -89,20 +91,34 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
     const context = docs.map(d => d.text).join('\n---\n');
 
     // Error handling for vague user input
-    const vagueInputs = ['help', 'help me', 'what should I do', 'idk', 'unsure', 'no idea'];
+    const vagueInputs = ['help', 'help me', 'what should I do', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks', 'thank you'];
     const isVague = vagueInputs.some(v => question.toLowerCase().includes(v));
 
+
+
     let userPrompt;
+    let systemPrompt;
     // Forces the direct mode toggle to avoid knowledge base context.
     if (isVague) {
-      userPrompt = `The user (${firstName}) is unsure what they need help with. Politely ask which specific area they want help with (examples: sleep, stress, exercise, supplements).`;
-    } else if (mode === 'direct') {
-      userPrompt = `${question}`;  // Send ONLY the user question, no KB context for direct mode
+      systemPrompt = `You are Methuselah, the friendly longevity coach. ONLY speak as Methuselah. NEVER reply as the user. Greet ${firstName} and invite them to share a health or wellness goal.`;
+      userPrompt = "";
+      //`Greet the user as Methuselah, a wise and friendly wellness coach, and invite them to share their health goals or concerns. Only write your own reply as Methuselah.`;
+    } 
+    else if (!context || context.length < 20) {
+      systemPrompt = "You are Methuselah, the friendly longevity coach. ONLY reply as Methuselah. NEVER reply as the user.";
+      userPrompt = `If the user's question is not related to health, wellness, or longevity, politely explain you can only answer those topics. Question: ${question}`;
+      }
+    else if (mode === 'direct') {
+      systemPrompt = buildSystemPrompt(firstName, mode);
+      userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;
+      //userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;  // Send ONLY the user question, no KB context for direct mode
     } else {
-      userPrompt = `Here is some relevant context:\n${context}\n\nBased on this, answer ${firstName}'s question as a longevity wellness coach.`;
+      systemPrompt = buildSystemPrompt(firstName, mode);
+      userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
+      //userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
     }
 
-    const systemPrompt = buildSystemPrompt(firstName, mode);
+    //const systemPrompt = buildSystemPrompt(firstName, mode);
 
     // generate answer with Zephyr-7B 
     const chatResp = await hf.chatCompletion({
@@ -113,7 +129,7 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
         // { role: 'user',      content: question }
         {
           role: 'user',
-          content: `Here is some relevant context:\n${context}\n\nBased on this, answer the following question:\n${question}`
+          content: userPrompt
         }
       ],
       max_tokens: 800,
@@ -126,6 +142,15 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
     answer = answer
       .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/i, '')
       .trim();
+    //const userRoleRegex = /(?:^|\n)[A-Z][a-zA-Z0-9_ ]{0,40}:/;
+    //const roleMatch = answer.match(userRoleRegex);
+   //if (roleMatch) {
+    //answer = answer.slice(0, roleMatch.index).trim();  
+    const roleOrDialogue = answer.search(/\n\s*([\/\[]|USER|METHUSALEH|COACH|PATIENT|CLIENT)/i);
+    if (roleOrDialogue > 0) {
+      answer = answer.slice(0, roleOrDialogue).trim(); 
+  }
+    answer = answer.split('\n\n')[0].trim();
     res.json({ answer, contextDocs: docs }); //Send answer + the passages we used
   } catch (err) {
     console.error('ragChat ERROR', err);
