@@ -2,8 +2,19 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
 import HealthMetric from '../models/HealthMetric.js';
+import RateLimit from 'express-rate-limit';
 
 const router = express.Router();
+
+// Rate limiter: maximum of 100 requests per 15 minutes
+const limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+  message: { message: 'Too many requests, please try again later.' }
+});
+
+// Apply rate limiter to all /health-metrics routes
+router.use('/health-metrics', limiter);
 
 // GET route to fetch all health metrics for the logged-in user
 router.get('/health-metrics', auth, async (req, res) => {
