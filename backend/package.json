@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev:qa": "node scripts/generateQAPairs.js",
+    "dev:test": "node scripts/testQAGen.js",
+    "dev:gemtest": "node scripts/gemTestQAGen.js"
   },
   "keywords": [],
   "author": "",
@@ -19,13 +21,16 @@
     "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
+    "fs-extra": "^11.3.0",
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.29",
     "mongodb": "^6.15.0",
-    "mongoose": "^8.13.2"
+    "mongoose": "^8.16.1",
+    "ollama": "^0.5.16"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

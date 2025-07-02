@@ -9,17 +9,18 @@
 // Edited by: Viktor Gjorgjevski
 // Date: 06/13/2025
 // added link to button for feedback page
+// Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality. Added improvements to UI repsonsiveness.
 
 
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography, message } from 'antd'
-import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined } from '@ant-design/icons'
+import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown } from 'antd'
+import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import Profile from './profile' // Checked by Mohammad, 06/18/2025
+import Profile from './profile'
 import Dashboard from './dashboard'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import { getConversations, addConversation, Conversation, UserData } from '../models'
+import { getConversations, addConversation, updateConversationTitle, deleteConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
 import ChatModeToggle from './ChatModeToggle';
@@ -42,6 +43,13 @@ const Chatbot = () => {
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
+  const [editingChatId, setEditingChatId] = useState<string | null>(null)
+  const [editingChatTitle, setEditingChatTitle] = useState('')  
+  const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+
+  // Responsive breakpoint for sidebar (adjust this value as needed)
+  const SIDEBAR_BREAKPOINT = 768 // pixels
 
 
   // Check login status on initial render
@@ -68,6 +76,28 @@ const Chatbot = () => {
   checkLoginStatus();
 }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth
+      setWindowWidth(newWidth)
+      
+      // Auto-collapse sidebar when window is too small, unless manually controlled
+      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
+        setCollapsed(true)
+      } else if (newWidth >= SIDEBAR_BREAKPOINT && collapsed && !isManuallyCollapsed) {
+        setCollapsed(false)
+      }
+    }
+
+    // Add event listener
+    window.addEventListener('resize', handleResize)
+    
+    // Check initial window size
+    handleResize()
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize)
+  }, [collapsed, isManuallyCollapsed])
 
   // Load theme and font size from localStorage on initial render
   useEffect(() => {
@@ -161,6 +191,72 @@ const Chatbot = () => {
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
 
+  const handleSidebarToggle = (newCollapsedState: boolean) => {
+    setCollapsed(newCollapsedState)
+    setIsManuallyCollapsed(newCollapsedState)
+    
+    // If user manually expands on small screen, respect their choice temporarily
+    // But reset manual override when they resize to large screen and back
+    if (!newCollapsedState && windowWidth < SIDEBAR_BREAKPOINT) {
+      // User wants to expand on small screen - allow it but reset manual flag on next resize
+      setTimeout(() => {
+        if (window.innerWidth < SIDEBAR_BREAKPOINT) {
+          setIsManuallyCollapsed(false)
+        }
+      }, 100)
+    }
+  }
+
+  const handleEditChat = (chatId: string, currentTitle: string) => {
+    setEditingChatId(chatId)
+    setEditingChatTitle(currentTitle)
+  }
+
+  const handleSaveEditChat = () => {
+    if (editingChatId && editingChatTitle.trim()) {
+      updateConversationTitle(editingChatId, editingChatTitle.trim())
+      const userId = userData?.email || 'default-user'
+      setChatHistory(getConversations(userId))
+      setEditingChatId(null)
+      setEditingChatTitle('')
+      message.success('Chat name updated successfully!')
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingChatId(null)
+    setEditingChatTitle('')
+  }
+
+  const handleDeleteChat = (chatId: string) => {
+    Modal.confirm({
+      title: 'Delete Chat',
+      content: 'Are you sure you want to delete this chat? This action cannot be undone.',
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: () => {
+        deleteConversation(chatId)
+        const userId = userData?.email || 'default-user'
+        const updatedHistory = getConversations(userId)
+        setChatHistory(updatedHistory)
+        
+        // If deleted chat was selected, select another chat or create new one
+        if (selectedChatId === chatId) {
+          if (updatedHistory.length > 0) {
+            setSelectedChatId(updatedHistory[0].conversationId)
+          } else {
+            // Create a new chat if no chats left
+            const newId = addConversation(userId, 'Chat 1')
+            setChatHistory(getConversations(userId))
+            setSelectedChatId(newId)
+          }
+        }
+        message.success('Chat deleted successfully!')
+      }
+    })
+  }
+
   //// Prev code:
   // const handleNewChat = () => {
   //   const wallet = walletAddress || 'default-wallet'
@@ -183,16 +279,51 @@ const Chatbot = () => {
       >
         {collapsed ? (
           <div style={styles.collapsedMenu}>
-            <Button icon={<MenuOutlined />} onClick={() => setCollapsed(false)} style={styles.transparentBtn} />
+            <Button 
+              icon={<MenuOutlined />} 
+              onClick={() => handleSidebarToggle(false)} 
+              style={styles.collapsedIconBtn(currentTheme)}
+              className="collapsed-sidebar-icon"
+            />
+            <div style={styles.collapsedIconContainer}>
+              <Button 
+                icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}
+                onClick={() => router.push('/profile')}
+                style={styles.collapsedIconBtn(currentTheme)}
+                className="collapsed-sidebar-icon"
+                title="Profile"
+              />
+              <Button 
+                icon={<SettingOutlined />}
+                onClick={() => router.push('/settings')}
+                style={styles.collapsedIconBtn(currentTheme)}
+                className="collapsed-sidebar-icon"
+                title="Settings"
+              />
+              <Button 
+                icon={<CameraOutlined />}
+                onClick={() => setDashboardVisible(true)}
+                style={styles.collapsedIconBtn(currentTheme)}
+                className="collapsed-sidebar-icon"
+                title="Dashboard"
+              />
+              <Button 
+                icon={<BulbOutlined />}
+                onClick={() => router.push('/feedback')}
+                style={styles.collapsedIconBtn(currentTheme)}
+                className="collapsed-sidebar-icon"
+                title="Feedback"
+              />
+            </div>
           </div>
         ) : (
           <div>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'space-between' }}>
-              <div>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 <div style={styles.avatarContainer}>
                   <Button
                     icon={<MenuOutlined />}
-                    onClick={() => setCollapsed(true)}
+                    onClick={() => handleSidebarToggle(true)}
                     style={styles.menuButton}
                   />
                   <div onClick={() => router.push('/profile')} style={{ cursor: 'pointer' }}>
@@ -252,38 +383,99 @@ const Chatbot = () => {
                     )}
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                  <div style={styles.menuSection}>
-                    <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
-                    <Text strong style={styles.chatHistoryText(currentTheme)}>Chat History</Text>
-                  </div>
-                  <div style={{ flexGrow: 1 }} />
-                  <div style={styles.footerButtons}>
+                
+                <div style={styles.menuSection}>
+                  <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+                  <Text strong style={styles.chatHistoryText(currentTheme)}>Chat History</Text>
+                </div>
+                
+                <div
+                  className="chat-list-container"
+                  style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '0 16px',
+                    minHeight: 0,
+                    maxHeight: 'calc(100vh - 280px)' // Ensure space for bottom buttons
+                  }}
+                >
+                  {chatHistory.map((chat) => (
                     <div
+                      key={chat.conversationId}
                       style={{
-                        flexGrow: 1,
-                        maxHeight: '400px',
-                        overflowY: chatHistory.length > 10 ? 'auto' : 'visible',
-                        padding: '0 16px 16px 16px'
+                        ...styles.chatItem,
+                        backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
                       }}
                     >
-                      {chatHistory.map((chat) => (
-                        <div
-                          key={chat.conversationId}
-                          style={{
-                            ...styles.chatItem,
-                            backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent'
+                      {editingChatId === chat.conversationId ? (
+                        <Input
+                          value={editingChatTitle}
+                          onChange={(e) => setEditingChatTitle(e.target.value)}
+                          onPressEnter={handleSaveEditChat}
+                          onBlur={handleSaveEditChat}
+                          autoFocus
+                          size="small"
+                          style={{ 
+                            flex: 1, 
+                            marginRight: 8,
+                            backgroundColor: currentTheme === 'dark' ? '#3a3a3a' : '#ffffff',
+                            color: currentTheme === 'dark' ? '#ffffff' : '#000000'
                           }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              handleCancelEdit()
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{ flex: 1, cursor: 'pointer' }}
                           onClick={() => setSelectedChatId(chat.conversationId)}
                         >
                           {chat.summary || chat.title}
                         </div>
-                      ))}
+                      )}
+                      <Dropdown
+                        menu={{
+                          items: [
+                            {
+                              key: 'edit',
+                              label: 'Rename',
+                              icon: <EditOutlined />,
+                              onClick: () => handleEditChat(chat.conversationId, chat.title)
+                            },
+                            {
+                              key: 'delete',
+                              label: 'Delete',
+                              icon: <DeleteOutlined />,
+                              danger: true,
+                              onClick: () => handleDeleteChat(chat.conversationId)
+                            }
+                          ]
+                        }}
+                        placement="bottomRight"
+                        trigger={['click']}
+                      >
+                        <Button
+                          type="text"
+                          icon={<MoreOutlined />}
+                          size="small"
+                          style={{ 
+                            color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+                            opacity: 0.7
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </Dropdown>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
-              {/* Bottom buttons */}
+              
+              {/* Bottom buttons - always visible */}
               <div style={styles.bottomButtons}>
                 <Link href="/profile">
                   <Button style={buttonStyle} icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}>
@@ -304,7 +496,7 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
-       <Layout style={styles.contentArea(collapsed, currentTheme)}>
+       <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
             <ChatGPT
@@ -337,7 +529,7 @@ const Chatbot = () => {
          </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
+      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />      
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
     </Layout>
@@ -363,14 +555,37 @@ const styles = {
     left: 0,
     top: 0,
     bottom: 0,
-    zIndex: 1000
+    zIndex: 1000,
+    transition: 'width 0.3s ease' // Smooth transition for width changes
   }),
   collapsedMenu: {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
-    paddingTop: '8px'
+    paddingTop: '8px',
+    height: '100vh',
+    gap: '8px'
   },
+  collapsedIconContainer: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '12px',
+    marginTop: '16px'
+  },
+  collapsedIconBtn: (theme: 'default' | 'dark') => ({
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: theme === 'dark' ? '#ffffff' : '#000000',
+    padding: '8px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '40px',
+    height: '40px',
+    cursor: 'pointer'
+  }),
   transparentBtn: {
     backgroundColor: 'transparent',
     border: 'none'
@@ -428,18 +643,14 @@ const styles = {
     cursor: 'pointer',
     color: '#203625'
   },
-  footerButtons: {
-    padding: '16px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '12px'
-  },
   bottomButtons: {
     padding: '16px',
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '12px',
-    marginBottom: '60px'
+    marginBottom: '60px',
+    flexShrink: 0, // Prevent shrinking
+    backgroundColor: 'inherit' // Inherit background to match sidebar
   },
   logoutBtn: {
     background: 'none',
@@ -455,7 +666,8 @@ const styles = {
   },
   contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
     marginLeft: collapsed ? 48 : 250,
-    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF'
+    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
+    transition: 'margin-left 0.3s ease' // Smooth transition for responsive behavior
   }),
   content: {
     padding: '24px',

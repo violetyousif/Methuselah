@@ -98,6 +98,18 @@ footer {
   padding-bottom: 16px;
 }
 
+/* Collapsed sidebar icon styles */
+.collapsed-sidebar-icon {
+  transition: all 0.3s ease !important;
+}
+.collapsed-sidebar-icon:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.1);
+}
+[data-theme='dark'] .collapsed-sidebar-icon:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
 /* Avatar display */
 .meta.assistant .avatar img {
   width: 40px;
@@ -468,5 +480,82 @@ body[data-fontsize='extra-large'] .ant-select-selector {
 [data-theme='extPages']:hover {
   color: #203625 !important;
   text-decoration: underline;
+}
+
+/* Chat list scrollbar styles - Mohammad Hoque, 7/1/2025 */
+.chat-list-container {
+  /* Custom scrollbar for webkit browsers (Chrome, Safari, Edge) */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme scrollbar adjustments */
+body[data-theme='dark'] .chat-list-container {
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Responsive sidebar styles - Mohammad Hoque, 7/1/2025 */
+@media (max-width: 768px) {
+  /* Ensure content area adjusts properly on small screens */
+  .content-area-responsive {
+    margin-left: 48px !important;
+    transition: margin-left 0.3s ease;
+  }
+  
+  /* Make sidebar icons more touch-friendly on mobile */
+  .collapsed-sidebar-icon {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    font-size: 18px !important;
+  }
+  
+  /* Adjust hamburger button for better mobile UX */
+  .hamburger-button {
+    padding: 8px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Smooth transition for larger screens */
+  .content-area-responsive {
+    transition: margin-left 0.3s ease;
+  }
+  
+  /* Reset touch-friendly sizing on desktop */
+  .collapsed-sidebar-icon {
+    min-width: auto;
+    min-height: auto;
+  }
 }
 
