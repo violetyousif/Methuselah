@@ -9,6 +9,12 @@ const ConversationSchema = new mongoose.Schema({
     content: String,
     tokenCount: Number
   },
+  messages: [{
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // optional
+    sender: { type: String, enum: ['user', 'AI'], required: true },
+    text: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now }
+  }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
