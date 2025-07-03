@@ -72,8 +72,29 @@ const legendStyle = { color: axisColor };
 
 
 React.useEffect(() => {
-  const storedTheme = localStorage.getItem('theme') || 'default'
-  setCurrentTheme(storedTheme as 'default' | 'dark')
+  const loadPreferences = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/settings', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        const settings = await res.json();
+        const theme = settings.preferences?.theme || 'default';
+        setCurrentTheme(theme as 'default' | 'dark');
+      } else {
+        setCurrentTheme('default');
+      }
+    } catch (error) {
+      console.error('Error loading preferences:', error);
+      setCurrentTheme('default');
+    }
+  };
+
+  if (visible) {
+    loadPreferences();
+  }
 }, [visible])
   const styles = getStyles(currentTheme)
 const [metrics, setMetrics] = React.useState<Record<string, any>>({});

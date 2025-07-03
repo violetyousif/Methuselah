@@ -109,13 +109,39 @@ const Chatbot = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [collapsed, isManuallyCollapsed])
 
-  // Load theme and font size from localStorage on initial render
+  // Load theme and font size from database on initial render
   useEffect(() => {
-    const theme = localStorage.getItem('theme') || 'default'
-    const fontSize = localStorage.getItem('fontSize') || 'regular'
-    document.body.dataset.theme = theme
-    document.body.dataset.fontsize = fontSize
-    setCurrentTheme(theme as 'default' | 'dark')
+    const loadPreferences = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/settings', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (res.ok) {
+          const settings = await res.json();
+          const theme = settings.preferences?.theme || 'default';
+          const fontSize = settings.preferences?.fontSize || 'regular';
+          
+          document.body.dataset.theme = theme;
+          document.body.dataset.fontsize = fontSize;
+          setCurrentTheme(theme as 'default' | 'dark');
+        } else {
+          // Fallback to defaults if can't load from database
+          document.body.dataset.theme = 'default';
+          document.body.dataset.fontsize = 'regular';
+          setCurrentTheme('default');
+        }
+      } catch (error) {
+        console.error('Error loading preferences:', error);
+        // Fallback to defaults
+        document.body.dataset.theme = 'default';
+        document.body.dataset.fontsize = 'regular';
+        setCurrentTheme('default');
+      }
+    };
+
+    loadPreferences();
   }, [])
 
   // Load user data and chat history (updated for session-based auth)
@@ -394,16 +420,11 @@ const Chatbot = () => {
                               setIsLoggedIn(false);
                               setUserData(null);
                               
-                              // Reset theme to light mode
-                              localStorage.removeItem('theme');
+                              // Reset theme to light mode for public pages
                               document.body.dataset.theme = 'default';
-                              document.body.className = document.body.className.replace(/theme-\w+/g, '');
+                              document.body.dataset.fontsize = 'regular';
                               
-                              // Clear any other user-specific localStorage data
-                              localStorage.removeItem('userData');
-                              localStorage.removeItem('userPreferences');
-                              
-                              // Force light mode styles
+                              // Force light mode styles for public pages
                               document.body.style.backgroundColor = '#ffffff';
                               document.body.style.color = '#333333';
                               

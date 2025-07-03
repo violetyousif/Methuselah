@@ -51,15 +51,17 @@ export default function Settings() {
           document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
         } else {
           console.warn('Failed to load settings from backend, using defaults');
-          // Don't fallback to localStorage - use defaults instead to ensure clean state
           setFontSize('regular');
           setTheme('default');
+          document.body.dataset.theme = 'default';
+          document.body.dataset.fontsize = 'regular';
         }
       } catch (error) {
         console.error('Error loading settings:', error);
-        // Don't fallback to localStorage - use defaults instead to ensure clean state
         setFontSize('regular');
         setTheme('default');
+        document.body.dataset.theme = 'default';
+        document.body.dataset.fontsize = 'regular';
       }
     };
 
@@ -127,9 +129,9 @@ export default function Settings() {
 
     if (res.ok) {
       message.success('Settings updated successfully!');
-      // Update localStorage for theme and fontSize for immediate UI application
-      localStorage.setItem('theme', theme);
-      localStorage.setItem('fontSize', fontSize);
+      // Apply updated preferences immediately to UI
+      document.body.dataset.theme = theme;
+      document.body.dataset.fontsize = fontSize;
     } else {
       message.error(data.message || 'Failed to update settings');
     }
