@@ -39,7 +39,7 @@ import feedbackRoutes from './routes/feedback.js';
 import ragSearch from './routes/ragSearch.js';
 import ragChat   from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
-import conversations from './routes/conversations.js';
+import userChatHist from './routes/userChatHist.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -88,7 +88,7 @@ app.use('/api', feedbackRoutes);
 app.use('/api', ragSearch);
 app.use('/api', ragChat);
 app.use('/api', healthMetrics);
-app.use('/api', conversations);
+app.use('/api', userChatHist);
 
 
 
