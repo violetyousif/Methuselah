@@ -32,8 +32,12 @@ function register() {
   const [form] = Form.useForm();
   const [termsVisible, setTermsVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  //const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const router = useRouter();
+
+  // Force light mode for register page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
 
   const onFinish = async (values: any) => {
     try {
@@ -219,7 +223,7 @@ export default register;
 
 const styles = {
   page: {
-    backgroundColor: '#1D1E2C',
+    backgroundColor: '#F1F1EB', // Changed from dark '#1D1E2C' to light for consistency
     display: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',
@@ -237,8 +241,9 @@ const styles = {
     maxWidth: 400,
     margin: '1rem auto',
     padding: '2rem',
-    backgroundColor: '#F1F1EB',
-    borderRadius: '20px',
+    backgroundColor: '#A0B6AA',
+    borderRadius: '2rem',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
   },
   rowSpacing: {

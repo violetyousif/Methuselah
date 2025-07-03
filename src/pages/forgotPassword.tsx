@@ -1,12 +1,17 @@
 // Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
 function ForgotPassword() {
   const [form] = Form.useForm();
+
+  // Force light mode for forgot password page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
 
   const onFinish = async (values: any) => {
     try {

@@ -25,11 +25,11 @@ function Login() {
   const [loginError, setLoginError] = useState<{ email?: string; password?: string }>({});
 
 
-  // Load theme from <body data-theme="...">
-  // useEffect(() => {
-  //   const currentTheme = document.body.dataset.theme as 'default' | 'dark' || 'default';
-  //   setTheme(currentTheme);
-  // }, []);
+  // Force light mode for login page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+    setTheme('default');
+  }, []);
 
   const onFinish = async (values: any) => {
     try {
@@ -152,7 +152,7 @@ export default Login;
 
 const styles = {
   page: {
-    backgroundColor: '#1D1E2C',
+    backgroundColor: '#F1F1EB', // Changed from dark '#1D1E2C' to light for consistency
     display: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',
@@ -177,8 +177,9 @@ const styles = {
     width: '100%', // Make it fully responsive
     margin: '1rem auto',
     padding: '2rem',
-    backgroundColor: '#F1F1EB',
-    borderRadius: '20px',
+    backgroundColor: '#A0B6AA',
+    borderRadius: '2rem',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
     '@media (max-width: 480px)': {
       margin: '0.5rem auto',
