@@ -2,6 +2,8 @@
 /* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
 /* Modified: Violet Yousif (6/2/25), added new styling for global footer */
 /* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
+/* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
+/* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
 
 /* Modal Styling - Dark themed */
 .custom-modal .ant-modal-content {
@@ -50,6 +52,42 @@ body[data-fontsize='extra-large'] { font-size: 18px; }
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes fadeInFromLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to   { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInFromLeft {
+  from { 
+    transform: translateX(-100%); 
+  }
+  to   { 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes pulse {
+  0% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); 
+  }
+  50% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.1); 
+  }
+  100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); 
+  }
+}
+
 .fade-in {
   animation: fadeIn 1.5s ease-in-out;
 }
@@ -101,14 +139,46 @@ footer {
 
 /* Collapsed sidebar icon styles */
 .collapsed-sidebar-icon {
-  transition: all 0.3s ease !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  position: relative;
+  overflow: hidden;
 }
+
 .collapsed-sidebar-icon:hover {
   background-color: rgba(255, 255, 255, 0.2) !important;
-  transform: scale(1.1);
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
+
+.collapsed-sidebar-icon:active {
+  transform: scale(0.95) !important;
+  transition: all 0.1s ease !important;
+}
+
 [data-theme='dark'] .collapsed-sidebar-icon:hover {
   background-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Sidebar transition enhancement */
+.ant-layout-sider {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.ant-layout-sider-collapsed {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Enhanced sidebar content fade in/out */
+.sidebar-content {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-content.hidden {
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
 /* Avatar display */
@@ -457,6 +527,19 @@ body[data-theme='dark'] .chat-list-container {
     min-width: 40px !important;
     min-height: 40px !important;
   }
+  
+  /* Mobile hamburger button visual feedback */
+  .collapsed-sidebar-icon.hamburger-mobile {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    animation: pulse 2s infinite;
+  }
+  
+  .collapsed-sidebar-icon.hamburger-mobile:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.05);
+    animation: none;
+  }
 }
 
 @media (min-width: 769px) {
@@ -487,5 +570,82 @@ html, body {
 /* Remove any fixed height constraints that might cause double scrollbars */
 .ant-layout {
   min-height: 100vh;
+}
+
+/* Additional global responsive utilities */
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .container-responsive {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Form responsive improvements */
+@media (max-width: 480px) {
+  .ant-form-item-label > label {
+    font-size: 14px !important;
+  }
+  
+  .ant-input,
+  .ant-input-password,
+  .ant-select-selector {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important; /* Touch-friendly */
+  }
+  
+  .ant-btn {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Modal responsive improvements */
+@media (max-width: 768px) {
+  .ant-modal {
+    width: 95% !important;
+    max-width: none !important;
+  }
+  
+  .custom-modal .ant-modal-content,
+  .custom-dashboard-modal .ant-modal-content {
+    margin: 0 8px;
+  }
+}
+
+/* Responsive text sizing */
+@media (max-width: 480px) {
+  h1 { font-size: 1.5rem !important; }
+  h2 { font-size: 1.3rem !important; }
+  h3 { font-size: 1.1rem !important; }
+}
+
+/* SendBar responsive input styling */
+.sendbar-input-responsive {
+  font-size: 16px;
+  transition: font-size 0.2s ease;
+}
+
+@media (max-width: 600px) {
+  .sendbar-input-responsive {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sendbar-input-responsive {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 400px) {
+  .sendbar-input-responsive {
+    font-size: 12px;
+  }
 }
 

@@ -1,4 +1,5 @@
 /* Mohammad Hoque, 7/1/2025, Fixed double scrollbar issue by removing internal container scrolling and allowing natural page scrolling */
+/* Mohammad Hoque, 7/3/2025, Added responsive design for chat messages and improved mobile chat bubble sizing */
 
 @border-radius: 1rem;
 
@@ -10,6 +11,12 @@
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 180px); // Minimum height to account for header and footer
+  
+  @media (max-width: 768px) {
+    max-width: 100%;
+    min-height: calc(100vh - 120px);
+  }
+  
   .message-list {
     flex: 1;
     padding-bottom: 16px; // Add some padding at the bottom for spacing
@@ -34,6 +41,17 @@
       padding: 0.75rem 1rem;
       border-radius: @border-radius;
       background-color: #2a2a2a;
+      
+      @media (max-width: 768px) {
+        max-width: 85%;
+        padding: 0.5rem 0.75rem;
+      }
+      
+      @media (max-width: 480px) {
+        max-width: 95%;
+        padding: 0.5rem;
+      }
+      
       &.user {
         background-color: #4b5563;
         flex-direction: row-reverse;

@@ -11,6 +11,8 @@
 // added link to button for feedback page
 // Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality. Added improvements to UI repsonsiveness.
 // Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
+// Mohammad Hoque, 7/3/2025, Enhanced mobile sidebar functionality with manual toggle override, overlay, and improved responsive behavior
+// Mohammad Hoque, 7/3/2025, Added smooth sidebar collapse/expand animations with eased transitions, hover effects, and mobile pulse indicators
 
 
 import ChatGPT from '@/components/ChatGPT'
@@ -89,8 +91,8 @@ const Chatbot = () => {
       const newWidth = window.innerWidth
       setWindowWidth(newWidth)
       
-      // Auto-collapse sidebar when window is too small, unless manually controlled
-      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
+      // Only auto-collapse sidebar when window is too small AND user hasn't manually controlled it recently
+      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed && !isManuallyCollapsed) {
         setCollapsed(true)
       } else if (newWidth >= SIDEBAR_BREAKPOINT && collapsed && !isManuallyCollapsed) {
         setCollapsed(false)
@@ -216,18 +218,12 @@ const Chatbot = () => {
 
   const handleSidebarToggle = (newCollapsedState: boolean) => {
     setCollapsed(newCollapsedState)
-    setIsManuallyCollapsed(newCollapsedState)
+    setIsManuallyCollapsed(true) // Mark as manually controlled
     
-    // If user manually expands on small screen, respect their choice temporarily
-    // But reset manual override when they resize to large screen and back
-    if (!newCollapsedState && windowWidth < SIDEBAR_BREAKPOINT) {
-      // User wants to expand on small screen - allow it but reset manual flag on next resize
-      setTimeout(() => {
-        if (window.innerWidth < SIDEBAR_BREAKPOINT) {
-          setIsManuallyCollapsed(false)
-        }
-      }, 100)
-    }
+    // Reset the manual override after some time to allow automatic behavior later
+    setTimeout(() => {
+      setIsManuallyCollapsed(false)
+    }, 5000) // Reset after 5 seconds
   }
 
   const handleEditChat = (chatId: string, currentTitle: string) => {
@@ -325,7 +321,8 @@ const Chatbot = () => {
               icon={<MenuOutlined />} 
               onClick={() => handleSidebarToggle(false)} 
               style={styles.collapsedIconBtn(currentTheme)}
-              className="collapsed-sidebar-icon"
+              className="collapsed-sidebar-icon hamburger-mobile"
+              title="Open Menu"
             />
             <div style={styles.collapsedIconContainer}>
               <Button 
@@ -359,7 +356,7 @@ const Chatbot = () => {
             </div>
           </div>
         ) : (
-          <div>
+          <div className="sidebar-content" style={{ animation: 'slideInFromLeft 0.4s ease-out' }}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 <div style={styles.avatarContainer}>
@@ -547,6 +544,15 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
+      
+      {/* Overlay for mobile when sidebar is open */}
+      {!collapsed && windowWidth < SIDEBAR_BREAKPOINT && (
+        <div 
+          style={styles.mobileOverlay}
+          onClick={() => handleSidebarToggle(true)}
+        />
+      )}
+      
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
@@ -618,7 +624,12 @@ const styles = {
     top: 0,
     bottom: 0,
     zIndex: 1000,
-    transition: 'width 0.3s ease' // Smooth transition for width changes
+    transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition
+    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+    '@media (max-width: 768px)': {
+      zIndex: 1001, // Higher z-index on mobile to appear above content
+      boxShadow: '2px 0 20px rgba(0, 0, 0, 0.3)' // Stronger shadow on mobile
+    }
   }),
   collapsedMenu: {
     display: 'flex',
@@ -626,14 +637,18 @@ const styles = {
     alignItems: 'center',
     paddingTop: '8px',
     height: '100vh',
-    gap: '8px'
+    gap: '8px',
+    opacity: 1,
+    transform: 'translateX(0)',
+    transition: 'all 0.3s ease-in-out'
   },
   collapsedIconContainer: {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     gap: '12px',
-    marginTop: '16px'
+    marginTop: '16px',
+    animation: 'fadeInFromLeft 0.4s ease-out'
   },
   collapsedIconBtn: (theme: 'default' | 'dark') => ({
     backgroundColor: 'transparent',
@@ -646,7 +661,13 @@ const styles = {
     justifyContent: 'center',
     width: '40px',
     height: '40px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transform: 'scale(1)',
+    '&:hover': {
+      transform: 'scale(1.1)',
+      backgroundColor: 'rgba(255, 255, 255, 0.15)'
+    }
   }),
   transparentBtn: {
     backgroundColor: 'transparent',
@@ -682,7 +703,14 @@ const styles = {
     backgroundColor: theme === 'dark' ? '#318182' : '#F1F1EA',
     color: theme === 'dark' ? '#ffffff' : '#000000',
     border: 'none',
-    borderRadius: '1rem'
+    borderRadius: '1rem',
+    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transform: 'translateX(0)',
+    '&:hover': {
+      backgroundColor: theme === 'dark' ? '#256c6f' : '#e0e0e0',
+      transform: 'translateX(4px)',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+    }
   }),
   smallBtn: (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#F1F1EA',
@@ -729,9 +757,12 @@ const styles = {
   contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
     marginLeft: collapsed ? 48 : 250,
     backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
-    transition: 'margin-left 0.3s ease', // Smooth transition for responsive behavior
+    transition: 'margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition matching sidebar
     height: '100vh',
-    overflow: 'hidden' // Let the content handle its own scrolling
+    overflow: 'hidden', // Let the content handle its own scrolling
+    '@media (max-width: 768px)': {
+      marginLeft: 48 // Always use collapsed margin on mobile
+    }
   }),
   content: {
     padding: '24px',
@@ -740,7 +771,25 @@ const styles = {
     width: '100%',
     paddingBottom: '60px',
     height: '100%',
-    overflow: 'auto' // Enable scrolling for the content area
+    overflow: 'auto', // Enable scrolling for the content area
+    '@media (max-width: 768px)': {
+      padding: '16px'
+    },
+    '@media (max-width: 480px)': {
+      padding: '12px'
+    }
+  },
+  mobileOverlay: {
+    position: 'fixed' as 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
+    display: 'block',
+    animation: 'fadeIn 0.3s ease-out',
+    backdropFilter: 'blur(2px)'
   },
   footer: {
     position: 'fixed',

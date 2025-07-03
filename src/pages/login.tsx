@@ -164,15 +164,27 @@ const styles = {
     width: '100%',
     marginLeft: 'auto',
     marginRight: 'auto',
-    padding: '6rem 0',
+    padding: '6rem 1rem', // Reduced side padding for mobile
+    '@media (max-width: 768px)': {
+      padding: '2rem 1rem',
+    },
+    '@media (max-width: 480px)': {
+      padding: '1rem 0.5rem',
+    }
   },
   card: {
     maxWidth: 400,
+    width: '100%', // Make it fully responsive
     margin: '1rem auto',
     padding: '2rem',
     backgroundColor: '#F1F1EB',
     borderRadius: '20px',
     paddingBottom: '24px',
+    '@media (max-width: 480px)': {
+      margin: '0.5rem auto',
+      padding: '1.5rem',
+      borderRadius: '16px',
+    }
   },
   rowSpacing: {
     marginBottom: '0.6px'

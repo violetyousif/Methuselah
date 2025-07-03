@@ -1,3 +1,4 @@
+/* Mohammad Hoque, 7/3/2025, Added responsive design improvements for mobile and tablet devices including responsive typography and touch-friendly buttons */
 .landing {
   height: 100vh;
   width: 100%;
@@ -21,10 +22,38 @@
   animation: fadeIn 2s ease;
 }
 
+@media (max-width: 768px) {
+  .overlay {
+    padding: 24px;
+    width: 95%;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 16px;
+    width: 98%;
+    border-radius: 12px;
+  }
+}
+
 .title {
   font-size: 2.5rem;
   margin-bottom: 12px;
   color: #1D1E2C;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.8rem;
+  }
 }
 
 .name {
@@ -67,6 +96,17 @@
   text-decoration: none;
   font-size: 1rem;
   border-radius: 4px;
+  margin: 0 8px;
+}
+
+@media (max-width: 480px) {
+  .navButton {
+    display: block;
+    margin: 8px 0;
+    text-align: center;
+    padding: 8px 16px;
+    min-height: 44px; /* Touch-friendly size */
+  }
 }
 .navButton:hover {
   /* background-color: #3a3a3a; */

@@ -1,4 +1,4 @@
-// Mohammad Hoque, 7/3/2025, Created conversation management routes for CRUD operations on conversation collection
+// Mohammad Hoque, 7/3/2025, Created conversation management routes on conversation collection
 
 import express from 'express';
 import rateLimit from 'express-rate-limit';
