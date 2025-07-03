@@ -15,7 +15,7 @@
 // Date: 06/23/2025
 // Added RAG and LLM
 
-
+import healthMetricsInsightsRoute from './routes/healthMetricsInsights.js';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
@@ -86,6 +86,7 @@ app.use('/api', userProfile);
 app.use('/api', feedbackRoutes);
 app.use('/api', ragSearch);
 app.use('/api', ragChat);
+app.use('/api', healthMetricsInsightsRoute);
 
 
 
