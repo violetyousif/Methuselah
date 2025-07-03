@@ -3,10 +3,12 @@ import mongoose from 'mongoose';
 
 const HealthMetricSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  metric: { type: String, required: true }, // e.g., "sleep", "exercise"
-  value: { type: Number, required: true },
-  unit: { type: String }, // optional: e.g. "lbs", "hours"
-  recordedAt: { type: Date, default: Date.now }
+  weight: { type: Number },
+  sleepHours: { type: Number },
+  activityLevel: { type: String },
+  lastUpdated: { type: Date },
+  source: { type: String, default: 'profile' }
 });
 
-export default mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');
+export default mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics'); // 'HealthMetrics' collection in MongoDB
+export { HealthMetricSchema }; 
