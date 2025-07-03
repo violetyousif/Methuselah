@@ -1,12 +1,12 @@
 // Conversation.js: defines the structure of a Conversation call in MongoDB.
+// Mohammad Hoque, 7/3/2025, Removed unique constraint on userId to allow multiple conversations per user
 import mongoose from 'mongoose';
 
 const ConversationSchema = new mongoose.Schema({
   userId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
-    required: true,
-    unique: true // ensures one document per user
+    required: true
   },
   title: { type: String },
   summary: {
