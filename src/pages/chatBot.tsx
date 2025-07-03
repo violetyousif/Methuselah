@@ -10,10 +10,11 @@
 // Date: 06/13/2025
 // added link to button for feedback page
 // Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality. Added improvements to UI repsonsiveness.
+// Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
 
 
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown } from 'antd'
+import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import Profile from './profile'
@@ -24,6 +25,7 @@ import { getConversations, addConversation, updateConversationTitle, deleteConve
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
 import ChatModeToggle from './ChatModeToggle';
+import DeleteModal from '@/components/DeleteModal';
 
 
 
@@ -47,6 +49,12 @@ const Chatbot = () => {
   const [editingChatTitle, setEditingChatTitle] = useState('')  
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+  const [conversationsLoading, setConversationsLoading] = useState(false)
+  
+  // Custom modal state
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Responsive breakpoint for sidebar (adjust this value as needed)
   const SIDEBAR_BREAKPOINT = 768 // pixels
@@ -110,21 +118,35 @@ const Chatbot = () => {
 
   // Load user data and chat history (updated for session-based auth)
   useEffect(() => {
-    // User data is already fetched in the checkLoginStatus function above
-    // No need for separate fetch here since checkAuth already returns user data
-    
-    // Use session-based identifier for chat history (use email or fallback to default)
-    const userId = userData?.email || 'default-user'
-    const convs = getConversations(userId)
-    if (convs.length === 0) {
-      const newId = addConversation(userId, 'Chat 1')
-      setChatHistory(getConversations(userId))
-      setSelectedChatId(newId)
-      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
-    } else {
-      setChatHistory(convs)
-      setSelectedChatId(convs[0].conversationId)
+    const loadChatHistory = async () => {
+      // User data is already fetched in the checkLoginStatus function above
+      // No need for separate fetch here since checkAuth already returns user data
+      
+      if (!isLoggedIn || !userData?.email) return
+      
+      setConversationsLoading(true)
+      try {
+        // Use session-based identifier for chat history (use email or fallback to default)
+        const userId = userData?.email || 'default-user'
+        const convs = await getConversations(userId)
+        if (convs.length === 0) {
+          const newId = await addConversation(userId, 'Chat 1')
+          const updatedConvs = await getConversations(userId)
+          setChatHistory(updatedConvs)
+          setSelectedChatId(newId)
+          setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
+        } else {
+          setChatHistory(convs)
+          setSelectedChatId(convs[0].conversationId)
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error)
+      } finally {
+        setConversationsLoading(false)
+      }
     }
+    
+    loadChatHistory()
   }, [isLoggedIn, userData?.email])
 
   //// Prev code:
@@ -182,11 +204,12 @@ const Chatbot = () => {
       message.error('Failed to connect wallet')
   }} */
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
     const userId = userData?.email || 'default-user' // Use email as user identifier, fallback to 'default-user'
     const newChatTitle = `Chat ${chatHistory.length + 1}`
-    const newId = addConversation(userId, newChatTitle)
-    setChatHistory(getConversations(userId))
+    const newId = await addConversation(userId, newChatTitle)
+    const updatedConvs = await getConversations(userId)
+    setChatHistory(updatedConvs)
     setSelectedChatId(newId)
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
@@ -212,11 +235,12 @@ const Chatbot = () => {
     setEditingChatTitle(currentTitle)
   }
 
-  const handleSaveEditChat = () => {
+  const handleSaveEditChat = async () => {
     if (editingChatId && editingChatTitle.trim()) {
-      updateConversationTitle(editingChatId, editingChatTitle.trim())
+      await updateConversationTitle(editingChatId, editingChatTitle.trim())
       const userId = userData?.email || 'default-user'
-      setChatHistory(getConversations(userId))
+      const updatedConvs = await getConversations(userId)
+      setChatHistory(updatedConvs)
       setEditingChatId(null)
       setEditingChatTitle('')
       message.success('Chat name updated successfully!')
@@ -229,32 +253,50 @@ const Chatbot = () => {
   }
 
   const handleDeleteChat = (chatId: string) => {
-    Modal.confirm({
-      title: 'Delete Chat',
-      content: 'Are you sure you want to delete this chat? This action cannot be undone.',
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      onOk: () => {
-        deleteConversation(chatId)
-        const userId = userData?.email || 'default-user'
-        const updatedHistory = getConversations(userId)
-        setChatHistory(updatedHistory)
-        
-        // If deleted chat was selected, select another chat or create new one
-        if (selectedChatId === chatId) {
-          if (updatedHistory.length > 0) {
-            setSelectedChatId(updatedHistory[0].conversationId)
-          } else {
-            // Create a new chat if no chats left
-            const newId = addConversation(userId, 'Chat 1')
-            setChatHistory(getConversations(userId))
-            setSelectedChatId(newId)
-          }
+    setChatToDelete(chatId)
+    setIsDeleteModalVisible(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!chatToDelete) return
+
+    setDeleteLoading(true)
+    try {
+      console.log('Starting delete process for:', chatToDelete);
+      await deleteConversation(chatToDelete)
+      console.log('Delete API call completed');
+      
+      const userId = userData?.email || 'default-user'
+      const updatedHistory = await getConversations(userId)
+      console.log('Updated history length:', updatedHistory.length);
+      setChatHistory(updatedHistory)
+      
+      // If deleted chat was selected, select another chat or create new one
+      if (selectedChatId === chatToDelete) {
+        if (updatedHistory.length > 0) {
+          setSelectedChatId(updatedHistory[0].conversationId)
+        } else {
+          // Create a new chat if no chats left
+          const newId = await addConversation(userId, 'Chat 1')
+          const newConvs = await getConversations(userId)
+          setChatHistory(newConvs)
+          setSelectedChatId(newId)
         }
-        message.success('Chat deleted successfully!')
       }
-    })
+      message.success('Chat deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+      message.error('Failed to delete chat. Please try again.');
+    } finally {
+      setDeleteLoading(false)
+      setIsDeleteModalVisible(false)
+      setChatToDelete(null)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalVisible(false)
+    setChatToDelete(null)
   }
 
   //// Prev code:
@@ -399,7 +441,15 @@ const Chatbot = () => {
                     maxHeight: 'calc(100vh - 280px)' // Ensure space for bottom buttons
                   }}
                 >
-                  {chatHistory.map((chat) => (
+                  {conversationsLoading ? (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                      <Spin size="small" />
+                      <Text style={{ display: 'block', marginTop: 8, color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C' }}>
+                        Loading conversations...
+                      </Text>
+                    </div>
+                  ) : (
+                    chatHistory.map((chat) => (
                     <div
                       key={chat.conversationId}
                       style={{
@@ -471,7 +521,8 @@ const Chatbot = () => {
                         />
                       </Dropdown>
                     </div>
-                  ))}
+                  ))
+                  )}
                 </div>
               </div>
               
@@ -529,7 +580,18 @@ const Chatbot = () => {
          </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />      
+      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
+      
+      {/* Custom confirmation modal for delete operations */}
+      <DeleteModal
+        open={isDeleteModalVisible}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        title="Delete Chat"
+        message="Are you sure you want to delete this chat? This action cannot be undone."
+        loading={deleteLoading}
+      />
+      
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
     </Layout>

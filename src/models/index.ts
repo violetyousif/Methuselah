@@ -2,6 +2,7 @@
 // Violet Yousif, 6/10,2025, Changed the UserData interface to include firstName, lastName instead of name.
 // Mohammad Hoque, 6/18/2025, Added gender to UserData interface.
 // Mohammad Hoque, 7/1/2025, Added functions for updating conversation title and deleting conversations.
+// Mohammad Hoque, 7/3/2025, Integrated backend MongoDB conversation storage with frontend conversation management.
 
 import { ChatRole } from '../components/ChatGPT/interface'
 
@@ -40,52 +41,192 @@ export interface UserData {
 
 let inMemoryConversations: Record<string, Conversation> = {}
 
-export const getConversations = (walletAddress: string): Conversation[] => {
-  return Object.values(inMemoryConversations).filter((conv) => conv.walletAddress === walletAddress)
-}
-
-export const getConversation = (conversationId: string): Conversation | undefined => {
-  return inMemoryConversations[conversationId]
-}
-
-export const addConversation = (walletAddress: string, title: string): string => {
-  const conversationId = Date.now().toString()
-  inMemoryConversations[conversationId] = {
-    conversationId,
-    title,
-    summary: '',
-    walletAddress,
-    messages: [],
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-  return conversationId
-}
-
-export const addMessage = (conversationId: string, role: ChatRole, content: string): void => {
-  const conversation = inMemoryConversations[conversationId]
-  if (conversation) {
-    const message: Message = {
-      messageId: `${conversation.messages.length + 1}`,
-      role,
-      content,
-      timestamp: new Date()
+// Backend API functions for conversation management
+export const getConversations = async (userEmail?: string): Promise<Conversation[]> => {
+  try {
+    const response = await fetch('http://localhost:8080/api/conversations', {
+      method: 'GET',
+      credentials: 'include'
+    })
+    
+    if (response.ok) {
+      const conversations = await response.json()
+      // Update in-memory cache
+      conversations.forEach((conv: Conversation) => {
+        inMemoryConversations[conv.conversationId] = conv
+      })
+      return conversations
+    } else {
+      // Fallback to in-memory if backend fails
+      return Object.values(inMemoryConversations).filter((conv) => conv.walletAddress === (userEmail || 'default-user'))
     }
-    conversation.messages.push(message)
-    conversation.updatedAt = new Date()
+  } catch (error) {
+    console.error('Error fetching conversations from backend:', error)
+    // Fallback to in-memory if backend fails
+    return Object.values(inMemoryConversations).filter((conv) => conv.walletAddress === (userEmail || 'default-user'))
   }
 }
 
-export const updateConversationTitle = (conversationId: string, newTitle: string): void => {
-  const conversation = inMemoryConversations[conversationId]
-  if (conversation) {
-    conversation.title = newTitle
-    conversation.updatedAt = new Date()
+export const getConversation = async (conversationId: string): Promise<Conversation | undefined> => {
+  // Check in-memory cache first
+  if (inMemoryConversations[conversationId]) {
+    return inMemoryConversations[conversationId]
+  }
+  
+  try {
+    const response = await fetch(`http://localhost:8080/api/conversations/${conversationId}`, {
+      method: 'GET',
+      credentials: 'include'
+    })
+    
+    if (response.ok) {
+      const conversation = await response.json()
+      // Update in-memory cache
+      inMemoryConversations[conversation.conversationId] = conversation
+      return conversation
+    } else {
+      return undefined
+    }
+  } catch (error) {
+    console.error('Error fetching conversation from backend:', error)
+    return inMemoryConversations[conversationId]
   }
 }
 
-export const deleteConversation = (conversationId: string): void => {
-  delete inMemoryConversations[conversationId]
+export const addConversation = async (walletAddress: string, title: string): Promise<string> => {
+  try {
+    const response = await fetch('http://localhost:8080/api/conversations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ title })
+    })
+    
+    if (response.ok) {
+      const conversation = await response.json()
+      // Update in-memory cache
+      inMemoryConversations[conversation.conversationId] = conversation
+      return conversation.conversationId
+    } else {
+      throw new Error('Failed to create conversation on backend')
+    }
+  } catch (error) {
+    console.error('Error creating conversation on backend:', error)
+    // Fallback to in-memory creation
+    const conversationId = Date.now().toString()
+    inMemoryConversations[conversationId] = {
+      conversationId,
+      title,
+      summary: '',
+      walletAddress,
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    return conversationId
+  }
+}
+
+export const addMessage = async (conversationId: string, role: ChatRole, content: string): Promise<void> => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        sender: role === ChatRole.User ? 'user' : 'AI',
+        text: content
+      })
+    })
+    
+    if (response.ok) {
+      const message = await response.json()
+      // Update in-memory cache
+      const conversation = inMemoryConversations[conversationId]
+      if (conversation) {
+        const newMessage: Message = {
+          messageId: message.messageId,
+          role,
+          content,
+          timestamp: new Date(message.timestamp)
+        }
+        conversation.messages.push(newMessage)
+        conversation.updatedAt = new Date()
+      }
+    } else {
+      throw new Error('Failed to add message to backend')
+    }
+  } catch (error) {
+    console.error('Error adding message to backend:', error)
+    // Fallback to in-memory addition
+    const conversation = inMemoryConversations[conversationId]
+    if (conversation) {
+      const message: Message = {
+        messageId: `${conversation.messages.length + 1}`,
+        role,
+        content,
+        timestamp: new Date()
+      }
+      conversation.messages.push(message)
+      conversation.updatedAt = new Date()
+    }
+  }
+}
+
+export const updateConversationTitle = async (conversationId: string, newTitle: string): Promise<void> => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/conversations/${conversationId}/title`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ title: newTitle })
+    })
+    
+    if (response.ok) {
+      // Update in-memory cache
+      const conversation = inMemoryConversations[conversationId]
+      if (conversation) {
+        conversation.title = newTitle
+        conversation.updatedAt = new Date()
+      }
+    } else {
+      throw new Error('Failed to update conversation title on backend')
+    }
+  } catch (error) {
+    console.error('Error updating conversation title on backend:', error)
+    // Fallback to in-memory update
+    const conversation = inMemoryConversations[conversationId]
+    if (conversation) {
+      conversation.title = newTitle
+      conversation.updatedAt = new Date()
+    }
+  }
+}
+
+export const deleteConversation = async (conversationId: string): Promise<void> => {
+  try {
+    const response = await fetch(`http://localhost:8080/api/conversations/${conversationId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+    
+    if (response.ok) {
+      // Remove from in-memory cache
+      delete inMemoryConversations[conversationId]
+    } else {
+      throw new Error('Failed to delete conversation from backend')
+    }
+  } catch (error) {
+    console.error('Error deleting conversation from backend:', error)
+    // Fallback to in-memory deletion
+    delete inMemoryConversations[conversationId]
+  }
 }
 
 export const clearConversation = (conversationId: string): void => {

@@ -3,6 +3,7 @@
 // Violet Yousif, 6/16/2025, Removed Web3-specific code for a more general implementation.
 // Mizanur Mizan, 6/25/2025, Connected backend llm question response to chatbot frontend
 // Syed Rabbey, 6/27/2025, Integrated user's first name into chat greeting and question prompts.
+// Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
 
 import { useEffect, useReducer, useRef, useState } from 'react'
 import ClipboardJS from 'clipboard'
@@ -90,39 +91,37 @@ export const useChatGPT = (
     }
     fetchHealthData()
 
-    //// Prev code:
-    // const fetchHealthData = async () => {
-    //    if (walletAddress) {
-    //      const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
-    //      const data = await response.json()
-    //      setHealthData(data || null)
-    //  }
-    // }
-    // fetchHealthData()
-
-    const conv = getConversation(conversationId)
-    setCurrentConversation(conv || null)
+    const loadConversation = async () => {
+      const conv = await getConversation(conversationId)
+      setCurrentConversation(conv || null)
+    }
+    loadConversation()
 
   }, [conversationId, isLoggedIn])
 
   // }, [conversationId, walletAddress])
 
   useEffect(() => {
-    if (!healthData || greetingSent) return;
+    const initializeGreeting = async () => {
+      if (!healthData || greetingSent) return;
 
-    const conv = getConversation(conversationId);
-    const hasNoMessages = conv?.messages.length === 0;
+      const conv = await getConversation(conversationId);
+      const hasNoMessages = conv?.messages.length === 0;
 
-    if (hasNoMessages) {
-      const userName = healthData.firstName || 'traveler';
-      addMessage(
-        conversationId,
-        ChatRole.Assistant,
-        `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
-      );
-      setCurrentConversation(getConversation(conversationId) || null);
-      setGreetingSent(true);
+      if (hasNoMessages) {
+        const userName = healthData.firstName || 'traveler';
+        await addMessage(
+          conversationId,
+          ChatRole.Assistant,
+          `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
+        );
+        const updatedConv = await getConversation(conversationId)
+        setCurrentConversation(updatedConv || null);
+        setGreetingSent(true);
+      }
     }
+    
+    initializeGreeting()
   }, [healthData, greetingSent, conversationId]);
 
 
@@ -157,10 +156,12 @@ export const useChatGPT = (
     currentMessage.current = ''
     setLoading(false)
     if (content) {
-      addMessage(conversationId, ChatRole.Assistant, content)
-      setCurrentConversation(getConversation(conversationId) || null)
+      await addMessage(conversationId, ChatRole.Assistant, content)
+      const updatedConv = await getConversation(conversationId)
+      setCurrentConversation(updatedConv || null)
       await generateSummary(conversationId, fetchPath)
-      setCurrentConversation(getConversation(conversationId) || null)
+      const finalConv = await getConversation(conversationId)
+      setCurrentConversation(finalConv || null)
       scrollDown()
     }
   }
@@ -185,8 +186,9 @@ export const useChatGPT = (
 
       setStreamedMessage('');  //  Clears the streamed message after it's done
 
-      addMessage(conversationId, ChatRole.Assistant, assistantReply);
-      setCurrentConversation(getConversation(conversationId) || null);
+      await addMessage(conversationId, ChatRole.Assistant, assistantReply);
+      const updatedConv = await getConversation(conversationId)
+      setCurrentConversation(updatedConv || null);
 
       setLoading(false);
       scrollDown();
@@ -222,8 +224,13 @@ export const useChatGPT = (
   }
 
   const onSend = (message: ChatMessage) => {
-    addMessage(conversationId, message.role, message.content);
-    setCurrentConversation(getConversation(conversationId) || null);
+    // Add message asynchronously but don't block the UI
+    addMessage(conversationId, message.role, message.content).then(async () => {
+      const updatedConv = await getConversation(conversationId)
+      setCurrentConversation(updatedConv || null);
+    }).catch(error => {
+      console.error('Error saving message:', error);
+    });
 
     const healthPrompt = healthData
       ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
@@ -241,9 +248,10 @@ export const useChatGPT = (
     ]) */
   }
 
-  const onClear = () => {
+  const onClear = async () => {
     clearConversation(conversationId)
-    setCurrentConversation(getConversation(conversationId) || null)
+    const updatedConv = await getConversation(conversationId)
+    setCurrentConversation(updatedConv || null)
   }
 
   const onStop = async () => {
