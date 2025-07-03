@@ -14,8 +14,12 @@ import { Form, InputNumber, Select, Button, Input, message} from 'antd'
 import { UserData } from '../models'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import ActivityLevelModal from '../components/ActivityLevelModal'; // Import the new ActivityLevelModal component
 import { DownOutlined } from '@ant-design/icons'; // For dropdown arrow icon
+import dayjs from 'dayjs';
+import { Tabs } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+dayjs.extend(advancedFormat);
 
 /* Old Code
 interface ProfileProps {
@@ -36,6 +40,117 @@ const Profile: React.FC = () => {
     }
     return 'default'
   })
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>(dayjs().format('YYYY-MM-DD'));
+  const [sleepHours, setSleepHours] = useState<number>(0);
+  const [exerciseHours, setExerciseHours] = useState<number>(0);
+  const [calories, setCalories] = useState<number>(0);
+  const [allMetrics, setAllMetrics] = useState<Record<string, any>>({});
+
+  // Calendar cell click
+  /* const onSelectDate = (date: dayjs.Dayjs) => {
+    setSelectedDate(date.format('YYYY-MM-DD'));
+    setModalVisible(true);
+  }; */
+/* 
+  const onSelectDate = (date: dayjs.Dayjs) => {
+    const formatted = date.format('YYYY-MM-DD');
+    setSelectedDate(formatted);
+    const existing = allMetrics[formatted];
+
+    if (existing) {
+      setSleepHours(existing.sleepHours ?? 0);
+      setExerciseHours(existing.exerciseHours ?? 0);
+      setCalories(existing.calories ?? 0);
+    } else {
+      setSleepHours(0);
+      setExerciseHours(0);
+      setCalories(0);
+    }
+    setModalVisible(true);
+  }; */
+
+  const submitHealthMetric = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/health-metrics', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          date: selectedDate,
+          sleepHours,
+          exerciseHours,
+          calories
+        })
+      });
+
+      if (!res.ok) throw new Error('Submission failed');
+      message.success('Health metrics saved!');
+      setModalVisible(false);
+      // Update local metrics state so it's available immediately
+      setAllMetrics(prev => ({
+        ...prev,
+        [selectedDate]: {
+          sleepHours,
+          exerciseHours,
+          calories
+        }
+      }));
+    } catch (err) {
+      console.error(err);
+      message.error('Error saving health metrics');
+    }
+  };
+
+  useEffect(() => {
+  fetch('http://localhost:8080/api/health-metrics', {
+    credentials: 'include',
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      setAllMetrics(data.dates || {});
+    })
+    .catch((err) => {
+      console.error('Error fetching health metrics:', err);
+    });
+  }, []);
+
+  /* useEffect(() => {
+    const today = dayjs().format('YYYY-MM-DD');
+    setSelectedDate(today); // Ensure it's set
+
+    const existing = allMetrics[today];
+    if (existing) {
+      setSleepHours(existing.sleepHours ?? 0);
+      setExerciseHours(existing.exerciseHours ?? 0);
+      setCalories(existing.calories ?? 0);
+    } else {
+      setSleepHours(0);
+      setExerciseHours(0);
+      setCalories(0);
+    }
+}, [allMetrics]); */
+
+  useEffect(() => {
+    const today = dayjs().format('YYYY-MM-DD');
+    setSelectedDate(today); // Ensure it's set
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const existing = allMetrics[selectedDate];
+    if (existing) {
+      setSleepHours(existing.sleepHours ?? 0);
+      setExerciseHours(existing.exerciseHours ?? 0);
+      setCalories(existing.calories ?? 0);
+    } else {
+      setSleepHours(0);
+      setExerciseHours(0);
+      setCalories(0);
+    }
+  }, [selectedDate, allMetrics]); // depends on selected date or new data
+
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'default'
@@ -122,13 +237,20 @@ const Profile: React.FC = () => {
           Back
         </Button>
       </Link>
+      {/* <h2 style={styles.modalTitle}>User Profile - Health Data</h2> */}
+      <Tabs
+        defaultActiveKey="general" centered items={[
+        {
+          key: 'general',
+          label: 'General',
+          children: (
+          <>
       <h2 style={styles.modalTitle}>User Profile - Health Data</h2>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ activityLevel: 'moderate'}}
-        //// Prev: initialValues={{ activityLevel: 'moderate', name: 'John Doe', email: 'johndoe@gmail.com' }}
+        initialValues={{ activityLevel: 'moderate' }}
         style={styles.form}
       >
         <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
@@ -264,20 +386,64 @@ const Profile: React.FC = () => {
           <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
         </Form.Item>
       </Form>
-    </div>
-    <ActivityLevelModal
-        visible={activityModalVisible}
-        onClose={() => setActivityModalVisible(false)}
-        selected={selectedActivityLevel}
-        onSelect={(level: string) => {
-          setSelectedActivityLevel(level);
-          form.setFieldsValue({ activityLevel: level });
-          setActivityModalVisible(false);
-        }}
-      />
-    </div>
+    </>
+    )},
+    {
+    key: 'metrics',
+    label: 'Daily Health Metrics',
+    children: (
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <Button icon={<LeftOutlined />} onClick={() => {
+            const prev = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
+            setSelectedDate(prev);
+            const existing = allMetrics[prev];
+            setSleepHours(existing?.sleepHours || 0);
+            setExerciseHours(existing?.exerciseHours || 0);
+            setCalories(existing?.calories || 0);
+          }} />
+
+          {/* <h3 style={{ margin: 0 }}>{selectedDate}</h3> */}
+          <h3 style={{ margin: 0 }}>{dayjs(selectedDate).format('MMMM Do, YYYY')}</h3>
+
+          <Button icon={<RightOutlined />} onClick={() => {
+            const next = dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD');
+            if (dayjs(next).isAfter(dayjs(), 'day')) return; // prevent future dates
+            setSelectedDate(next);
+            const existing = allMetrics[next];
+            setSleepHours(existing?.sleepHours || 0);
+            setExerciseHours(existing?.exerciseHours || 0);
+            setCalories(existing?.calories || 0);
+          }} />
+        </div>
+
+        <Form layout="vertical">
+          {/* <Form.Item label="Sleep Hours"> */}
+          <Form.Item label={<span style={styles.metricsLabel}>Sleep Hours</span>}>
+            <InputNumber min={0} max={12} value={sleepHours} onChange={(v) => v !== null && setSleepHours(v)} style={{ width: '100%' }} />
+          </Form.Item>
+          {/* <Form.Item label="Exercise Hours"> */}
+          <Form.Item label={<span style={styles.metricsLabel}>Exercise Hours</span>}>
+            <InputNumber min={0} max={12} value={exerciseHours} onChange={(v) => v !== null && setExerciseHours(v)} style={{ width: '100%' }} />
+          </Form.Item>
+          {/* <Form.Item label="Calories"> */}
+          <Form.Item label={<span style={styles.metricsLabel}>Calories</span>}>
+            <InputNumber min={0} value={calories} onChange={(v) => v !== null && setCalories(v)} style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" onClick={submitHealthMetric} style={styles.primaryButton}>Save</Button>
+          </Form.Item>
+        </Form>
+      </div>
+    
   )
 }
+]} />
+</div>
+</div>
+  )}
+
 
 export default Profile
 
@@ -312,6 +478,10 @@ const getStyles = (theme: 'default' | 'dark') => ({
   label: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     fontWeight: 'bold',
+    marginBottom: 4
+  },
+  metricsLabel: {
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     marginBottom: 4
   },
   input: {

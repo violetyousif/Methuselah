@@ -22,6 +22,7 @@ import {
   Cell,
   Label
 } from 'recharts'
+import dayjs from 'dayjs';
 
 interface DashboardProps {
   visible: boolean
@@ -29,7 +30,7 @@ interface DashboardProps {
   onClose: () => void
 }
 
-const healthData = [
+/* const healthData = [
   { day: 'Mon', sleep: 6.5, exercise: 1.0 },
   { day: 'Tue', sleep: 7.0, exercise: 0.5 },
   { day: 'Wed', sleep: 8.0, exercise: 1.5 },
@@ -37,7 +38,7 @@ const healthData = [
   { day: 'Fri', sleep: 7.5, exercise: 2.0 },
   { day: 'Sat', sleep: 9.0, exercise: 2.5 },
   { day: 'Sun', sleep: 8.5, exercise: 1.0 }
-]
+] */
 
 const dietData = [
   { name: 'Protein', value: 25 },
@@ -120,6 +121,7 @@ const axisColor = isDark ? '#B8FFF8' : '#000000';       // axes & legend
 const gridColor = isDark ? '#318182' : '#203625';       // grid lines
 const barColorSleep = isDark ? '#4BC2C4' : '#203625';   // sleep bar
 const barColorExercise = isDark ? '#96F2D7' : '#203625';// exercise bar
+const barColorCalories = isDark ? '#FFD369' : '#203625'// calories bar
 const chartTitleColor = isDark ? '#4BC2C4' : '#4BC2C4';
 const tooltipBg = isDark ? "#232323" : "#fff";
 const tooltipText = isDark ? "#e0e0e0" : "#203625";
@@ -134,6 +136,35 @@ React.useEffect(() => {
 
 
   const styles = getStyles(currentTheme)
+const [metrics, setMetrics] = React.useState<Record<string, any>>({});
+const [last7Data, setLast7Data] = React.useState<
+  { date: string; sleep: number; exercise: number; calories: number }[]
+>([]);
+
+React.useEffect(() => {
+  fetch('http://localhost:8080/api/health-metrics', { credentials: 'include' })
+    .then(res => res.json())
+    .then(data => setMetrics(data.dates || {}))
+    .catch(console.error);
+}, []);
+
+React.useEffect(() => {
+  const today = dayjs()
+  const arr: { date: string; sleep: number; exercise: number; calories: number }[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = today.subtract(i, 'day').format('YYYY-MM-DD')
+    const m = metrics[d]
+    if (m) {
+      arr.push({
+        date: dayjs(d).format('ddd'),
+        sleep: m.sleepHours,
+        exercise: m.exerciseHours,
+        calories: m.calories
+      })
+    }
+  }
+  setLast7Data(arr)
+}, [metrics])
 
   return (
     <Modal
@@ -155,7 +186,7 @@ React.useEffect(() => {
       </div>
 
       <div style={styles.chartSection}>
-        <div style={styles.chartContainer}>
+        {/* <div style={styles.chartContainer}>
           <h3 style={styles.chartTitle}>Sleep Health</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={healthData}>
@@ -183,7 +214,30 @@ React.useEffect(() => {
             </BarChart>
 
           </ResponsiveContainer>
-        </div>
+        </div> */}
+        {[
+          { key: 'sleep', label: 'Last 7 Days: Sleep Hours', fill: barColorSleep },
+          { key: 'exercise', label: 'Last 7 Days: Exercise Hours', fill: barColorExercise },
+          { key: 'calories', label: 'Last 7 Days: Calories', fill: barColorCalories }
+        ].map(({ key, label, fill }) => (
+          <div style={styles.chartContainer} key={key}>
+            <h3 style={styles.chartTitle}>{label}</h3>
+          {last7Data.length === 0 ? (
+            <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={last7Data}>
+                <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+                <XAxis dataKey="date" stroke={axisColor} />
+                <YAxis stroke={axisColor} />
+                <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+                <Legend wrapperStyle={legendStyle} />
+                <Bar dataKey={key} fill={fill} name={label.split(': ')[1]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+          </div>
+        ))}
       </div>
 
       <div style={styles.pieChartSection}>
@@ -253,6 +307,13 @@ const getStyles = (theme: 'default' | 'dark') => ({
     justifyContent: 'space-between',
     flexWrap: 'wrap' as const,
     gap: '24px'
+  },
+  noDataMessage: {
+    justifyContent: 'center',
+    color: theme === 'dark' ? '#aaa' : '#333',
+    fontStyle: 'italic',
+    padding: '40px 0',
+    fontSize: '16px'
   },
   chartContainer: {
     flex: 1,
