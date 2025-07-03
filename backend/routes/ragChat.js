@@ -3,7 +3,7 @@
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
 // Violet Yousif, 6/27/2025 - Fixed the deprecated inference client import
 // Viktor Gjorgjevski, 7/1/2025 Fixed issue where LLM response was including user response and replying to itself
-// Viktor Gjorgjevski, 7/3/2025 Added File support
+// Viktor Gjorgjevski, 7/3/2025 Added File support foundation
 
 // What happens inside:
 // 1. Embed the user’s question.
