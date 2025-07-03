@@ -302,9 +302,9 @@ const getStyles = (theme: 'default' | 'dark') => ({
     padding: '40px',
     backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA',
     borderRadius: '2rem',
-    border: '3px solid',
-    borderColor: theme === 'dark' ? '#318182' : '#000000',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+    boxShadow: theme === 'dark' 
+      ? '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(49,129,130,0.2)' 
+      : '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
   },
   header: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',

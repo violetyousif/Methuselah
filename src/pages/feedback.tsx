@@ -68,8 +68,9 @@ const styles = {
       padding: '2rem',
       backgroundColor: theme === 'dark' ? '#252525' : '#A0B6AA',
       borderRadius: '2rem',
-      border: '3px solid',
-      borderColor: theme === 'dark' ? '#4b5563' : '#000000'
+      boxShadow: theme === 'dark' 
+        ? '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(75,85,99,0.2)' 
+        : '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
     },
     backButton: {
       marginBottom: '24px',

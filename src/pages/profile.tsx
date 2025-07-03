@@ -467,8 +467,9 @@ const getStyles = (theme: 'default' | 'dark') => ({
     padding: '2rem',
     backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA', // Only dark changed
     borderRadius: '2rem',
-    border: '3px solid',
-    borderColor: theme === 'dark' ? '#318182' : '#000000' // Only dark changed
+    boxShadow: theme === 'dark' 
+      ? '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(49,129,130,0.2)' 
+      : '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
   },
   modalMask: {
     backgroundColor: theme === 'dark'

@@ -89,7 +89,7 @@ const styles = {
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '2rem',
-    border: '3px solid',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
   },
   backButton: {
     marginBottom: '24px',
