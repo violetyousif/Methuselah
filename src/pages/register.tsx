@@ -57,16 +57,16 @@ function register() {
 
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div style={styles.page} className="register-page">
+      <div style={styles.card} className="register-card mobile-card-shadow">
         {/* Back to login */}
         <Link href="/login">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Create an Account</h2>
+        <h2 style={styles.header} className="register-header">Create an Account</h2>
 
         <Form form={form} name="register" layout="vertical" onFinish={onFinish}>
 
@@ -200,7 +200,7 @@ function register() {
 
           { /* Submit Button */}
           <Form.Item style={styles.submitContainer}>
-            <Button type="primary" htmlType="submit" style={styles.submitButton}>
+            <Button type="primary" htmlType="submit" style={styles.submitButton} className="register-submit-button">
               Sign Up
             </Button>
           </Form.Item>

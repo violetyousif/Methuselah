@@ -96,15 +96,15 @@ const styles = {
 
 
 return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div style={styles.page} className="feedback-page">
+      <div style={styles.card} className="feedback-card mobile-card-shadow">
         <Link href="/">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Submit Feedback</h2>
+        <h2 style={styles.header} className="feedback-header">Submit Feedback</h2>
 
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
@@ -112,13 +112,14 @@ return (
             name="comments"
             rules={[{ required: true, message: 'Please enter your feedback' }]}
           >
-            <TextArea rows={4} />
+            <TextArea rows={4} className="feedback-textarea" />
           </Form.Item>
 
           <Form.Item
             label="Rating"
             name="rating"
             rules={[{ required: true, message: 'Please select a rating' }]}
+            className="feedback-rating-container"
           >
             <Select placeholder="Select a rating">
               {[1, 2, 3, 4, 5].map(num => (
@@ -128,7 +129,7 @@ return (
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={styles.submitButton}>
+            <Button type="primary" htmlType="submit" style={styles.submitButton} className="feedback-submit-button">
               Submit
             </Button>
           </Form.Item>

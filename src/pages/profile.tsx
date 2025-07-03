@@ -230,28 +230,29 @@ const Profile: React.FC = () => {
   const styles = getStyles(currentTheme)
 
   return (
-    <div style={styles.page}>
-        <div style={styles.card}>
+    <div style={styles.page} className="profile-page">
+        <div style={styles.card} className="profile-card mobile-card-shadow">
       <Link href="/chatBot">
-      < Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+      < Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
           Back
         </Button>
       </Link>
       {/* <h2 style={styles.modalTitle}>User Profile - Health Data</h2> */}
       <Tabs
-        defaultActiveKey="general" centered items={[
+        defaultActiveKey="general" centered className="profile-tabs" items={[
         {
           key: 'general',
           label: 'General',
           children: (
           <>
-      <h2 style={styles.modalTitle}>User Profile - Health Data</h2>
+      <h2 style={styles.modalTitle} className="profile-modal-title">User Profile - Health Data</h2>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{ activityLevel: 'moderate' }}
         style={styles.form}
+        className="profile-form"
       >
         <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
           <Input style={styles.input} />
@@ -382,8 +383,10 @@ const Profile: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} style={styles.primaryButton}>Save</Button>
-          <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
+          <div className="profile-button-group">
+            <Button type="primary" htmlType="submit" loading={loading} style={styles.primaryButton}>Save</Button>
+            <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
+          </div>
         </Form.Item>
       </Form>
     </>
@@ -393,7 +396,7 @@ const Profile: React.FC = () => {
     label: 'Daily Health Metrics',
     children: (
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }} className="profile-date-navigation">
           <Button icon={<LeftOutlined />} onClick={() => {
             const prev = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
             setSelectedDate(prev);

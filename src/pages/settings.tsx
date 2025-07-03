@@ -140,15 +140,15 @@ export default function Settings() {
 };
 
   return (
-    <div className="fadeIn settingsPage">
-      <div className="settingsCard">
+    <div className="fadeIn settingsPage settings-page">
+      <div className="settingsCard settings-card mobile-card-shadow">
         <Link href="/chatBot">
-          <Button icon={<ArrowLeftOutlined />} className="settingsBackButton">
+          <Button icon={<ArrowLeftOutlined />} className="settingsBackButton back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h1 className="settingsHeader">Settings</h1>
+        <h1 className="settingsHeader settings-header">Settings</h1>
 
         <div className="settingsForm">
           {/* Name Fields */}

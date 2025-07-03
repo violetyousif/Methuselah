@@ -700,3 +700,445 @@ html, body {
   }
 }
 
+/* ==================== ADDITIONAL MOBILE RESPONSIVE STYLES ==================== */
+/* Mohammad Hoque, 7/3/2025, Added comprehensive mobile responsive styles for all remaining pages */
+
+/* Register Page Mobile Styles */
+@media (max-width: 768px) {
+  .register-page {
+    padding: 1rem !important;
+  }
+  
+  .register-card {
+    margin: 0.5rem auto !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .register-short-input-container {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .register-half-width {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: 0.5rem !important;
+  }
+  
+  .register-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .register-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .register-label {
+    font-size: 14px !important;
+  }
+  
+  .register-submit-button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Profile Page Mobile Styles */
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 1rem !important;
+  }
+  
+  .profile-card {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .profile-tabs .ant-tabs-tab {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+  
+  .profile-button-group {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .profile-button-group .ant-btn {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 0.5rem !important;
+  }
+  
+  .profile-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .profile-modal-title {
+    font-size: 1.2rem !important;
+  }
+  
+  .profile-form .ant-form-item-label > label {
+    font-size: 14px !important;
+  }
+  
+  .profile-date-navigation {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+  
+  .profile-date-navigation h3 {
+    font-size: 1rem !important;
+    margin: 8px 0 !important;
+  }
+}
+
+/* Settings Page Mobile Styles */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 1rem !important;
+  }
+  
+  .settings-card {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .settings-form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .settings-half-width {
+    width: 100% !important;
+  }
+  
+  .settings-avatar-section {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 0.5rem !important;
+  }
+  
+  .settings-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .settings-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .settings-section-title {
+    font-size: 1.2rem !important;
+  }
+  
+  .settings-label {
+    font-size: 14px !important;
+  }
+}
+
+/* Forgot Password Page Mobile Styles */
+@media (max-width: 768px) {
+  .forgot-password-page {
+    padding: 1rem !important;
+  }
+  
+  .forgot-password-card {
+    margin: 0.5rem auto !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .forgot-password-link-group {
+    margin-top: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .forgot-password-page {
+    padding: 0.5rem !important;
+  }
+  
+  .forgot-password-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .forgot-password-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .forgot-password-subtext {
+    font-size: 14px !important;
+  }
+  
+  .forgot-password-submit-button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Feedback Page Mobile Styles */
+@media (max-width: 768px) {
+  .feedback-page {
+    padding: 1rem !important;
+  }
+  
+  .feedback-card {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .feedback-rating-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  
+  .feedback-textarea {
+    min-height: 120px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .feedback-page {
+    padding: 0.5rem !important;
+  }
+  
+  .feedback-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .feedback-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .feedback-textarea {
+    min-height: 100px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  .feedback-submit-button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* General Mobile Improvements for All Pages */
+@media (max-width: 768px) {
+  /* Back button improvements */
+  .back-button-mobile {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 8px 16px !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* Form item spacing */
+  .ant-form-item {
+    margin-bottom: 16px !important;
+  }
+  
+  /* Tab improvements */
+  .ant-tabs-nav {
+    margin-bottom: 16px !important;
+  }
+  
+  /* Card shadows for better depth perception */
+  .mobile-card-shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Reduce form item spacing further on very small screens */
+  .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+  
+  /* Ensure adequate touch targets */
+  .ant-btn,
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker {
+    min-height: 44px !important;
+  }
+  
+  /* Improve text readability */
+  h1, h2, h3 {
+    line-height: 1.3 !important;
+  }
+  
+  /* Better spacing for small screens */
+  .mobile-spacing-small {
+    padding: 8px !important;
+    margin: 4px 0 !important;
+  }
+}
+
+/* Portrait orientation specific styles */
+@media (max-width: 480px) and (orientation: portrait) {
+  .mobile-portrait-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .mobile-portrait-center {
+    text-align: center !important;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mobile-landscape-compact {
+    padding: 8px !important;
+  }
+  
+  .mobile-landscape-compact .ant-form-item {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Additional Mobile Utility Classes and Improvements */
+/* Mohammad Hoque, 7/3/2025, Added extra utility classes and touch interaction improvements */
+
+/* Improved touch targets for mobile */
+@media (max-width: 768px) {
+  /* Better button spacing and touch targets */
+  .ant-btn {
+    min-height: 44px !important;
+    padding: 8px 16px !important;
+    margin: 4px 0 !important;
+  }
+  
+  /* Improved form field spacing */
+  .ant-form-item-label {
+    padding-bottom: 4px !important;
+  }
+  
+  /* Better select dropdown behavior */
+  .ant-select-dropdown {
+    border-radius: 8px !important;
+  }
+  
+  /* Improved modal positioning */
+  .ant-modal-wrap {
+    padding: 16px !important;
+  }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .mobile-xs-full-width {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .mobile-xs-compact {
+    padding: 8px !important;
+    margin: 4px 0 !important;
+  }
+  
+  /* Smaller text for very small screens */
+  .mobile-xs-small-text {
+    font-size: 12px !important;
+  }
+}
+
+/* Tablet portrait optimizations */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .tablet-portrait-optimized {
+    max-width: 80% !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* High DPI screen optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .high-dpi-border {
+    border-width: 0.5px !important;
+  }
+}
+
+/* Dark mode mobile specific improvements */
+@media (max-width: 768px) {
+  [data-theme='dark'] .mobile-dark-border {
+    border-color: #318182 !important;
+    box-shadow: 0 2px 8px rgba(49, 129, 130, 0.2) !important;
+  }
+  
+  [data-theme='dark'] .mobile-dark-bg {
+    background-color: #1D1E2C !important;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Focus indicators */
+  .ant-btn:focus,
+  .ant-input:focus,
+  .ant-select-selector:focus {
+    outline: 2px solid #318182 !important;
+    outline-offset: 2px !important;
+  }
+  
+  /* Better contrast for small text */
+  .mobile-high-contrast {
+    color: #000 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  [data-theme='dark'] .mobile-high-contrast {
+    color: #fff !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .landscape-compact-form {
+    padding: 8px !important;
+  }
+  
+  .landscape-compact-form .ant-form-item {
+    margin-bottom: 8px !important;
+  }
+  
+  .landscape-reduce-height {
+    min-height: 36px !important;
+    height: 36px !important;
+  }
+}
+

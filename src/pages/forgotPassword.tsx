@@ -29,18 +29,18 @@ function ForgotPassword() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div style={styles.page} className="forgot-password-page">
+      <div style={styles.card} className="forgot-password-card mobile-card-shadow">
         
         {/* Back Button to Home */}
         <Link href="/login">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Forgot Password?</h2>
-        <p style={styles.subtext}>Enter your email and we'll send a reset link.</p>
+        <h2 style={styles.header} className="forgot-password-header">Forgot Password?</h2>
+        <p style={styles.subtext} className="forgot-password-subtext">Enter your email and we'll send a reset link.</p>
 
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
@@ -55,7 +55,7 @@ function ForgotPassword() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block style={styles.submitButton}>
+            <Button type="primary" htmlType="submit" block style={styles.submitButton} className="forgot-password-submit-button">
               Send Reset Link
             </Button>
           </Form.Item>
