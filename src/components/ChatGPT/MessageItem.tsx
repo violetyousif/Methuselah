@@ -2,6 +2,7 @@
 // Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Dashboard component function parameters to prevent errors.
 // Mizanur Mizan, 6/23/2025, Added extended interface for placing current avatar image next to the user messages
 // Syed Rabbey, 6/27/2025, Adjusted the display speed of the assistant's message to be more natural and readable.
+// Mohammad Hoque, 7/3/2025, Added user name display functionality - shows "Methuselah" under AI messages and user's first name under user messages, with improved name and timestamp positioning above message bubbles.
 
 
 import React, { useEffect, useState } from 'react'
