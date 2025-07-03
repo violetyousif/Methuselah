@@ -1,6 +1,52 @@
 /* Modified: Syed Rabbey (6/1/25), - Added custom scrollbar, modal styling, and dark theme styles */
 /* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
-/* Modified: Violet Yousif (6/2/25), added new styling for global footer */
+/* Modified: Violet Yo.timestamp {
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #000;
+}
+
+[data-theme='dark'] .timestamp {
+  color: #F1F1EA;
+}
+
+.message-name {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #888;
+}
+
+[data-theme='dark'] .message-name {
+  color: #aaa;
+}
+
+.message-header {
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #888;
+  display: flex;
+  align-items: center;
+}
+
+[data-theme='dark'] .message-header {
+  color: #aaa;
+}
+
+.message-header.align-right {
+  justify-content: flex-end;
+}
+
+.message-header.align-left {
+  justify-content: flex-start;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-left {
+  text-align: left;
+}ded new styling for global footer */
 /* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
 /* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
 /* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */

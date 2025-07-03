@@ -565,6 +565,7 @@ const Chatbot = () => {
               assistantBubbleColor="#9AB7A9"
               userBubbleColor="#318182"
               userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
+              userName={userData?.firstName || 'User'}
               chatMode={chatMode}
             />
           )}

@@ -16,6 +16,7 @@ export interface ChatGPTProps {
   assistantBubbleColor: string;
   userBubbleColor: string;
   userAvatar?: string;
+  userName?: string;
   chatMode: 'direct' | 'conversational';
 
 }

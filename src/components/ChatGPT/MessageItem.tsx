@@ -18,10 +18,11 @@ interface MessageItemProps extends ChatMessageItemProps {
   assistantColor?: string
   userColor?: string
   userAvatar?: string
+  userName?: string
 }
 
 const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
-  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png' } = props
+  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
   
   const isUser = message.role === 'user'
   const bgColor = isUser ? userColor : assistantColor
@@ -54,18 +55,34 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
 
   return (
     <div style={{ marginBottom: '16px' }}>
-      <div className={`timestamp ${isUser ? 'align-right' : 'align-left'}`}>
-        {timestamp}
-    </div>
-    <div
-      className="message-item"
-      style={{
-        display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
-        margin: '6px 0',
-        alignItems: 'flex-start'
-      }}
-    >
+      {/* Name and timestamp together above the message */}
+      <div className={`message-header ${isUser ? 'align-right' : 'align-left'}`} style={{ marginBottom: '4px' }}>
+        <span style={{
+          fontSize: '12px',
+          color: '#888',
+          fontWeight: '600',
+          marginRight: '8px'
+        }}>
+          {isUser ? userName : 'Methuselah'}
+        </span>
+        <span style={{
+          fontSize: '11px',
+          color: '#aaa',
+          fontWeight: '400'
+        }}>
+          {timestamp}
+        </span>
+      </div>
+      
+      <div
+        className="message-item"
+        style={{
+          display: 'flex',
+          justifyContent: isUser ? 'flex-end' : 'flex-start',
+          margin: '6px 0',
+          alignItems: 'flex-start'
+        }}
+      >
       {!isUser && (
         <div style={{ marginRight: 8 }}>
           <div className="methuselah-icon-wrapper">
