@@ -1,11 +1,10 @@
 // Syed Rabbey, 5/26/25, Created a popup dashboard page with static charts and pre-written messages for the user. 
 //                       Dashboard component function is declared, an event handler is used to close the modal, 
 //                       and recharts functions are pulled to render sleep/exercise activity.
-
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
-
 // Syed Rabbey, 06/02/2025, Reformatted the code to change colors and add new data point.
 // Violet Yousif, 6/14/2025, Removed unused walletAddress prop from DashboardProps interface and component function parameters.
+// Syed Rabbey, 7/2/2025, 
 
 import React from 'react'
 import { Modal } from 'antd'
@@ -58,6 +57,64 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
   return 'default'
 })
 
+const [userId, setUserId] = React.useState<string | null>(null);
+const [tips, setTips] = React.useState({ tip1: '', tip2: '', tip3: '' });
+const [firstName, setFirstName] = React.useState<string>('');
+
+React.useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') || 'default';
+    setCurrentTheme(storedTheme as 'default' | 'dark');
+}, [visible]);
+
+  //  Fetch userId from  backend
+React.useEffect(() => {
+  const fetchUserId = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/user-data', {
+        credentials: 'include',
+      });
+      const userData = await res.json();
+      setUserId(userData._id);
+      setFirstName(userData.firstName || 'Guest'); // <- store name
+    } catch (error) {
+      console.error('Failed to load user ID:', error);
+    }
+  };
+
+  fetchUserId();
+}, []);
+
+// Fetch insights when dashboard becomes visible
+React.useEffect(() => {
+  const fetchInsights = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/healthmetrics/insights', {
+        credentials: 'include',
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch insights');
+
+      const data = await res.json();
+
+      console.log("INSIGHTS RECEIVED IN REACT:", data); // Debug log
+
+      setTips({
+        tip1: data.tip1 || '',
+        tip2: data.tip2 || '',
+        tip3: data.tip3 || ''
+      });
+    } catch (error) {
+      console.error('Error fetching insights:', error);
+    }
+  };
+
+  if (visible) {
+    fetchInsights();
+  }
+}, [visible]);
+
+
+
 const isDark = currentTheme === 'dark';
 const axisColor = isDark ? '#B8FFF8' : '#000000';       // axes & legend
 const gridColor = isDark ? '#318182' : '#203625';       // grid lines
@@ -72,7 +129,10 @@ const legendStyle = { color: axisColor };
 React.useEffect(() => {
   const storedTheme = localStorage.getItem('theme') || 'default'
   setCurrentTheme(storedTheme as 'default' | 'dark')
-}, [visible])
+}, [visible]);
+
+
+
   const styles = getStyles(currentTheme)
 
   return (
@@ -91,7 +151,7 @@ React.useEffect(() => {
       wrapClassName="custom-dashboard-modal" 
     >
       <div style={styles.greeting}>
-        Welcome back, <strong>Guest</strong>! Here's a look at your recent health activity.
+        Welcome back, <strong>{firstName}</strong>! Here's a look at your recent health activity.
       </div>
 
       <div style={styles.chartSection}>
@@ -145,15 +205,13 @@ React.useEffect(() => {
         </ResponsiveContainer>
       </div>
 
-      <div style={styles.tips}>
-        <p style={styles.tipPrimary}>☀️ It is recommended that you increase your Vitamin D intake.</p>
-        <p style={styles.tipNeutral}>
-          💪 To meet your weight gain goals, make sure you're getting{' '}
-          <span style={styles.tipHighlight}>consistent sleep</span> and{' '}
-          <span style={styles.tipHighlight}>planned exercise routines</span>.
-        </p>
-        <p style={styles.tipSecondary}>👏 Good job on your consistency! You earned it.</p>
+      <div style={{ color: 'black', fontSize: '20px' }}>
+        <p style={{ fontSize: '16px' }}>{tips.tip1}</p>
+        <p style={{ fontSize: '16px' }}>{tips.tip2}</p>
+        <p style={{ fontSize: '16px', color: '#42c9c9' }}>{tips.tip3}</p>
       </div>
+
+
     </Modal>
   )
 }
