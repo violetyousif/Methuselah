@@ -5,8 +5,19 @@ import HealthMetricHistory from '../models/HealthMetricHistory.js';
 import getUser from '../models/User.js';
 import auth from '../middleware/auth.js';
 import mongoose from 'mongoose';
+import rateLimit from 'express-rate-limit';
+
 
 const router = express.Router();
+
+
+const insightsLimiter = rateLimit({
+  windowMs: 60 * 1000,  // 1 minute
+  max: 5,               // limit each IP to 5 requests per minute
+  message: 'Too many requests. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Utility function: calculate number of days between two dates
 const daysBetween = (date1, date2) => {
@@ -14,7 +25,7 @@ const daysBetween = (date1, date2) => {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 };
 
-router.get('/healthmetrics/insights', auth, async (req, res) => { 
+router.get('/healthmetrics/insights', auth, insightsLimiter, async (req, res) => { 
   try {
     const userId = req.user.id;
     const user = await getUser.findById(userId);
