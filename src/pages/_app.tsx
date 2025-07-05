@@ -1,5 +1,7 @@
 // Mohammad Hoque, 6/2/2025, Applies global theme and font size preferences using <body> dataset attributes
 // Updated: Removed localStorage dependency, theme preferences now loaded from database by individual pages
+// Violet Yousif, 6/2/2025, Added global footer with copyright notice
+// Violet Yousif, 7/5/2025, Modified to move Mohammad's viewport meta tag for mobile responsiveness from _document.tsx to _app.tsx
 
 import Head from 'next/head'
 import '@/styles/globals.css'
@@ -26,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <Head>
       <meta
         name="viewport"
-        content="width=device-width,height=device-height,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+        content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
       />
     </Head>
     <Layout>
@@ -36,5 +38,3 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   )
 }
-
-

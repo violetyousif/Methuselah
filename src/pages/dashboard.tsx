@@ -284,10 +284,10 @@ const getStyles = (theme: 'default' | 'dark') => ({
   chartContainer: {
     flex: 1,
     minWidth: '300px',
-    '@media (max-width: 768px)': {
+    '@media (maxWidth: 768px)': {
       minWidth: '280px'
     },
-    '@media (max-width: 480px)': {
+    '@media (maxWidth: 480px)': {
       minWidth: '100%'
     }
   },

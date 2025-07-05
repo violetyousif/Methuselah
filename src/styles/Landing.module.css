@@ -1,4 +1,5 @@
-/* Mohammad Hoque, 7/3/2025, Added responsive design improvements for mobile and tablet devices including responsive typography and touch-friendly buttons */
+/* Mohammad Hoque, 7/3/2025, Added responsive design improvements for mobile and tablet devices including responsive typography and touch-friendly buttons /*
+/* Violet Yousif, 7/5/2025, Altered text for Methuselah's name */ 
 .landing {
   height: 100vh;
   width: 100%;
@@ -59,6 +60,9 @@
 
 .name {
   color: #5A7F65;
+  font-family: fantasy;
+  font-size: 3.2rem;
+  font-weight: bold;
 }
 
 .subtitle {

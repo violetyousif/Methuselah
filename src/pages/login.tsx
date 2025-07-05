@@ -9,6 +9,7 @@
 // Viktor Gjrogjevski, 06/03/2025, Fixed token and data not being removed when logging out
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from Login component function parameters.
 // Violet Yousif, 6/16/2025, Removed unused localStorage code for user data and changed layout to reflect public design.
+// Violet Yousif, 7/5/2025, Changed submit button for Login to smaller size.
 
 
 import React, { useEffect, useState } from 'react';
@@ -133,17 +134,19 @@ function Login() {
             </Form.Item>
           </div>
         </Form>
-
-        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+        <div>
+          Don't have an account? <span data-theme='extPages'><Link href='/register'>Sign Up Here</Link></span>
+        </div>
+        {/* <div style={{ textAlign: 'center', marginTop: '16px' }}>
           <span style={{ color: '#333333' }}>Don't have an account? </span>
           <Button 
             type="link" 
             onClick={() => router.push('/register')}
-            style={{ color: '#4a90e2', padding: 0, fontWeight: 'bold' }}
+            style={{}}
           >
             Sign up here
-          </Button>
-        </div>
+          </Button> 
+        </div>*/}
       </div>
     </div>
   )
@@ -165,10 +168,10 @@ const styles = {
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: '6rem 1rem', // Reduced side padding for mobile
-    '@media (max-width: 768px)': {
+    '@media (maxWidth: 768px)': {
       padding: '2rem 1rem',
     },
-    '@media (max-width: 480px)': {
+    '@media (maxWidth: 480px)': {
       padding: '1rem 0.5rem',
     }
   },
@@ -234,7 +237,7 @@ const styles = {
   },
   submitButton: {
     marginTop: '8px',
-    width: '100%',
+    width: '30%',
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'

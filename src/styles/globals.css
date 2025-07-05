@@ -1,11 +1,12 @@
-/* Modified: Syed Rabbey (6/1/25), - Added custom scrollbar, modal styling, and dark theme styles */
-/* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
-/* Modified: Violet Yousif (6/2/25), added new styling for global footer */
+/* Syed Rabbey, (6/1/25), Added custom scrollbar, modal styling, and dark theme styles */
+/* Mohammad Hoque, (6/2/25), Dark theme enhancements and animation accessibility */
+/* Violet Yousif (6/2/25), added new styling for global footer */
 /* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
 /* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
 /* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
+/* Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.*/
 
-/* Modified: Violet Yo.timestamp {
+/* timestamp {
   font-size: 12px;
   margin-bottom: 4px;
   color: #000;
@@ -55,6 +56,60 @@
 /* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
 /* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
 /* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
+
+
+/* ------------- Additional Profile Styles ------------- */
+/* Profile Tabs - Custom styles */
+.profile-tabs .ant-tabs-tab {
+  font-weight: 500;
+  color: #F1F1EA !important;
+}
+
+.profile-tabs .ant-tabs-tab-active {
+  color: #136769 !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid #136769 !important;
+}
+
+.profile-tabs .ant-tabs-tab:hover {
+  color: #136769 !important;
+}
+
+.profile-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #136769 !important;
+}
+
+.profile-tabs .ant-tabs-ink-bar {
+  background-color: #136769 !important;
+  border-bottom: 3px solid #136769 !important;
+}
+
+/* Dark theme profile tabs */
+[data-theme='dark'] .profile-tabs .ant-tabs-tab {
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-tab-active {
+  color: #91cdce !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid #91cdce !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-tab:hover {
+  color: #91cdce !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #91cdce !important;
+  text-transform: uppercase !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-ink-bar {
+  background-color: #91cdce !important;
+  border-bottom: 3px solid #91cdce !important;
+}
+
+/* ------------------------------------------------------ */
 
 /* Modal Styling - Dark themed */
 .custom-modal .ant-modal-content {
@@ -316,15 +371,6 @@ body[data-theme='dark'] .methuselah-icon-wrapper {
   stroke-width: 1.5;
 }
 
-/* Link styles */
-a {
-    color: #1D1E2C !important;
-}
-a:hover {
-    color: #318182 !important;
-    text-decoration: underline;
-} 
-
 /* ------------------ DARK THEME STYLES ------------------ */
 /* Added by: Mohammad Hoque - 06/02/25 */
 [data-theme='dark'] {
@@ -497,22 +543,26 @@ body[data-fontsize='extra-large'] .ant-select-selector {
 
 /* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */
-[data-theme='dark'] a {
-    color: #318182 !important;
-    background-color: none !important;
+a {
+  font-weight: 600;
+  color: #F1F1EA !important;
 }
-[data-theme='dark'] a:hover {
-    color: #203625 !important;
-    text-decoration: underline;
-    background-color: none !important;
-}
-/* Links on Sign In and Registration*/
+a:hover {
+  color: #1D1E2C !important;
+  text-decoration: underline;
+} 
+
+/* Links on for Terms of Service:
+  It uses Modal form so it doesn't get recognized as a Link type*/
 [data-theme='extPages'] {
-  color: #3b8d8e !important;
+  font-weight: 600;
+  color: #F1F1EA !important;
   background-color: transparent !important;
+  
 }
+
 [data-theme='extPages']:hover {
-  color: #203625 !important;
+  color: #1D1E2C !important;
   text-decoration: underline;
 }
 

@@ -794,10 +794,10 @@ const styles = {
     paddingBottom: '60px',
     height: '100%',
     overflow: 'auto', // Enable scrolling for the content area
-    '@media (max-width: 768px)': {
+    '@media (maxWidth: 768px)': {
       padding: '16px'
     },
-    '@media (max-width: 480px)': {
+    '@media (maxWidth: 480px)': {
       padding: '12px'
     }
   },
