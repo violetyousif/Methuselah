@@ -33,4 +33,4 @@ const HealthMetricSchema = new mongoose.Schema({
 
 const HealthMetric = mongoose.models.HealthMetric || mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');
 export default HealthMetric;
-// export default mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');s
+// export default mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');
