@@ -54,3 +54,11 @@ backend/python/venv/
 __pycache__/
 
 .env
+
+
+# .gitignore
+.env
+
+
+
+.history/

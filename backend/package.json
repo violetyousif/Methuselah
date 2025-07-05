@@ -30,6 +30,7 @@
     "langchain": "^0.3.29",
     "mongodb": "^6.15.0",
     "mongoose": "^8.16.1",
+    "nodemailer": "^7.0.4",
     "ollama": "^0.5.16"
   },
   "devDependencies": {

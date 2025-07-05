@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   gender: { type: String, required: false },
   profilePic: { type: String, default: '/avatars/avatar1.png' },
   agreedToTerms: { type: Boolean, default: false, required: true },
+  longestStreak: { type: Number, default: 0 },
   // Health-related fields for profile data (add to table):
   weight: { type: Number }, // kg --> change to lbs
   height: { type: Number }, // cm --> change to ft or inches
