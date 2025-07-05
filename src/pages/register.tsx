@@ -4,7 +4,7 @@
 // Mohammad Hoque, 06/02/2025, Added dynamic dark mode theme support and enhanced phone formatting + form validation
 // Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
-
+// Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
 
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
@@ -293,7 +293,7 @@ const styles = {
   },
   submitButton: {
     marginTop: '8px',
-    width: '100%',
+    width: '40%',
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'

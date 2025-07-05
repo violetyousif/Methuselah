@@ -1,5 +1,6 @@
 // src/models/index.ts
-// Violet Yousif, 6/10,2025, Changed the UserData interface to include firstName, lastName instead of name.
+// Viktor Gjorgjevski, 6/3/2025, Updated interface UserData to include profile pic, firstName, lastName
+// Violet Yousif, 6/10,2025, Changed the UserData interface to include added age, weight, height, activityLevel, sleepHours, and removed profilePic and name.
 // Mohammad Hoque, 6/18/2025, Added gender to UserData interface.
 // Mohammad Hoque, 7/1/2025, Added functions for updating conversation title and deleting conversations.
 // Mohammad Hoque, 7/3/2025, Integrated backend MongoDB conversation storage with frontend conversation management.
@@ -23,8 +24,6 @@ export interface Conversation {
   updatedAt: Date
 }
 
-// Updated interface to include name and email
-// Updated interface to include profile pic, firstname, lastname: Viktor Gjorgjevski 6/3/2025
 export interface UserData {
   //name?: string
   firstName?: string

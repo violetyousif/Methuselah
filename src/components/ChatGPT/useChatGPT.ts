@@ -91,6 +91,18 @@ export const useChatGPT = (
     }
     fetchHealthData()
 
+
+    //// Prev code (DON'T DELETE):
+    // const fetchHealthData = async () => {
+    //    if (walletAddress) {
+    //      const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
+    //      const data = await response.json()
+    //      setHealthData(data || null)
+    //  }
+    // }
+    // fetchHealthData()
+
+
     const loadConversation = async () => {
       const conv = await getConversation(conversationId)
       setCurrentConversation(conv || null)
@@ -99,6 +111,7 @@ export const useChatGPT = (
 
   }, [conversationId, isLoggedIn])
 
+  //// Prev code (DON'T DELETE):
   // }, [conversationId, walletAddress])
 
   useEffect(() => {
@@ -127,7 +140,7 @@ export const useChatGPT = (
 
 
 
-  //// Prev code:
+  //// Prev code (DON'T DELETE):
   // Original Web3 version:
   // useEffect(() => {
   //   const fetchHealthData = async () => {
