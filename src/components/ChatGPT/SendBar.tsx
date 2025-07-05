@@ -1,4 +1,5 @@
-import React, { KeyboardEventHandler, useRef } from 'react'
+// Mohammad Hoque, 7/3/2025, Added responsive placeholder text that dynamically adjusts based on screen size for better mobile UX
+import React, { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
 import { ClearOutlined, SendOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { ChatRole, SendBarProps } from './interface'
 import Show from './Show'
@@ -7,6 +8,29 @@ const SendBar = (props: SendBarProps) => {
   const { loading, disabled, onSend, onClear, onStop } = props
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [placeholder, setPlaceholder] = useState("Methuselah, I need your wellness wisdom regarding...")
+
+  // Update placeholder based on screen size
+  useEffect(() => {
+    const updatePlaceholder = () => {
+      const width = window.innerWidth
+      if (width <= 400) {
+        setPlaceholder("Ask Methuselah...")
+      } else if (width <= 480) {
+        setPlaceholder("Ask for wellness advice...")
+      } else if (width <= 600) {
+        setPlaceholder("Methuselah, I need advice...")
+      } else if (width <= 768) {
+        setPlaceholder("Methuselah, I need wellness advice...")
+      } else {
+        setPlaceholder("Methuselah, I need your wellness wisdom regarding...")
+      }
+    }
+
+    updatePlaceholder()
+    window.addEventListener('resize', updatePlaceholder)
+    return () => window.removeEventListener('resize', updatePlaceholder)
+  }, [])
 
   const onInputAutoSize = () => {
     if (inputRef.current) {
@@ -106,9 +130,9 @@ const SendBar = (props: SendBarProps) => {
         {/* Text Input */}
         <textarea
           ref={inputRef}
-          className="input"
+          className="input sendbar-input-responsive"
           disabled={disabled}
-          placeholder="Methuselah, I need your wellness wisdom regarding..."
+          placeholder={placeholder}
           autoComplete="off"
           rows={1}
           style={{
@@ -117,7 +141,8 @@ const SendBar = (props: SendBarProps) => {
             borderRadius: 8,
             padding: '8px',
             backgroundColor: '#F1F1EA',
-            color: '#1E1E1E'
+            color: '#1E1E1E',
+            fontSize: 'inherit' // Let CSS handle responsive font sizing
           }}
           onKeyDown={onKeydown}
           onInput={onInputAutoSize}

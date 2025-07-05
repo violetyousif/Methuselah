@@ -23,7 +23,7 @@ const { Option } = Select
 
 export default function Settings() {
   const [fontSize, setFontSize] = useState('regular')
-  const [theme, setTheme] = useState('default')
+  const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   //// Prev: const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
@@ -44,22 +44,24 @@ export default function Settings() {
           setLastName(settings.lastName || '');
           setProfilePic(settings.profilePic || '');
           setFontSize(settings.preferences?.fontSize || 'regular');
-          setTheme(settings.preferences?.theme || 'default');
+          setTheme((settings.preferences?.theme as 'default' | 'dark') || 'default');
           
           // Apply theme and fontSize to UI immediately
           document.body.dataset.theme = settings.preferences?.theme || 'default';
           document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
         } else {
           console.warn('Failed to load settings from backend, using defaults');
-          // Don't fallback to localStorage - use defaults instead to ensure clean state
           setFontSize('regular');
           setTheme('default');
+          document.body.dataset.theme = 'default';
+          document.body.dataset.fontsize = 'regular';
         }
       } catch (error) {
         console.error('Error loading settings:', error);
-        // Don't fallback to localStorage - use defaults instead to ensure clean state
         setFontSize('regular');
         setTheme('default');
+        document.body.dataset.theme = 'default';
+        document.body.dataset.fontsize = 'regular';
       }
     };
 
@@ -127,9 +129,9 @@ export default function Settings() {
 
     if (res.ok) {
       message.success('Settings updated successfully!');
-      // Update localStorage for theme and fontSize for immediate UI application
-      localStorage.setItem('theme', theme);
-      localStorage.setItem('fontSize', fontSize);
+      // Apply updated preferences immediately to UI
+      document.body.dataset.theme = theme;
+      document.body.dataset.fontsize = fontSize;
     } else {
       message.error(data.message || 'Failed to update settings');
     }
@@ -139,26 +141,28 @@ export default function Settings() {
   }
 };
 
+  const styles = getStyles(theme);
+
   return (
-    <div className="fadeIn settingsPage">
-      <div className="settingsCard">
+    <div style={styles.page} className="fadeIn settingsPage settings-page">
+      <div style={styles.card} className="settingsCard settings-card mobile-card-shadow">
         <Link href="/chatBot">
-          <Button icon={<ArrowLeftOutlined />} className="settingsBackButton">
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="settingsBackButton back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h1 className="settingsHeader">Settings</h1>
+        <h1 style={styles.header} className="settingsHeader settings-header">Settings</h1>
 
         <div className="settingsForm">
           {/* Name Fields */}
           <div>
-            <div className="settingsLabel">First Name:</div>
-            <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="settingsInput" />
+            <div style={styles.label} className="settingsLabel">First Name:</div>
+            <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} style={styles.input} className="settingsInput" />
           </div>
           <div>
-            <div className="settingsLabel">Last Name:</div>
-            <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="settingsInput" />
+            <div style={styles.label} className="settingsLabel">Last Name:</div>
+            <Input value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} className="settingsInput" />
           </div>
 
           {/* Date of Birth Field - Moved to Profile page */}
@@ -174,7 +178,7 @@ export default function Settings() {
 
           {/* Profile Pic selection */}
           <div>
-            <div className="settingsLabel">Profile Picture:</div>
+            <div style={styles.label} className="settingsLabel">Profile Picture:</div>
             {/* Custom Image Upload Option */}
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <Avatar
@@ -196,7 +200,7 @@ export default function Settings() {
                   }}
                   accept="image/*"
                 >
-                  <Button icon={<UploadOutlined />}>Upload Custom Profile Pic</Button>
+                  <Button icon={<UploadOutlined />} style={styles.uploadButton}>Upload Custom Profile Pic</Button>
                 </Upload>
               </ImgCrop>
             </div>
@@ -211,7 +215,7 @@ export default function Settings() {
                     height: '60px',
                     borderRadius: '50%',
                     cursor: 'pointer',
-                    border: profilePic === pic ? '3px solid #318182' : '2px solid transparent',
+                    border: profilePic === pic ? `3px solid ${theme === 'dark' ? '#318182' : '#203625'}` : '2px solid transparent',
                   }}
                   onClick={() => setProfilePic(pic)}
                 />
@@ -221,8 +225,8 @@ export default function Settings() {
           
           {/* Theme Field */}
           <div>
-            <div className="settingsLabel">Theme:</div>
-            <Select value={theme} onChange={(val) => setTheme(val)} className="settingsInput">
+            <div style={styles.label} className="settingsLabel">Theme:</div>
+            <Select value={theme} onChange={(val: 'default' | 'dark') => setTheme(val)} style={styles.select} className="settingsInput">
               <Option value="default">Light</Option>
               <Option value="dark">Dark</Option>
             </Select>
@@ -230,15 +234,15 @@ export default function Settings() {
 
           {/* Font Size Field */}
           <div>
-            <div className="settingsLabel">Font Size:</div>
-            <Select value={fontSize} onChange={(val) => setFontSize(val)} className="settingsInput">
+            <div style={styles.label} className="settingsLabel">Font Size:</div>
+            <Select value={fontSize} onChange={(val) => setFontSize(val)} style={styles.select} className="settingsInput">
               <Option value="regular">Regular</Option>
               <Option value="large">Large</Option>
               <Option value="extra-large">Extra Large</Option>
             </Select>
           </div>
 
-          <Button type="primary" onClick={handleSave} className="settingsSaveButton">
+          <Button type="primary" onClick={handleSave} style={styles.primaryButton} className="settingsSaveButton">
             Save Changes
           </Button>
         </div>
@@ -275,60 +279,79 @@ export default function Settings() {
         }
       `}</style>
       <style jsx>{`
-        .settingsPage {
-          min-height: 100vh;
-          background-color: ${theme === 'dark' ? '#1D1E2C' : '#F1F1EB'};
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 40px;
-        }
-        .settingsCard {
-          background-color: ${theme === 'dark' ? '#27293d' : '#A0B6AA'};
-          border-radius: 2rem;
-          padding: 40px;
-          width: 100%;
-          max-width: 480px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .settingsBackButton {
-          margin-bottom: 24px;
-          background-color: ${theme === 'dark' ? '#318182' : '#203625'};
-          color: white !important;
-          border-color: ${theme === 'dark' ? '#318182' : '#203625'};
-          border-radius: 9999px;
-        }
-        .settingsHeader {
-          text-align: center;
-          font-size: 24px;
-          margin-bottom: 32px;
-          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'};
-        }
         .settingsForm {
           display: flex;
           flex-direction: column;
           gap: 20px;
         }
-        .settingsLabel {
-          font-weight: bold;
-          margin-bottom: 4px;
-          color: ${theme === 'dark' ? '#F1F1EA' : 'inherit'};
-        }
-        .settingsInput {
-          width: 100%;
-          border-radius: 12px;
-          background-color: ${theme === 'dark' ? '#1D1E2C' : 'inherit'};
-          color: ${theme === 'dark' ? '#F1F1EA' : 'inherit'};
-          border-color: ${theme === 'dark' ? '#318182' : 'inherit'};
-        }
-        .settingsSaveButton {
-          margin-top: 16px;
-          background-color: ${theme === 'dark' ? '#318182' : '#203625'};
-          color: white !important;
-          border-color: ${theme === 'dark' ? '#318182' : '#203625'};
-          border-radius: 9999px;
-        }
       `}</style>
     </div>
   )
 }
+
+const getStyles = (theme: 'default' | 'dark') => ({
+  page: {
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB',
+    minHeight: '100vh',
+    padding: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  card: {
+    maxWidth: 480,
+    width: '100%',
+    padding: '40px',
+    backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA',
+    borderRadius: '2rem',
+    boxShadow: theme === 'dark' 
+      ? '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(49,129,130,0.2)' 
+      : '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
+  },
+  header: {
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    fontWeight: 'bold',
+    fontSize: '24px',
+    textAlign: 'center' as const,
+    marginBottom: '32px'
+  },
+  label: {
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    fontWeight: 'bold',
+    marginBottom: '4px'
+  },
+  input: {
+    width: '100%',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    borderRadius: '12px'
+  },
+  select: {
+    width: '100%',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    borderRadius: '12px'
+  },
+  primaryButton: {
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    color: '#ffffff',
+    borderRadius: '9999px',
+    marginTop: '16px'
+  },
+  uploadButton: {
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    color: '#ffffff',
+    borderRadius: '1rem'
+  },
+  backButton: {
+    marginBottom: '24px',
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625',
+    color: '#ffffff',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    borderRadius: '9999px'
+  }
+})
