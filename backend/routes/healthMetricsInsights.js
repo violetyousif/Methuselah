@@ -25,7 +25,7 @@ const daysBetween = (date1, date2) => {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 };
 
-router.get('/healthmetrics/insights', auth, insightsLimiter, async (req, res) => { 
+router.get('/healthmetrics/insights', insightsLimiter, auth, async (req, res) => { 
   try {
     const userId = req.user.id;
     const user = await getUser.findById(userId);
