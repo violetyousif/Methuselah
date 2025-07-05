@@ -47,8 +47,8 @@ router.get('/healthmetrics/insights', insightsLimiter, auth, async (req, res) =>
       const last = weightHistory[weightHistory.length - 1].value;
       const diff = last - first;
 
-      if (diff > 0) weightTip = `💪 You're up ${diff.toFixed(1)} lbs since last week!`;
-      else if (diff < 0) weightTip = `👏 You're down ${Math.abs(diff).toFixed(1)} lbs since last week!`;
+      if (diff > 0) weightTip = `You're up ${diff.toFixed(1)} lbs since last week!`;
+      else if (diff < 0) weightTip = `You're down ${Math.abs(diff).toFixed(1)} lbs since last week!`;
       else weightTip = `⚖️ Your weight stayed the same this week. Stay consistent!`;
     } else {
       weightTip = `📉 Track your weight more often to see trends!`;
@@ -100,13 +100,13 @@ router.get('/healthmetrics/insights', insightsLimiter, auth, async (req, res) =>
 
     let consistencyTip = '';
     if (streak >= 1) {
-      consistencyTip = `✅ Amazing, you've logged data ${streak} day${streak > 1 ? 's' : ''} in a row!`;
+      consistencyTip = `Amazing, you've logged data ${streak} day${streak > 1 ? 's' : ''} in a row!`;
     } else {
-      consistencyTip = `🗓️ Let's start your streak! Try logging something today.`;
+      consistencyTip = `Let's start your streak! Try logging something today.`;
     }
 
     // 4. Placeholder AI tip
-    const aiTip = `🌱 Keep going ${user.firstName || 'friend'}! Every step counts towards your goals.`;
+    const aiTip = `Keep going ${user.firstName || 'friend'}! Every step counts towards your goals.`;
 
     res.json({
       tip1: weightTip,
