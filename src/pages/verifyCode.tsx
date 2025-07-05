@@ -1,7 +1,5 @@
-// Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
-// Syed Rabbey, 07/04/2025, Added functionality to send reset code and navigate to verification page
-
-import React, { useState } from 'react';
+// Syed Rabbey, 07/04/2025, Page to verify code sent to user's email for password reset. Appears after user submits email for reset code.
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Typography } from 'antd';
 import { useRouter } from 'next/router';
 import { ArrowLeftOutlined } from '@ant-design/icons';
@@ -9,34 +7,31 @@ import Link from 'next/link';
 
 const { Title, Text } = Typography;
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+export default function VerifyCodePage() {
   const router = useRouter();
+  const { email } = router.query;
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('resetToken') : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setError('');
     try {
-      const res = await fetch('http://localhost:8080/api/auth/send-reset-code', {
+      const res = await fetch('http://localhost:8080/api/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, code, token }),
       });
-
       const data = await res.json();
-
       if (res.ok) {
-        localStorage.setItem('resetToken', data.token);
-        router.push(`/verifyCode?email=${encodeURIComponent(email)}`);
+        router.push(`/resetPassword?email=${email}`);
       } else {
-        setMessage(data.message || 'Failed to send code.');
+        setError(data.message || 'Invalid code');
       }
     } catch (err) {
-      setMessage('Something went wrong.');
+      setError('Something went wrong.');
     }
-    setLoading(false);
   };
 
   return (
@@ -48,31 +43,32 @@ export default function ForgotPassword() {
           </Button>
         </Link>
 
-        <Title level={3} style={styles.header}>Forgot Password</Title>
+        <Title level={3} style={styles.header}>Verify Your Email</Title>
+
+        {email && <Text style={styles.subtext}>Code sent to: {email}</Text>}
 
         <Form layout="vertical" onSubmitCapture={handleSubmit}>
-          <Form.Item label={<span style={styles.label}>Email</span>} required>
+          <Form.Item label={<span style={styles.label}>6-digit Code</span>} required>
             <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              autoComplete="email"
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Enter the code"
+              maxLength={6}
               style={styles.placeholderStyle}
             />
           </Form.Item>
 
-          {message && <Text type="danger" style={{ color: 'red' }}>{message}</Text>}
+          {error && <Text type="danger" style={{ color: 'red' }}>{error}</Text>}
 
           <Form.Item>
             <Button
               type="primary"
               htmlType="submit"
-              loading={loading}
               block
               style={styles.submitButton}
             >
-              {loading ? 'Sending...' : 'Send Reset Code'}
+              Verify Code
             </Button>
           </Form.Item>
         </Form>
@@ -116,6 +112,12 @@ const styles = {
     color: '#1D1E2C',
     textAlign: 'center' as const,
     fontWeight: 'bold' as const
+  },
+  subtext: {
+    textAlign: 'center' as const,
+    marginBottom: '1rem',
+    color: '#1D1E2C',
+    display: 'block'
   },
   label: {
     color: '#1D1E2C',

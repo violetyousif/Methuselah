@@ -15,15 +15,24 @@
 // Date: 06/23/2025
 // Added RAG and LLM
 
-import healthMetricsInsightsRoute from './routes/healthMetricsInsights.js';
 import dotenv from 'dotenv';
+import path from 'path';
+
+
+// Description: Set up the express app and connect to MongoDB
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Description: Load environment variables from .env file
+dotenv.config({ path: path.join(__dirname, '/.env.local') });
+
+import healthMetricsInsightsRoute from './routes/healthMetricsInsights.js';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
 import { MongoClient } from 'mongodb';
 import cors from 'cors';          // for cross origin requests
 import bcrypt from 'bcrypt';      // to encrypt passwords
 import jwt from 'jsonwebtoken';   // security: make sure user is logged in to access app session
-import path from 'path';
 import { fileURLToPath } from 'url';
  
 // Importing routes and middleware
@@ -31,6 +40,7 @@ import logger from './middleware/logger.js';
 import userLogin from './routes/userLogin.js';
 import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';
+import userLoginRoutes from './routes/userLogin.js';
 import checkAuth from './routes/checkAuth.js';
 import userSettings from './routes/userSettings.js';
 import userData from './routes/userData.js';
@@ -39,16 +49,21 @@ import feedbackRoutes from './routes/feedback.js';
 import ragSearch from './routes/ragSearch.js';
 import ragChat   from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
+import authRoutes from './routes/authRoutes.js';  // Importing auth routes for user authentication
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
 
 // Description: Set up the express app and connect to MongoDB
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-// Description: Load environment variables from .env file
-dotenv.config({ path: path.join(__dirname, '/.env.local') });
+
+
+// 🔍 DEBUG: Log env values to verify .env is working
+console.log("MAIL_USER:", process.env.MAIL_USER);
+console.log("MAIL_PASS exists?", Boolean(process.env.MAIL_PASS));
+
+console.log('TESTING ENV', process.env.MAIL_USER);
+
 
 // Description: Create an instance of express app and set up middleware
 const app = express();
@@ -58,6 +73,7 @@ app.use(cors({
   credentials: true 
 }));
 app.use(express.json());
+app.use('/api/auth', userLoginRoutes);
 app.use(logger);  // Logs all incoming requests
 
 
@@ -76,7 +92,6 @@ app.get('/', (req, res) => {
   });
 
 // Protected Routes
-app.use('/api', userLogin);
 app.use('/api', userRegister);
 app.use('/api', userLogout);
 app.use('/api', checkAuth);
@@ -88,7 +103,7 @@ app.use('/api', ragSearch);
 app.use('/api', ragChat);
 app.use('/api', healthMetricsInsightsRoute);
 app.use('/api', healthMetrics);
-
+app.use('/api/auth', authRoutes);
 
 
 // Description: Start Server
