@@ -128,7 +128,14 @@ return (
               ))}
             </Select>
           </Form.Item>
-
+          <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                    <Form.Item
+                      label="Comments"
+                      name="comments"
+                      rules={[{ required: true, message: 'Please enter your feedback' }]}
+                    >
+                      <TextArea rows={4} />
+                    </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" style={styles.submitButton} className="feedback-submit-button">
               Submit
