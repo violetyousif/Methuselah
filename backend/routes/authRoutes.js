@@ -19,7 +19,10 @@ router.post('/verify-reset-code', (req, res) => {
 // Update password
 router.post('/update-password', async (req, res) => {
   const { email, newPassword } = req.body;
-  const user = await User.findOne({ email });
+  if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+  const user = await User.findOne({ email: { $eq: email } });
   if (!user) return res.status(404).json({ message: 'User not found' });
 
   const salt = await bcrypt.genSalt(10);
