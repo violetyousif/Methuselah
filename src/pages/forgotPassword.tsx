@@ -1,50 +1,36 @@
 // Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
-// Syed Rabbey, 07/04/2025, Added functionality to send reset code and navigate to verification page
 
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Input, Button, message } from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/router';
 
-const { Title, Text } = Typography;
+function ForgotPassword() {
+  const [form] = Form.useForm();
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  
   // Force light mode for forgot password page since user hasn't logged in yet
   useEffect(() => {
     document.body.dataset.theme = 'default';
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
   const onFinish = async (values: any) => {
     try {
-      const res = await fetch('http://localhost:8080/api/auth/send-reset-code', {
+      const response = await fetch('http://localhost:8080/api/forgotpassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: values.email })
+        credentials: 'include',
+        body: JSON.stringify(values),
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem('resetToken', data.token);
-        router.push(`/verifyCode?email=${encodeURIComponent(values.email)}`);
-
+      const data = await response.json();
+      if (response.ok) {
+        message.success('Password reset link sent. Please check your email.');
+        form.resetFields();
       } else {
-        setMessage(data.message || 'Failed to send code.');
+        message.error(data.message || 'Unable to send reset link.');
       }
     } catch (err) {
-      setMessage('Something went wrong.');
+      message.error('Server error. Please try again later.');
     }
-    setLoading(false);
   };
 
   return (
@@ -58,61 +44,53 @@ export default function ForgotPassword() {
           </Button>
         </Link>
 
-        <h2 className="forgot-password-header">Forgot Password?</h2>
-        <p  className="forgot-password-subtext">Enter your email and we'll send a reset link.</p>
+        <h2 style={styles.header} className="forgot-password-header">Forgot Password?</h2>
+        <p style={styles.subtext} className="forgot-password-subtext">Enter your email and we'll send a reset link.</p>
 
-        <Form layout="vertical" onSubmitCapture={handleSubmit}>
-          <Form.Item label={<span style={styles.label}>Email</span>} required>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              autoComplete="email"
-              style={styles.placeholderStyle}
-            />
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            label={<span style={styles.label}>Email</span>}
+            name="email"
+            rules={[
+              { required: true, message: 'Please enter your email' },
+              { type: 'email', message: 'Please enter a valid email' },
+            ]}
+          >
+            <Input placeholder="janedoe@example.com" style={styles.placeholderStyle} />
           </Form.Item>
-
-          {message && <Text type="danger" style={{ color: 'red' }}>{message}</Text>}
 
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              style={styles.submitButton}
-              className="forgot-password-submit-button"
-            >
-              {loading ? 'Sending...' : 'Send Reset Code'}
+            <Button type="primary" htmlType="submit" block style={styles.submitButton} className="forgot-password-submit-button">
+              Send Reset Link
             </Button>
           </Form.Item>
-          
         </Form>
+
+        {/* Navigation Links */}
+        <div style={styles.linkGroup}>
+          <div>
+            <Link href="/login" style={styles.linkColor}>Back to Login</Link>
+          </div>
+          <div style={{ marginTop: '1rem' }}>
+            Don’t have an account? <Link href="/register" style={styles.linkColor}>Sign Up</Link>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
+export default ForgotPassword;
+
 const styles = {
   page: {
-    backgroundColor: '#1D1E2C',
-    display: 'block',
-    position: 'absolute' as const,
+    backgroundColor: '#F1F1EB',
     minHeight: '100vh',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    height: '100%',
-    width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    padding: '6rem 0',
+    padding: '6rem',
   },
   card: {
     maxWidth: 400,
-    margin: '1rem auto',
+    margin: 'auto',
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '2rem',
@@ -122,32 +100,39 @@ const styles = {
     marginBottom: '24px',
     backgroundColor: '#203625',
     color: 'white',
-    border: 'none',
-    borderRadius: '9999px'
+    borderColor: '#203625',
+    borderRadius: '9999px',
   },
   header: {
     color: '#1D1E2C',
     textAlign: 'center' as const,
-    fontWeight: 'bold' as const
+    fontWeight: 'bold' as const,
+  },
+  subtext: {
+    textAlign: 'center' as const,
+    marginBottom: '1rem',
+    color: '#1D1E2C',
   },
   label: {
     color: '#1D1E2C',
-    fontSize: '0.95rem',
-    display: 'block',
-    alignItems: 'center',
-    gap: '0.25rem',
-    marginTop: '0.5rem',
   },
   placeholderStyle: {
     opacity: 0.8,
     color: '#1D1E2C',
   },
   submitButton: {
-    marginTop: '8px',
-    width: '100%',
     backgroundColor: '#203625',
+    borderColor: '#203625',
     color: '#e0e0e0',
-    borderRadius: '1rem'
-  }
-
-};}
+    borderRadius: '1rem',
+  },
+  linkColor: {
+    color: '#C9F4DC',
+    fontWeight: '600' as const,
+    textDecoration: 'underline' as const,
+  },
+  linkGroup: {
+    textAlign: 'center' as const,
+    marginTop: '1.5rem',
+  },
+};

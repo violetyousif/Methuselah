@@ -1,9 +1,10 @@
 // auth.js: middleware file in backend
 // PURPOSE: Reusable middleware that checks for a valid token before allowing access to a protected route.
+
 // Violet Yousif, 5/31/2025, This middleware checks if the user is authenticated by verifying the JWT token.
 // Violet Yousif, 6/14/2025, Added fixes to token call in a cookie with JWT_SECRET. Uses the cookie dependency to get the token directly from the cookie.
-// Viktor Gjorgjevski, 6/18/2025, Added console log for token verification success and failure.
 
+// Viktor Gjorgjevski, 6/18/2025, Added console log for token verification success and failure.
 
 import jwt from 'jsonwebtoken';
 
@@ -25,7 +26,5 @@ const auth = (req, res, next) => {
     res.status(400).json({ message: 'Invalid token' });
   }
 };
-
-
 
 export default auth;
