@@ -27,7 +27,7 @@ import jwt from 'jsonwebtoken';
 //import cookie from 'cookie'; // Don't need anymore, using res.cookie() directly from server.js and middleware
 
 // prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
-import rateLimit from 'express-rate-limit';
+//import rateLimit from 'express-rate-limit';
 
 
 const resetCodeLimiter = rateLimit({
