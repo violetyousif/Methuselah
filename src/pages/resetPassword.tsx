@@ -1,67 +1,67 @@
-//Syed Rabbey, 07/04/2025, Let's user enter new password, updates the password in the database, and redirects to home page.
+// Syed Rabbey, 07/06/2025, Lets user enter new password after code verification, updates it in DB, and redirects to login.
 
-import React, { useState } from 'react'
-import { Form, Input, Button, Typography, message } from 'antd'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import React, { useState } from 'react';
+import { Form, Input, Button, Typography, message } from 'antd';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography
+const { Title } = Typography;
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const router = useRouter()
+export default function ResetPassword() {
+  const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { email } = router.query;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setErrorMessage('')
+    e.preventDefault();
+    if (!email) return message.error('Missing email. Please restart the reset process.');
+
+    setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8080/api/auth/send-reset-code', {
+      const res = await fetch('http://localhost:8080/api/auth/update-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      })
+        body: JSON.stringify({ email, newPassword }),
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem('resetToken', data.token)
-        router.push(`/verifyCode?email=${encodeURIComponent(email)}`)
+        message.success('Password updated successfully. You can now log in.');
+        router.push('/login');
       } else {
-        setErrorMessage(data.message || 'Failed to send code.')
+        message.error(data.message || 'Failed to update password.');
       }
     } catch (err) {
-      setErrorMessage('Something went wrong.')
+      message.error('Something went wrong.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false)
-  }
+  };
 
   return (
     <div className="fadeIn settingsPage">
       <div className="settingsCard">
-        <Link href="/login">
+        <Link href="/forgotPassword">
           <Button icon={<ArrowLeftOutlined />} className="settingsBackButton">
             Back
           </Button>
         </Link>
-        <Title level={3} className="settingsHeader">Forgot Password</Title>
+
+        <Title level={3} className="settingsHeader">Reset Your Password</Title>
 
         <Form layout="vertical" onSubmitCapture={handleSubmit} className="settingsForm">
-          <Form.Item label="Email" required>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+          <Form.Item label="New Password" required>
+            <Input.Password
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
               className="settingsInput"
-              placeholder="Enter your email"
             />
           </Form.Item>
-
-          {errorMessage && <Text type="danger" className="block text-center">{errorMessage}</Text>}
 
           <Form.Item>
             <Button
@@ -71,12 +71,13 @@ export default function ForgotPassword() {
               loading={loading}
               block
             >
-              Send Reset Code
+              Reset Password
             </Button>
           </Form.Item>
         </Form>
       </div>
 
+      {/* Keep your global and local styles below */}
       <style jsx global>{`
         body[data-fontsize='regular'] { font-size: 16px; }
         body[data-fontsize='large'] { font-size: 18px; }
@@ -141,5 +142,5 @@ export default function ForgotPassword() {
         }
       `}</style>
     </div>
-  )
+  );
 }

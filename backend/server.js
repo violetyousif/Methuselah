@@ -37,6 +37,7 @@ import { fileURLToPath } from 'url';
  
 // Importing routes and middleware
 import logger from './middleware/logger.js';
+import userLoginRoutes from './routes/userLogin.js';
 import userLogin from './routes/userLogin.js';
 import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';

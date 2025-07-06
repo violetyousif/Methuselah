@@ -18,7 +18,7 @@ export default function VerifyCodePage() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:8080/api/auth/verify-code', {
+      const res = await fetch('http://localhost:8080/api/auth/verify-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, token }),

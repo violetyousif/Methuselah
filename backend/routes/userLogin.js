@@ -17,7 +17,6 @@ dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
 
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 const router = express.Router();
 import User from '../models/User.js'; 
 import nodemailer from 'nodemailer';
@@ -84,13 +83,17 @@ const updatePasswordLimiter = rateLimit({
 // 3. Reset password and redirect to login
 router.post('/update-password', updatePasswordLimiter, async (req, res) => {
   const { email, newPassword } = req.body;
-  const user = await User.findOne({ email: { $eq: email} });
+  const user = await User.findOne({ email: { $eq: email } });
   if (!user) return res.status(404).json({ message: 'User not found' });
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(newPassword, salt);
   await user.save();
+
+  // ✅ Important: Don't sign in here. Just send success.
+  res.status(200).json({ message: 'Password updated successfully' });
 });
+
 
 
 const loginLimiter = rateLimit({

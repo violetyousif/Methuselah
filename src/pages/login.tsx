@@ -34,7 +34,7 @@ function Login() {
 
   const onFinish = async (values: any) => {
     try {
-      const response = await fetch('http://localhost:8080/api/login', {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',     // Include cookies for session management request
