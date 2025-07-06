@@ -1,6 +1,115 @@
-/* Modified: Syed Rabbey (6/1/25), - Added custom scrollbar, modal styling, and dark theme styles */
-/* Dark theme enhancements and animation accessibility by Mohammad Hoque (6/2/25) */
-/* Modified: Violet Yousif (6/2/25), added new styling for global footer */
+/* Syed Rabbey, (6/1/25), Added custom scrollbar, modal styling, and dark theme styles */
+/* Mohammad Hoque, (6/2/25), Dark theme enhancements and animation accessibility */
+/* Violet Yousif (6/2/25), added new styling for global footer */
+/* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
+/* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
+/* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
+/* Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.*/
+
+/* timestamp {
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #000;
+}
+
+[data-theme='dark'] .timestamp {
+  color: #F1F1EA;
+}
+
+.message-name {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #888;
+}
+
+[data-theme='dark'] .message-name {
+  color: #aaa;
+}
+
+.message-header {
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #888;
+  display: flex;
+  align-items: center;
+}
+
+[data-theme='dark'] .message-header {
+  color: #aaa;
+}
+
+.message-header.align-right {
+  justify-content: flex-end;
+}
+
+.message-header.align-left {
+  justify-content: flex-start;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-left {
+  text-align: left;
+}ded new styling for global footer */
+/* Mohammad Hoque, 7/1/2025, Added proper scrolling behavior to prevent double scrollbars in chat interface */
+/* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
+/* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
+
+
+/* ------------- Additional Profile Styles ------------- */
+/* Profile Tabs - Custom styles */
+.profile-tabs .ant-tabs-tab {
+  font-weight: 500;
+  color: #F1F1EA !important;
+}
+
+.profile-tabs .ant-tabs-tab-active {
+  color: #136769 !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid #136769 !important;
+}
+
+.profile-tabs .ant-tabs-tab:hover {
+  color: #136769 !important;
+}
+
+.profile-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #136769 !important;
+}
+
+.profile-tabs .ant-tabs-ink-bar {
+  background-color: #136769 !important;
+  border-bottom: 3px solid #136769 !important;
+}
+
+/* Dark theme profile tabs */
+[data-theme='dark'] .profile-tabs .ant-tabs-tab {
+  color: #F1F1EA !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-tab-active {
+  color: #91cdce !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid #91cdce !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-tab:hover {
+  color: #91cdce !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #91cdce !important;
+  text-transform: uppercase !important;
+}
+
+[data-theme='dark'] .profile-tabs .ant-tabs-ink-bar {
+  background-color: #91cdce !important;
+  border-bottom: 3px solid #91cdce !important;
+}
+
+/* ------------------------------------------------------ */
 
 /* Modal Styling - Dark themed */
 .custom-modal .ant-modal-content {
@@ -49,6 +158,42 @@ body[data-fontsize='extra-large'] { font-size: 18px; }
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes fadeInFromLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to   { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInFromLeft {
+  from { 
+    transform: translateX(-100%); 
+  }
+  to   { 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes pulse {
+  0% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); 
+  }
+  50% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.1); 
+  }
+  100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); 
+  }
+}
+
 .fade-in {
   animation: fadeIn 1.5s ease-in-out;
 }
@@ -100,14 +245,46 @@ footer {
 
 /* Collapsed sidebar icon styles */
 .collapsed-sidebar-icon {
-  transition: all 0.3s ease !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  position: relative;
+  overflow: hidden;
 }
+
 .collapsed-sidebar-icon:hover {
   background-color: rgba(255, 255, 255, 0.2) !important;
-  transform: scale(1.1);
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
+
+.collapsed-sidebar-icon:active {
+  transform: scale(0.95) !important;
+  transition: all 0.1s ease !important;
+}
+
 [data-theme='dark'] .collapsed-sidebar-icon:hover {
   background-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Sidebar transition enhancement */
+.ant-layout-sider {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.ant-layout-sider-collapsed {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Enhanced sidebar content fade in/out */
+.sidebar-content {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-content.hidden {
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
 /* Avatar display */
@@ -193,85 +370,6 @@ body[data-theme='dark'] .methuselah-icon-wrapper {
   stroke: black;
   stroke-width: 1.5;
 }
-
-/* Link styles */
-a {
-    color: #1D1E2C !important;
-}
-a:hover {
-    color: #318182 !important;
-    text-decoration: underline;
-} 
-
-/* ------------------ DARK THEME STYLES ------------------ */
-/* Added by: Mohammad Hoque - 06/02/25 */
-/* [data-theme='dark'] {
-  background-color: #0f0f17;
-  color: #F1F1EA;
-}
-
-[data-theme='dark'] .card,
-[data-theme='dark'] .container,
-[data-theme='dark'] .ant-card {
-  background-color: #0f0f17 !important;
-  border-color: #318182 !important;
-  color: #F1F1EA !important;
-}
-
-[data-theme='dark'] .ant-btn-primary {
-  background-color: #318182 !important;
-  border-color: #318182 !important;
-  color: #ffffff !important;
-}
-[data-theme='dark'] .ant-btn-primary:hover {
-  background-color: #256c6f !important;
-  border-color: #256c6f !important;
-}
-
-[data-theme='dark'] .ant-input,
-[data-theme='dark'] .ant-select-selector,
-[data-theme='dark'] .ant-picker {
-  background-color: #0f0f17 !important;
-  border-color: #318182 !important;
-  color: #F1F1EA !important;
-}
-
-[data-theme='dark'] .ant-input:focus,
-[data-theme='dark'] .ant-select-selector:focus,
-[data-theme='dark'] .ant-picker-focused {
-  border-color: #42a9aa !important;
-  box-shadow: 0 0 0 2px rgba(66, 169, 170, 0.3) !important;
-}
-
-[data-theme='dark'] .ant-select-item-option-selected {
-  background-color: #318182 !important;
-  color: #ffffff !important;
-}
-
-[data-theme='dark'] footer {
-  background-color: #0f0f17 !important;
-  color: #F1F1EA !important;
-}
-
-[data-theme='dark'] .sider {
-  background-color: #318182 !important;
-}
-
-[data-theme='dark'] ::-webkit-scrollbar-thumb {
-  background-color: #318182;
-}
-[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
-  background-color: #0f0f17;
-}
-
-[data-theme='dark'] * {
-  scrollbar-color: #318182 #0f0f17;
-}
-
-[data-theme='dark'] .chat-icon-black-outline {
-  color: #F1F1EA;
-  stroke: #F1F1EA;
-} */
 
 /* ------------------ DARK THEME STYLES ------------------ */
 /* Added by: Mohammad Hoque - 06/02/25 */
@@ -443,42 +541,28 @@ body[data-fontsize='extra-large'] .ant-select-selector {
   font-size: 2.5em !important;
 }
 
-/* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
-body[data-fontsize='regular'] { font-size: 16px; }
-body[data-fontsize='large'] { font-size: 17px; }
-body[data-fontsize='extra-large'] { font-size: 18px; }
-
-body[data-fontsize='large'] h1,
-body[data-fontsize='large'] h2,
-body[data-fontsize='large'] input,
-body[data-fontsize='large'] .ant-select-selector {
-  font-size: 2em !important;
-}
-body[data-fontsize='extra-large'] h1,
-body[data-fontsize='extra-large'] h2,
-body[data-fontsize='extra-large'] input,
-body[data-fontsize='extra-large'] .ant-select-selector {
-  font-size: 2.5em !important;
-}
-
 /* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */
-[data-theme='dark'] a {
-    color: #318182 !important;
-    background-color: none !important;
+a {
+  font-weight: 600;
+  color: #F1F1EA !important;
 }
-[data-theme='dark'] a:hover {
-    color: #203625 !important;
-    text-decoration: underline;
-    background-color: none !important;
-}
-/* Links on Sign In and Registration*/
+a:hover {
+  color: #1D1E2C !important;
+  text-decoration: underline;
+} 
+
+/* Links on for Terms of Service:
+  It uses Modal form so it doesn't get recognized as a Link type*/
 [data-theme='extPages'] {
-  color: #3b8d8e !important;
+  font-weight: 600;
+  color: #F1F1EA !important;
   background-color: transparent !important;
+  
 }
+
 [data-theme='extPages']:hover {
-  color: #203625 !important;
+  color: #1D1E2C !important;
   text-decoration: underline;
 }
 
@@ -544,6 +628,19 @@ body[data-theme='dark'] .chat-list-container {
     min-width: 40px !important;
     min-height: 40px !important;
   }
+  
+  /* Mobile hamburger button visual feedback */
+  .collapsed-sidebar-icon.hamburger-mobile {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    animation: pulse 2s infinite;
+  }
+  
+  .collapsed-sidebar-icon.hamburger-mobile:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.05);
+    animation: none;
+  }
 }
 
 @media (min-width: 769px) {
@@ -556,6 +653,542 @@ body[data-theme='dark'] .chat-list-container {
   .collapsed-sidebar-icon {
     min-width: auto;
     min-height: auto;
+  }
+}
+
+/* Global styles for proper scrolling behavior */
+html, body {
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Ensure the main content area doesn't create unnecessary scrollbars */
+.content-area-responsive {
+  height: 100vh;
+  overflow-y: auto; /* Let the main content area handle vertical scrolling */
+}
+
+/* Remove any fixed height constraints that might cause double scrollbars */
+.ant-layout {
+  min-height: 100vh;
+}
+
+/* Additional global responsive utilities */
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .container-responsive {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Form responsive improvements */
+@media (max-width: 480px) {
+  .ant-form-item-label > label {
+    font-size: 14px !important;
+  }
+  
+  .ant-input,
+  .ant-input-password,
+  .ant-select-selector {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important; /* Touch-friendly */
+  }
+  
+  .ant-btn {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Modal responsive improvements */
+@media (max-width: 768px) {
+  .ant-modal {
+    width: 95% !important;
+    max-width: none !important;
+  }
+  
+  .custom-modal .ant-modal-content,
+  .custom-dashboard-modal .ant-modal-content {
+    margin: 0 8px;
+  }
+}
+
+/* Responsive text sizing */
+@media (max-width: 480px) {
+  h1 { font-size: 1.5rem !important; }
+  h2 { font-size: 1.3rem !important; }
+  h3 { font-size: 1.1rem !important; }
+}
+
+/* SendBar responsive input styling */
+.sendbar-input-responsive {
+  font-size: 16px;
+  transition: font-size 0.2s ease;
+}
+
+@media (max-width: 600px) {
+  .sendbar-input-responsive {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sendbar-input-responsive {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 400px) {
+  .sendbar-input-responsive {
+    font-size: 12px;
+  }
+}
+
+/* ==================== ADDITIONAL MOBILE RESPONSIVE STYLES ==================== */
+/* Mohammad Hoque, 7/3/2025, Added comprehensive mobile responsive styles for all remaining pages */
+
+/* Register Page Mobile Styles */
+@media (max-width: 768px) {
+  .register-page {
+    padding: 1rem !important;
+  }
+  
+  .register-card {
+    margin: 0.5rem auto !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .register-short-input-container {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .register-half-width {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: 0.5rem !important;
+  }
+  
+  .register-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .register-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .register-label {
+    font-size: 14px !important;
+  }
+  
+  .register-submit-button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Profile Page Mobile Styles */
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 1rem !important;
+  }
+  
+  .profile-card {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .profile-tabs .ant-tabs-tab {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+  
+  .profile-button-group {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .profile-button-group .ant-btn {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 0.5rem !important;
+  }
+  
+  .profile-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .profile-modal-title {
+    font-size: 1.2rem !important;
+  }
+  
+  .profile-form .ant-form-item-label > label {
+    font-size: 14px !important;
+  }
+  
+  .profile-date-navigation {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+  
+  .profile-date-navigation h3 {
+    font-size: 1rem !important;
+    margin: 8px 0 !important;
+  }
+}
+
+/* Settings Page Mobile Styles */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 1rem !important;
+  }
+  
+  .settings-card {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .settings-form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .settings-half-width {
+    width: 100% !important;
+  }
+  
+  .settings-avatar-section {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 0.5rem !important;
+  }
+  
+  .settings-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .settings-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .settings-section-title {
+    font-size: 1.2rem !important;
+  }
+  
+  .settings-label {
+    font-size: 14px !important;
+  }
+}
+
+/* Forgot Password Page Mobile Styles */
+@media (max-width: 768px) {
+  .forgot-password-page {
+    padding: 1rem !important;
+  }
+  
+  .forgot-password-card {
+    margin: 0.5rem auto !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .forgot-password-link-group {
+    margin-top: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .forgot-password-page {
+    padding: 0.5rem !important;
+  }
+  
+  .forgot-password-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .forgot-password-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .forgot-password-subtext {
+    font-size: 14px !important;
+  }
+  
+  .forgot-password-submit-button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Feedback Page Mobile Styles */
+@media (max-width: 768px) {
+  .feedback-page {
+    padding: 1rem !important;
+  }
+  
+  .feedback-card {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+  
+  .feedback-rating-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  
+  .feedback-textarea {
+    min-height: 120px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .feedback-page {
+    padding: 0.5rem !important;
+  }
+  
+  .feedback-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+  
+  .feedback-header {
+    font-size: 1.5rem !important;
+  }
+  
+  .feedback-textarea {
+    min-height: 100px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  .feedback-submit-button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* General Mobile Improvements for All Pages */
+@media (max-width: 768px) {
+  /* Back button improvements */
+  .back-button-mobile {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 8px 16px !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* Form item spacing */
+  .ant-form-item {
+    margin-bottom: 16px !important;
+  }
+  
+  /* Tab improvements */
+  .ant-tabs-nav {
+    margin-bottom: 16px !important;
+  }
+  
+  /* Card shadows for better depth perception */
+  .mobile-card-shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Reduce form item spacing further on very small screens */
+  .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+  
+  /* Ensure adequate touch targets */
+  .ant-btn,
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker {
+    min-height: 44px !important;
+  }
+  
+  /* Improve text readability */
+  h1, h2, h3 {
+    line-height: 1.3 !important;
+  }
+  
+  /* Better spacing for small screens */
+  .mobile-spacing-small {
+    padding: 8px !important;
+    margin: 4px 0 !important;
+  }
+}
+
+/* Portrait orientation specific styles */
+@media (max-width: 480px) and (orientation: portrait) {
+  .mobile-portrait-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .mobile-portrait-center {
+    text-align: center !important;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mobile-landscape-compact {
+    padding: 8px !important;
+  }
+  
+  .mobile-landscape-compact .ant-form-item {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Additional Mobile Utility Classes and Improvements */
+/* Mohammad Hoque, 7/3/2025, Added extra utility classes and touch interaction improvements */
+
+/* Improved touch targets for mobile */
+@media (max-width: 768px) {
+  /* Better button spacing and touch targets */
+  .ant-btn {
+    min-height: 44px !important;
+    padding: 8px 16px !important;
+    margin: 4px 0 !important;
+  }
+  
+  /* Improved form field spacing */
+  .ant-form-item-label {
+    padding-bottom: 4px !important;
+  }
+  
+  /* Better select dropdown behavior */
+  .ant-select-dropdown {
+    border-radius: 8px !important;
+  }
+  
+  /* Improved modal positioning */
+  .ant-modal-wrap {
+    padding: 16px !important;
+  }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .mobile-xs-full-width {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .mobile-xs-compact {
+    padding: 8px !important;
+    margin: 4px 0 !important;
+  }
+  
+  /* Smaller text for very small screens */
+  .mobile-xs-small-text {
+    font-size: 12px !important;
+  }
+}
+
+/* Tablet portrait optimizations */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .tablet-portrait-optimized {
+    max-width: 80% !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* High DPI screen optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .high-dpi-border {
+    border-width: 0.5px !important;
+  }
+}
+
+/* Dark mode mobile specific improvements */
+@media (max-width: 768px) {
+  [data-theme='dark'] .mobile-dark-border {
+    border-color: #318182 !important;
+    box-shadow: 0 2px 8px rgba(49, 129, 130, 0.2) !important;
+  }
+  
+  [data-theme='dark'] .mobile-dark-bg {
+    background-color: #1D1E2C !important;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Focus indicators */
+  .ant-btn:focus,
+  .ant-input:focus,
+  .ant-select-selector:focus {
+    outline: 2px solid #318182 !important;
+    outline-offset: 2px !important;
+  }
+  
+  /* Better contrast for small text */
+  .mobile-high-contrast {
+    color: #000 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  [data-theme='dark'] .mobile-high-contrast {
+    color: #fff !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .landscape-compact-form {
+    padding: 8px !important;
+  }
+  
+  .landscape-compact-form .ant-form-item {
+    margin-bottom: 8px !important;
+  }
+  
+  .landscape-reduce-height {
+    min-height: 36px !important;
+    height: 36px !important;
   }
 }
 

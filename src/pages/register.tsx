@@ -4,7 +4,7 @@
 // Mohammad Hoque, 06/02/2025, Added dynamic dark mode theme support and enhanced phone formatting + form validation
 // Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
-
+// Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
 
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
@@ -32,8 +32,12 @@ function register() {
   const [form] = Form.useForm();
   const [termsVisible, setTermsVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  //const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const router = useRouter();
+
+  // Force light mode for register page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
 
   const onFinish = async (values: any) => {
     try {
@@ -57,16 +61,16 @@ function register() {
 
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div style={styles.page} className="register-page">
+      <div style={styles.card} className="register-card mobile-card-shadow">
         {/* Back to login */}
         <Link href="/login">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Create an Account</h2>
+        <h2 style={styles.header} className="register-header">Create an Account</h2>
 
         <Form form={form} name="register" layout="vertical" onFinish={onFinish}>
 
@@ -200,7 +204,7 @@ function register() {
 
           { /* Submit Button */}
           <Form.Item style={styles.submitContainer}>
-            <Button type="primary" htmlType="submit" style={styles.submitButton}>
+            <Button type="primary" htmlType="submit" style={styles.submitButton} className="register-submit-button">
               Sign Up
             </Button>
           </Form.Item>
@@ -219,7 +223,7 @@ export default register;
 
 const styles = {
   page: {
-    backgroundColor: '#1D1E2C',
+    backgroundColor: '#F1F1EB', // Changed from dark '#1D1E2C' to light for consistency
     display: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',
@@ -237,8 +241,9 @@ const styles = {
     maxWidth: 400,
     margin: '1rem auto',
     padding: '2rem',
-    backgroundColor: '#F1F1EB',
-    borderRadius: '20px',
+    backgroundColor: '#A0B6AA',
+    borderRadius: '2rem',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
   },
   rowSpacing: {
@@ -288,7 +293,7 @@ const styles = {
   },
   submitButton: {
     marginTop: '8px',
-    width: '100%',
+    width: '40%',
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'

@@ -1,12 +1,17 @@
 // Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
 function ForgotPassword() {
   const [form] = Form.useForm();
+
+  // Force light mode for forgot password page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
 
   const onFinish = async (values: any) => {
     try {
@@ -29,18 +34,18 @@ function ForgotPassword() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div style={styles.page} className="forgot-password-page">
+      <div style={styles.card} className="forgot-password-card mobile-card-shadow">
         
         {/* Back Button to Home */}
         <Link href="/login">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
             Back
           </Button>
         </Link>
 
-        <h2 style={styles.header}>Forgot Password?</h2>
-        <p style={styles.subtext}>Enter your email and we'll send a reset link.</p>
+        <h2 style={styles.header} className="forgot-password-header">Forgot Password?</h2>
+        <p style={styles.subtext} className="forgot-password-subtext">Enter your email and we'll send a reset link.</p>
 
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
@@ -55,7 +60,7 @@ function ForgotPassword() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block style={styles.submitButton}>
+            <Button type="primary" htmlType="submit" block style={styles.submitButton} className="forgot-password-submit-button">
               Send Reset Link
             </Button>
           </Form.Item>
@@ -89,7 +94,7 @@ const styles = {
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '2rem',
-    border: '3px solid',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
   },
   backButton: {
     marginBottom: '24px',

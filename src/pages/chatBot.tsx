@@ -10,10 +10,13 @@
 // Date: 06/13/2025
 // added link to button for feedback page
 // Mohammad Hoque, 7/1/2025, Added chat tab edit name and delete functionality. Added improvements to UI repsonsiveness.
+// Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
+// Mohammad Hoque, 7/3/2025, Enhanced mobile sidebar functionality with manual toggle override, overlay, and improved responsive behavior
+// Mohammad Hoque, 7/3/2025, Added smooth sidebar collapse/expand animations with eased transitions, hover effects, and mobile pulse indicators
 
 
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown } from 'antd'
+import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import Profile from './profile'
@@ -24,6 +27,7 @@ import { getConversations, addConversation, updateConversationTitle, deleteConve
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
 import ChatModeToggle from './ChatModeToggle';
+import DeleteModal from '@/components/DeleteModal';
 
 
 
@@ -47,6 +51,12 @@ const Chatbot = () => {
   const [editingChatTitle, setEditingChatTitle] = useState('')  
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+  const [conversationsLoading, setConversationsLoading] = useState(false)
+  
+  // Custom modal state
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Responsive breakpoint for sidebar (adjust this value as needed)
   const SIDEBAR_BREAKPOINT = 768 // pixels
@@ -81,8 +91,8 @@ const Chatbot = () => {
       const newWidth = window.innerWidth
       setWindowWidth(newWidth)
       
-      // Auto-collapse sidebar when window is too small, unless manually controlled
-      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
+      // Only auto-collapse sidebar when window is too small AND user hasn't manually controlled it recently
+      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed && !isManuallyCollapsed) {
         setCollapsed(true)
       } else if (newWidth >= SIDEBAR_BREAKPOINT && collapsed && !isManuallyCollapsed) {
         setCollapsed(false)
@@ -99,32 +109,72 @@ const Chatbot = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [collapsed, isManuallyCollapsed])
 
-  // Load theme and font size from localStorage on initial render
+  // Load theme and font size from database on initial render
   useEffect(() => {
-    const theme = localStorage.getItem('theme') || 'default'
-    const fontSize = localStorage.getItem('fontSize') || 'regular'
-    document.body.dataset.theme = theme
-    document.body.dataset.fontsize = fontSize
-    setCurrentTheme(theme as 'default' | 'dark')
+    const loadPreferences = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/settings', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (res.ok) {
+          const settings = await res.json();
+          const theme = settings.preferences?.theme || 'default';
+          const fontSize = settings.preferences?.fontSize || 'regular';
+          
+          document.body.dataset.theme = theme;
+          document.body.dataset.fontsize = fontSize;
+          setCurrentTheme(theme as 'default' | 'dark');
+        } else {
+          // Fallback to defaults if can't load from database
+          document.body.dataset.theme = 'default';
+          document.body.dataset.fontsize = 'regular';
+          setCurrentTheme('default');
+        }
+      } catch (error) {
+        console.error('Error loading preferences:', error);
+        // Fallback to defaults
+        document.body.dataset.theme = 'default';
+        document.body.dataset.fontsize = 'regular';
+        setCurrentTheme('default');
+      }
+    };
+
+    loadPreferences();
   }, [])
 
   // Load user data and chat history (updated for session-based auth)
   useEffect(() => {
-    // User data is already fetched in the checkLoginStatus function above
-    // No need for separate fetch here since checkAuth already returns user data
-    
-    // Use session-based identifier for chat history (use email or fallback to default)
-    const userId = userData?.email || 'default-user'
-    const convs = getConversations(userId)
-    if (convs.length === 0) {
-      const newId = addConversation(userId, 'Chat 1')
-      setChatHistory(getConversations(userId))
-      setSelectedChatId(newId)
-      setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
-    } else {
-      setChatHistory(convs)
-      setSelectedChatId(convs[0].conversationId)
+    const loadChatHistory = async () => {
+      // User data is already fetched in the checkLoginStatus function above
+      // No need for separate fetch here since checkAuth already returns user data
+      
+      if (!isLoggedIn || !userData?.email) return
+      
+      setConversationsLoading(true)
+      try {
+        // Use session-based identifier for chat history (use email or fallback to default)
+        const userId = userData?.email || 'default-user'
+        const convs = await getConversations(userId)
+        if (convs.length === 0) {
+          const newId = await addConversation(userId, 'Chat 1')
+          const updatedConvs = await getConversations(userId)
+          setChatHistory(updatedConvs)
+          setSelectedChatId(newId)
+          setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
+        } else {
+          setChatHistory(convs)
+          setSelectedChatId(convs[0].conversationId)
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error)
+      } finally {
+        setConversationsLoading(false)
+      }
     }
+    
+    loadChatHistory()
   }, [isLoggedIn, userData?.email])
 
   //// Prev code:
@@ -182,29 +232,24 @@ const Chatbot = () => {
       message.error('Failed to connect wallet')
   }} */
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
     const userId = userData?.email || 'default-user' // Use email as user identifier, fallback to 'default-user'
     const newChatTitle = `Chat ${chatHistory.length + 1}`
-    const newId = addConversation(userId, newChatTitle)
-    setChatHistory(getConversations(userId))
+    const newId = await addConversation(userId, newChatTitle)
+    const updatedConvs = await getConversations(userId)
+    setChatHistory(updatedConvs)
     setSelectedChatId(newId)
     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
   }
 
   const handleSidebarToggle = (newCollapsedState: boolean) => {
     setCollapsed(newCollapsedState)
-    setIsManuallyCollapsed(newCollapsedState)
+    setIsManuallyCollapsed(true) // Mark as manually controlled
     
-    // If user manually expands on small screen, respect their choice temporarily
-    // But reset manual override when they resize to large screen and back
-    if (!newCollapsedState && windowWidth < SIDEBAR_BREAKPOINT) {
-      // User wants to expand on small screen - allow it but reset manual flag on next resize
-      setTimeout(() => {
-        if (window.innerWidth < SIDEBAR_BREAKPOINT) {
-          setIsManuallyCollapsed(false)
-        }
-      }, 100)
-    }
+    // Reset the manual override after some time to allow automatic behavior later
+    setTimeout(() => {
+      setIsManuallyCollapsed(false)
+    }, 5000) // Reset after 5 seconds
   }
 
   const handleEditChat = (chatId: string, currentTitle: string) => {
@@ -212,11 +257,12 @@ const Chatbot = () => {
     setEditingChatTitle(currentTitle)
   }
 
-  const handleSaveEditChat = () => {
+  const handleSaveEditChat = async () => {
     if (editingChatId && editingChatTitle.trim()) {
-      updateConversationTitle(editingChatId, editingChatTitle.trim())
+      await updateConversationTitle(editingChatId, editingChatTitle.trim())
       const userId = userData?.email || 'default-user'
-      setChatHistory(getConversations(userId))
+      const updatedConvs = await getConversations(userId)
+      setChatHistory(updatedConvs)
       setEditingChatId(null)
       setEditingChatTitle('')
       message.success('Chat name updated successfully!')
@@ -229,32 +275,50 @@ const Chatbot = () => {
   }
 
   const handleDeleteChat = (chatId: string) => {
-    Modal.confirm({
-      title: 'Delete Chat',
-      content: 'Are you sure you want to delete this chat? This action cannot be undone.',
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      onOk: () => {
-        deleteConversation(chatId)
-        const userId = userData?.email || 'default-user'
-        const updatedHistory = getConversations(userId)
-        setChatHistory(updatedHistory)
-        
-        // If deleted chat was selected, select another chat or create new one
-        if (selectedChatId === chatId) {
-          if (updatedHistory.length > 0) {
-            setSelectedChatId(updatedHistory[0].conversationId)
-          } else {
-            // Create a new chat if no chats left
-            const newId = addConversation(userId, 'Chat 1')
-            setChatHistory(getConversations(userId))
-            setSelectedChatId(newId)
-          }
+    setChatToDelete(chatId)
+    setIsDeleteModalVisible(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!chatToDelete) return
+
+    setDeleteLoading(true)
+    try {
+      console.log('Starting delete process for:', chatToDelete);
+      await deleteConversation(chatToDelete)
+      console.log('Delete API call completed');
+      
+      const userId = userData?.email || 'default-user'
+      const updatedHistory = await getConversations(userId)
+      console.log('Updated history length:', updatedHistory.length);
+      setChatHistory(updatedHistory)
+      
+      // If deleted chat was selected, select another chat or create new one
+      if (selectedChatId === chatToDelete) {
+        if (updatedHistory.length > 0) {
+          setSelectedChatId(updatedHistory[0].conversationId)
+        } else {
+          // Create a new chat if no chats left
+          const newId = await addConversation(userId, 'Chat 1')
+          const newConvs = await getConversations(userId)
+          setChatHistory(newConvs)
+          setSelectedChatId(newId)
         }
-        message.success('Chat deleted successfully!')
       }
-    })
+      message.success('Chat deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+      message.error('Failed to delete chat. Please try again.');
+    } finally {
+      setDeleteLoading(false)
+      setIsDeleteModalVisible(false)
+      setChatToDelete(null)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalVisible(false)
+    setChatToDelete(null)
   }
 
   //// Prev code:
@@ -283,7 +347,8 @@ const Chatbot = () => {
               icon={<MenuOutlined />} 
               onClick={() => handleSidebarToggle(false)} 
               style={styles.collapsedIconBtn(currentTheme)}
-              className="collapsed-sidebar-icon"
+              className="collapsed-sidebar-icon hamburger-mobile"
+              title="Open Menu"
             />
             <div style={styles.collapsedIconContainer}>
               <Button 
@@ -317,7 +382,7 @@ const Chatbot = () => {
             </div>
           </div>
         ) : (
-          <div>
+          <div className="sidebar-content" style={{ animation: 'slideInFromLeft 0.4s ease-out' }}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 <div style={styles.avatarContainer}>
@@ -355,16 +420,11 @@ const Chatbot = () => {
                               setIsLoggedIn(false);
                               setUserData(null);
                               
-                              // Reset theme to light mode
-                              localStorage.removeItem('theme');
+                              // Reset theme to light mode for public pages
                               document.body.dataset.theme = 'default';
-                              document.body.className = document.body.className.replace(/theme-\w+/g, '');
+                              document.body.dataset.fontsize = 'regular';
                               
-                              // Clear any other user-specific localStorage data
-                              localStorage.removeItem('userData');
-                              localStorage.removeItem('userPreferences');
-                              
-                              // Force light mode styles
+                              // Force light mode styles for public pages
                               document.body.style.backgroundColor = '#ffffff';
                               document.body.style.color = '#333333';
                               
@@ -399,7 +459,15 @@ const Chatbot = () => {
                     maxHeight: 'calc(100vh - 280px)' // Ensure space for bottom buttons
                   }}
                 >
-                  {chatHistory.map((chat) => (
+                  {conversationsLoading ? (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                      <Spin size="small" />
+                      <Text style={{ display: 'block', marginTop: 8, color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C' }}>
+                        Loading conversations...
+                      </Text>
+                    </div>
+                  ) : (
+                    chatHistory.map((chat) => (
                     <div
                       key={chat.conversationId}
                       style={{
@@ -471,7 +539,8 @@ const Chatbot = () => {
                         />
                       </Dropdown>
                     </div>
-                  ))}
+                  ))
+                  )}
                 </div>
               </div>
               
@@ -496,6 +565,15 @@ const Chatbot = () => {
           </div>
         )}
       </Sider>
+      
+      {/* Overlay for mobile when sidebar is open */}
+      {!collapsed && windowWidth < SIDEBAR_BREAKPOINT && (
+        <div 
+          style={styles.mobileOverlay}
+          onClick={() => handleSidebarToggle(true)}
+        />
+      )}
+      
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
@@ -508,6 +586,7 @@ const Chatbot = () => {
               assistantBubbleColor="#9AB7A9"
               userBubbleColor="#318182"
               userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
+              userName={userData?.firstName || 'User'}
               chatMode={chatMode}
             />
           )}
@@ -529,7 +608,18 @@ const Chatbot = () => {
          </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>
-      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />      
+      <Dashboard visible={dashboardVisible} onClose={() => setDashboardVisible(false)} />
+      
+      {/* Custom confirmation modal for delete operations */}
+      <DeleteModal
+        open={isDeleteModalVisible}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        title="Delete Chat"
+        message="Are you sure you want to delete this chat? This action cannot be undone."
+        loading={deleteLoading}
+      />
+      
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
     </Layout>
@@ -556,7 +646,12 @@ const styles = {
     top: 0,
     bottom: 0,
     zIndex: 1000,
-    transition: 'width 0.3s ease' // Smooth transition for width changes
+    transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition
+    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+    '@media (max-width: 768px)': {
+      zIndex: 1001, // Higher z-index on mobile to appear above content
+      boxShadow: '2px 0 20px rgba(0, 0, 0, 0.3)' // Stronger shadow on mobile
+    }
   }),
   collapsedMenu: {
     display: 'flex',
@@ -564,14 +659,18 @@ const styles = {
     alignItems: 'center',
     paddingTop: '8px',
     height: '100vh',
-    gap: '8px'
+    gap: '8px',
+    opacity: 1,
+    transform: 'translateX(0)',
+    transition: 'all 0.3s ease-in-out'
   },
   collapsedIconContainer: {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     gap: '12px',
-    marginTop: '16px'
+    marginTop: '16px',
+    animation: 'fadeInFromLeft 0.4s ease-out'
   },
   collapsedIconBtn: (theme: 'default' | 'dark') => ({
     backgroundColor: 'transparent',
@@ -584,7 +683,13 @@ const styles = {
     justifyContent: 'center',
     width: '40px',
     height: '40px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transform: 'scale(1)',
+    '&:hover': {
+      transform: 'scale(1.1)',
+      backgroundColor: 'rgba(255, 255, 255, 0.15)'
+    }
   }),
   transparentBtn: {
     backgroundColor: 'transparent',
@@ -620,7 +725,14 @@ const styles = {
     backgroundColor: theme === 'dark' ? '#318182' : '#F1F1EA',
     color: theme === 'dark' ? '#ffffff' : '#000000',
     border: 'none',
-    borderRadius: '1rem'
+    borderRadius: '1rem',
+    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transform: 'translateX(0)',
+    '&:hover': {
+      backgroundColor: theme === 'dark' ? '#256c6f' : '#e0e0e0',
+      transform: 'translateX(4px)',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+    }
   }),
   smallBtn: (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#F1F1EA',
@@ -667,14 +779,39 @@ const styles = {
   contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
     marginLeft: collapsed ? 48 : 250,
     backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
-    transition: 'margin-left 0.3s ease' // Smooth transition for responsive behavior
+    transition: 'margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition matching sidebar
+    height: '100vh',
+    overflow: 'hidden', // Let the content handle its own scrolling
+    '@media (max-width: 768px)': {
+      marginLeft: 48 // Always use collapsed margin on mobile
+    }
   }),
   content: {
     padding: '24px',
     maxWidth: '960px',
     margin: '0 auto',
     width: '100%',
-    paddingBottom: '60px'
+    paddingBottom: '60px',
+    height: '100%',
+    overflow: 'auto', // Enable scrolling for the content area
+    '@media (maxWidth: 768px)': {
+      padding: '16px'
+    },
+    '@media (maxWidth: 480px)': {
+      padding: '12px'
+    }
+  },
+  mobileOverlay: {
+    position: 'fixed' as 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
+    display: 'block',
+    animation: 'fadeIn 0.3s ease-out',
+    backdropFilter: 'blur(2px)'
   },
   footer: {
     position: 'fixed',
