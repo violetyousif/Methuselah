@@ -1,3 +1,5 @@
+//  Mizanur Mizan, 07/02/2025, Added new fields for mood, brekfast, lunch, dinner
+
 // HealthMetric.js: defines the structure of a HealthMetric call in MongoDB.
 import mongoose from 'mongoose';
 
@@ -14,7 +16,16 @@ const HealthMetricSchema = new mongoose.Schema({
     of: new mongoose.Schema({
       sleepHours: { type: Number, required: true },
       exerciseHours: { type: Number, required: true },
-      calories: { type: Number, required: true }
+      mood: { type: String, default: '' },
+      calories: { type: Number, required: true },
+      meals: {
+        type: new mongoose.Schema({
+          breakfast: { type: String, default: '' },
+          lunch: { type: String, default: '' },
+          dinner: { type: String, default: '' }
+        }, { _id: false }),
+        default: undefined
+      }
     }, { _id: false })}
   },
   // metric: { type: String, required: true }, // e.g., "sleep", "exercise"
