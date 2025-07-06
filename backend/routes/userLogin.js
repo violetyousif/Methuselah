@@ -57,7 +57,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     try {
       token = jwt.sign(
         // Assigning data User(collection) variable: _id and email to userId and email respectively
-        {  userId: user._id, email: user.email }, 
+        {  userId: user._id, email: user.email.toLowerCase(), role: user.role },
         process.env.JWT_SECRET, // Secret key to prove its from our server (authentication)
         { expiresIn: '1h' }     // Token will expire in 1 hour
         );

@@ -10,6 +10,7 @@
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from Login component function parameters.
 // Violet Yousif, 6/16/2025, Removed unused localStorage code for user data and changed layout to reflect public design.
 // Violet Yousif, 7/5/2025, Changed submit button for Login to smaller size.
+// Violet Yousif, 7/5/2025, Added role-based access control to the login page.
 
 
 import React, { useEffect, useState } from 'react';
@@ -43,7 +44,16 @@ function Login() {
       const data = await response.json();
       if (response.ok) {
         message.success('Login successful!')
-        router.push('/chatBot')
+        if (data.user.role === 'admin') {
+          // Redirect to admin dashboard or perform admin-specific actions
+          //router.push('/admin/dashboard');
+          router.push('/admin/uploadData'); // Adjust this path as needed
+        }
+        else {
+          // Redirect to user dashboard or perform user-specific actions
+          router.push('/chatBot')
+        }
+      
         // localStorage.setItem('usersName', data.user.firstName || 'Guest') 
             
         // localStorage.setItem('userData', JSON.stringify(data.user)); 
@@ -184,7 +194,7 @@ const styles = {
     borderRadius: '2rem',
     boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
-    '@media (max-width: 480px)': {
+    '@media (maxWidth: 480px)': {
       margin: '0.5rem auto',
       padding: '1.5rem',
       borderRadius: '16px',
