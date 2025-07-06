@@ -17,6 +17,7 @@ dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 const router = express.Router();
 import User from '../models/User.js'; 
 import nodemailer from 'nodemailer';
@@ -29,11 +30,21 @@ import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 
 
+const resetCodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit to 5 requests per window per IP
+  message: {
+    message: 'Too many reset requests, please try again after 15 minutes.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 
 // 1. Send reset code
-router.post('/send-reset-code', async (req, res) => {
+router.post('/send-reset-code', resetCodeLimiter, async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: {$eq: email}});
   if (!user) return res.status(404).json({ message: 'Email not found.' });
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -60,24 +71,25 @@ router.post('/verify-reset-code', (req, res) => {
   }
 });
 
-// 3. Reset password and auto-login
-router.post('/update-password', async (req, res) => {
+const updatePasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit to 10 requests per IP per windowMs
+  message: {
+    message: 'Too many password reset attempts, please try again after 15 minutes',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// 3. Reset password and redirect to login
+router.post('/update-password', updatePasswordLimiter, async (req, res) => {
   const { email, newPassword } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: { $eq: email} });
   if (!user) return res.status(404).json({ message: 'User not found' });
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(newPassword, salt);
   await user.save();
-
-
-  // Log them in
-  const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, {
-    expiresIn: '7d',
-  });
-
-  res.cookie('token', token, { httpOnly: true });
-  res.json({ message: 'Password updated and logged in.' });
 });
 
 

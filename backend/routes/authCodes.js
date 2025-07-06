@@ -3,6 +3,8 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js'; // Replace with your actual user model
+import rateLimit from 'express-rate-limit';
+import validator from 'validator';
 const router = express.Router();
 
 // Verify reset code
@@ -16,10 +18,26 @@ router.post('/verify-reset-code', (req, res) => {
   }
 });
 
+
+const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3, // only 3 attempts per IP per 15 mins
+  message: {
+    message: 'Too many password reset attempts. Try again in 15 minutes.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Update password
-router.post('/update-password', async (req, res) => {
+router.post('/update-password', passwordResetLimiter, async (req, res) => {
   const { email, newPassword } = req.body;
-  const user = await User.findOne({ email });
+
+  if (typeof email !== 'string' || !validator.isEmail(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  const user = await User.findOne({ email: { $eq: email } });
   if (!user) return res.status(404).json({ message: 'User not found' });
 
   const salt = await bcrypt.genSalt(10);

@@ -40,7 +40,6 @@ import logger from './middleware/logger.js';
 import userLogin from './routes/userLogin.js';
 import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';
-import userLoginRoutes from './routes/userLogin.js';
 import checkAuth from './routes/checkAuth.js';
 import userSettings from './routes/userSettings.js';
 import userData from './routes/userData.js';
@@ -49,7 +48,7 @@ import feedbackRoutes from './routes/feedback.js';
 import ragSearch from './routes/ragSearch.js';
 import ragChat   from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
-import authRoutes from './routes/authRoutes.js';  // Importing auth routes for user authentication
+import authCodes from './routes/authCodes.js';  // Importing auth codes for user authentication
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -103,7 +102,7 @@ app.use('/api', ragSearch);
 app.use('/api', ragChat);
 app.use('/api', healthMetricsInsightsRoute);
 app.use('/api', healthMetrics);
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authCodes);
 
 
 // Description: Start Server
