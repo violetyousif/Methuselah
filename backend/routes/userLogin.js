@@ -31,7 +31,17 @@ import rateLimit from 'express-rate-limit';
 
 
 // 1. Send reset code
-router.post('/send-reset-code', async (req, res) => {
+const resetCodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit to 5 requests per IP per windowMs
+  message: {
+    message: 'Too many reset code requests, please try again after 15 minutes',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.post('/send-reset-code', resetCodeLimiter, async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) return res.status(404).json({ message: 'Email not found.' });
