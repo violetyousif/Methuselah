@@ -8,6 +8,7 @@
 // Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, inch) instead of metric (kg, cm).
 // Mohammad Hoque, 06/19/2025, Switched Activity Level to modal selection with dropdown icon and helper text.
 // Violet Yousif, 06/21/2025, Added confirmation message on successful profile update.
+// Mizanur Mizan, 07/03/2025-07/04/2025, Added Health Metrics section with date selection for sleep hours, exercise hours, mood, calories, and meals
 
 import React, { useState, useEffect } from 'react'
 import { Form, InputNumber, Select, Button, Input, message} from 'antd'
@@ -20,6 +21,8 @@ import { Tabs } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat);
+import { Calendar, Modal } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
 
 /* Old Code
 interface ProfileProps {
@@ -46,6 +49,13 @@ const Profile: React.FC = () => {
   const [exerciseHours, setExerciseHours] = useState<number>(0);
   const [calories, setCalories] = useState<number>(0);
   const [allMetrics, setAllMetrics] = useState<Record<string, any>>({});
+  const [mealInputs, setMealInputs] = useState({
+    breakfast: '',
+    lunch: '',
+    dinner: ''
+  });
+  const [mood, setMood] = useState('');
+  const [calendarVisible, setCalendarVisible] = useState(false);
 
   // Calendar cell click
   /* const onSelectDate = (date: dayjs.Dayjs) => {
@@ -80,7 +90,9 @@ const Profile: React.FC = () => {
           date: selectedDate,
           sleepHours,
           exerciseHours,
-          calories
+          mood,
+          calories,
+          meals: mealInputs
         })
       });
 
@@ -93,7 +105,9 @@ const Profile: React.FC = () => {
         [selectedDate]: {
           sleepHours,
           exerciseHours,
-          calories
+          mood,
+          calories,
+          meals: mealInputs
         }
       }));
     } catch (err) {
@@ -144,17 +158,48 @@ const Profile: React.FC = () => {
       setSleepHours(existing.sleepHours ?? 0);
       setExerciseHours(existing.exerciseHours ?? 0);
       setCalories(existing.calories ?? 0);
+      setMealInputs({
+        breakfast: existing.meals?.breakfast || '',
+        lunch: existing.meals?.lunch || '',
+        dinner: existing.meals?.dinner || ''
+      });
+      setMood(existing.mood || '');
     } else {
       setSleepHours(0);
       setExerciseHours(0);
       setCalories(0);
+      setMealInputs({
+        breakfast: '',
+        lunch: '',
+        dinner: ''
+      });
+      setMood('');
     }
   }, [selectedDate, allMetrics]); // depends on selected date or new data
 
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') || 'default'
-    setCurrentTheme(storedTheme as 'default' | 'dark')
+    const loadPreferences = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/settings', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (res.ok) {
+          const settings = await res.json();
+          const theme = settings.preferences?.theme || 'default';
+          setCurrentTheme(theme as 'default' | 'dark');
+        } else {
+          setCurrentTheme('default');
+        }
+      } catch (error) {
+        console.error('Error loading preferences:', error);
+        setCurrentTheme('default');
+      }
+    };
+
+    loadPreferences();
   }, [])
 
   useEffect(() => {
@@ -230,28 +275,29 @@ const Profile: React.FC = () => {
   const styles = getStyles(currentTheme)
 
   return (
-    <div style={styles.page}>
-        <div style={styles.card}>
+    <div style={styles.page} className="profile-page">
+        <div style={styles.card} className="profile-card mobile-card-shadow">
       <Link href="/chatBot">
-      < Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+      < Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
           Back
         </Button>
       </Link>
       {/* <h2 style={styles.modalTitle}>User Profile - Health Data</h2> */}
       <Tabs
-        defaultActiveKey="general" centered items={[
+        defaultActiveKey="general" centered className="profile-tabs" items={[
         {
           key: 'general',
           label: 'General',
           children: (
           <>
-      <h2 style={styles.modalTitle}>User Profile - Health Data</h2>
+      <h2 style={styles.modalTitle} className="profile-modal-title">User Profile - Health Data</h2>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{ activityLevel: 'moderate' }}
         style={styles.form}
+        className="profile-form"
       >
         <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
           <Input style={styles.input} />
@@ -382,8 +428,10 @@ const Profile: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} style={styles.primaryButton}>Save</Button>
-          <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
+          <div className="profile-button-group">
+            <Button type="primary" htmlType="submit" loading={loading} style={styles.primaryButton}>Save</Button>
+            <Button htmlType="button" onClick={() => form.resetFields()} style={styles.cancelButton}>Reset</Button>
+          </div>
         </Form.Item>
       </Form>
     </>
@@ -393,7 +441,32 @@ const Profile: React.FC = () => {
     label: 'Daily Health Metrics',
     children: (
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+          <Button
+            icon={<CalendarOutlined />}
+            onClick={() => setCalendarVisible(true)}
+            style={{ marginLeft: 'auto' }}
+          >
+            Calendar
+          </Button>
+        </div>
+        <Modal
+          title="Select a Date"
+          open={calendarVisible}
+          onCancel={() => setCalendarVisible(false)}
+          footer={null}
+        >
+          <Calendar
+            fullscreen={false}
+            value={dayjs(selectedDate)}
+            onSelect={date => {
+              setSelectedDate(date.format('YYYY-MM-DD'));
+              setCalendarVisible(false);
+            }}
+            disabledDate={current => current && current > dayjs().endOf('day')}
+          />
+        </Modal>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }} className="profile-date-navigation">
           <Button icon={<LeftOutlined />} onClick={() => {
             const prev = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
             setSelectedDate(prev);
@@ -426,9 +499,51 @@ const Profile: React.FC = () => {
           <Form.Item label={<span style={styles.metricsLabel}>Exercise Hours</span>}>
             <InputNumber min={0} max={12} value={exerciseHours} onChange={(v) => v !== null && setExerciseHours(v)} style={{ width: '100%' }} />
           </Form.Item>
+          <Form.Item label={<span style={styles.metricsLabel}>Mood</span>}>
+            <Select
+              value={mood}
+              onChange={setMood}
+              style={{ width: '100%' }}
+              placeholder="Select your mood"
+            >
+              <Select.Option value="happy">Happy</Select.Option>
+              <Select.Option value="neutral">Neutral</Select.Option>
+              <Select.Option value="sad">Sad</Select.Option>
+              <Select.Option value="stressed">Stressed</Select.Option>
+              <Select.Option value="excited">Excited</Select.Option>
+              <Select.Option value="tired">Tired</Select.Option>
+            </Select>
+          </Form.Item>
           {/* <Form.Item label="Calories"> */}
           <Form.Item label={<span style={styles.metricsLabel}>Calories</span>}>
             <InputNumber min={0} value={calories} onChange={(v) => v !== null && setCalories(v)} style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item label={<span style={styles.metricsLabel}>Breakfast</span>}>
+            <Input.TextArea
+              value={mealInputs.breakfast}
+              onChange={e => setMealInputs({ ...mealInputs, breakfast: e.target.value })}
+              placeholder="E.g. 2 eggs, toast, orange juice"
+              autoSize
+            />
+          </Form.Item>
+
+          <Form.Item label={<span style={styles.metricsLabel}>Lunch</span>}>
+            <Input.TextArea
+              value={mealInputs.lunch}
+              onChange={e => setMealInputs({ ...mealInputs, lunch: e.target.value })}
+              placeholder="E.g. chicken sandwich, salad"
+              autoSize
+            />
+          </Form.Item>
+
+          <Form.Item label={<span style={styles.metricsLabel}>Dinner</span>}>
+            <Input.TextArea
+              value={mealInputs.dinner}
+              onChange={e => setMealInputs({ ...mealInputs, dinner: e.target.value })}
+              placeholder="E.g. salmon, rice, broccoli"
+              autoSize
+            />
           </Form.Item>
 
           <Form.Item>
@@ -464,8 +579,9 @@ const getStyles = (theme: 'default' | 'dark') => ({
     padding: '2rem',
     backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA', // Only dark changed
     borderRadius: '2rem',
-    border: '3px solid',
-    borderColor: theme === 'dark' ? '#318182' : '#000000' // Only dark changed
+    boxShadow: theme === 'dark' 
+      ? '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(49,129,130,0.2)' 
+      : '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
   },
   modalMask: {
     backgroundColor: theme === 'dark'

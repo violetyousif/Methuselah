@@ -129,12 +129,30 @@ const legendStyle = { color: axisColor };
 
 
 React.useEffect(() => {
-  const storedTheme = localStorage.getItem('theme') || 'default'
-  setCurrentTheme(storedTheme as 'default' | 'dark')
-}, [visible]);
+  const loadPreferences = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/settings', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        const settings = await res.json();
+        const theme = settings.preferences?.theme || 'default';
+        setCurrentTheme(theme as 'default' | 'dark');
+      } else {
+        setCurrentTheme('default');
+      }
+    } catch (error) {
+      console.error('Error loading preferences:', error);
+      setCurrentTheme('default');
+    }
+  };
 
-
-
+  if (visible) {
+    loadPreferences();
+  }
+}, [visible])
   const styles = getStyles(currentTheme)
 const [metrics, setMetrics] = React.useState<Record<string, any>>({});
 const [last7Data, setLast7Data] = React.useState<
@@ -172,8 +190,11 @@ React.useEffect(() => {
       open={visible}
       onCancel={onClose}
       footer={null}
-      width="80%"
-      style={styles.modalContainer}
+      width="90%"
+      style={{
+        ...styles.modalContainer,
+        maxWidth: '1200px'
+      }}
       styles={{
         body: styles.modalBody,
         mask: styles.modalMask,
@@ -317,7 +338,13 @@ const getStyles = (theme: 'default' | 'dark') => ({
   },
   chartContainer: {
     flex: 1,
-    minWidth: '300px'
+    minWidth: '300px',
+    '@media (maxWidth: 768px)': {
+      minWidth: '280px'
+    },
+    '@media (maxWidth: 480px)': {
+      minWidth: '100%'
+    }
   },
   pieChartSection: {
     display: 'flex',

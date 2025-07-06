@@ -2,6 +2,7 @@
 // Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Dashboard component function parameters to prevent errors.
 // Mizanur Mizan, 6/23/2025, Added extended interface for placing current avatar image next to the user messages
 // Syed Rabbey, 6/27/2025, Adjusted the display speed of the assistant's message to be more natural and readable.
+// Mohammad Hoque, 7/3/2025, Added user name display functionality - shows "Methuselah" under AI messages and user's first name under user messages, with improved name and timestamp positioning above message bubbles.
 
 
 import React, { useEffect, useState } from 'react'
@@ -18,10 +19,11 @@ interface MessageItemProps extends ChatMessageItemProps {
   assistantColor?: string
   userColor?: string
   userAvatar?: string
+  userName?: string
 }
 
 const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
-  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png' } = props
+  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
   
   const isUser = message.role === 'user'
   const bgColor = isUser ? userColor : assistantColor
@@ -54,18 +56,34 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
 
   return (
     <div style={{ marginBottom: '16px' }}>
-      <div className={`timestamp ${isUser ? 'align-right' : 'align-left'}`}>
-        {timestamp}
-    </div>
-    <div
-      className="message-item"
-      style={{
-        display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
-        margin: '6px 0',
-        alignItems: 'flex-start'
-      }}
-    >
+      {/* Name and timestamp together above the message */}
+      <div className={`message-header ${isUser ? 'align-right' : 'align-left'}`} style={{ marginBottom: '4px' }}>
+        <span style={{
+          fontSize: '12px',
+          color: '#888',
+          fontWeight: '600',
+          marginRight: '8px'
+        }}>
+          {isUser ? userName : 'Methuselah'}
+        </span>
+        <span style={{
+          fontSize: '11px',
+          color: '#aaa',
+          fontWeight: '400'
+        }}>
+          {timestamp}
+        </span>
+      </div>
+      
+      <div
+        className="message-item"
+        style={{
+          display: 'flex',
+          justifyContent: isUser ? 'flex-end' : 'flex-start',
+          margin: '6px 0',
+          alignItems: 'flex-start'
+        }}
+      >
       {!isUser && (
         <div style={{ marginRight: 8 }}>
           <div className="methuselah-icon-wrapper">

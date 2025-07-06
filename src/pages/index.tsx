@@ -13,6 +13,11 @@ export default function Home() {
   const [fadeOut, setFadeOut] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Force light mode for landing page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
+
   // const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   try {
   //     const userMessage = e.target.value
