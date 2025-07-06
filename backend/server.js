@@ -1,28 +1,16 @@
 // Viktor, 5/28/2025, Backend file that contains routes and calls to perform database functions
 // Violet Yousif, 5/31/2025, Fixed errors and converted imported CommonJS to ES module syntax
+// Viktor Gjorgjevski, 06/12/2025, import for feedback and route api
 // Mohammad Hoque, 6/13/2025, Added userProfile route to handle profile fetch and update
 // Violet Yousif, 6/16/2025, Added cookie-parser to handle auth cookies
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/12/2025
-// import for feedback and route api
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/18/2025
-// updated feedback and route api
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/23/2025
-// Added RAG and LLM
-
+// Viktor Gjorgjevski, 06/18/2025, updated feedback and route api
+// Viktor Gjorgjevski, 06/23/2025, Added ragChat and ragSearch routes for RAG functionality
+// Violet Yousif, 7/6/2025, Added admin route directory
 
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
-import { MongoClient } from 'mongodb';
 import cors from 'cors';          // for cross origin requests
-import bcrypt from 'bcrypt';      // to encrypt passwords
-import jwt from 'jsonwebtoken';   // security: make sure user is logged in to access app session
 import path from 'path';
 import { fileURLToPath } from 'url';
  
@@ -40,6 +28,7 @@ import ragSearch from './routes/ragSearch.js';
 import ragChat   from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
 import userChatHist from './routes/userChatHist.js';
+import adminRoutes from './routes/adminServer.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -76,7 +65,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to the Methuselah Backend API!');
   });
 
-// Protected Routes
+// Protected User Routes
 app.use('/api', userLogin);
 app.use('/api', userRegister);
 app.use('/api', userLogout);
@@ -90,6 +79,8 @@ app.use('/api', ragChat);
 app.use('/api', healthMetrics);
 app.use('/api', userChatHist);
 
+// Admin Routes
+app.use('/api', adminRoutes); 
 
 
 // Description: Start Server

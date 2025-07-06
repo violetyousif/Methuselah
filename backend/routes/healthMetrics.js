@@ -17,7 +17,7 @@ const limiter = RateLimit({
 router.use('/health-metrics', limiter);
 
 // GET route to fetch all health metrics for the logged-in user
-router.get('/health-metrics', auth, async (req, res) => {
+router.get('/health-metrics', auth(), async (req, res) => {
   try {
     const userId = req.user.id;
     const data = await HealthMetric.findOne({ userId });
@@ -32,7 +32,7 @@ router.get('/health-metrics', auth, async (req, res) => {
 });
 
 // Save or update daily metrics
-router.patch('/health-metrics', auth, async (req, res) => {
+router.patch('/health-metrics', auth(), async (req, res) => {
   try {
     const { date, sleepHours, exerciseHours, mood, calories, meals } = req.body;
     const userId = req.user.id;

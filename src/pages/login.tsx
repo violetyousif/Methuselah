@@ -47,7 +47,7 @@ function Login() {
         if (data.user.role === 'admin') {
           // Redirect to admin dashboard or perform admin-specific actions
           //router.push('/admin/dashboard');
-          router.push('/admin/uploadData'); // Adjust this path as needed
+          router.push('/admin/adminUpload');
         }
         else {
           // Redirect to user dashboard or perform user-specific actions

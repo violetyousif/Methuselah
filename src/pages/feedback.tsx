@@ -31,7 +31,7 @@ export default function FeedbackPage(){
     // Handles form submission: sends POST request with feedback data and token
     const handleSubmit = async (values: any) => {
     try{
-        const res = await fetch('http://localhost:8080/api/submit-feedback', {
+        const res = await fetch('http://localhost:8080/api/feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -20,7 +20,7 @@ const conversationLimiter = rateLimit({
 });
 
 // GET /conversations - Get all conversations for the authenticated user
-router.get('/conversations', conversationLimiter, auth, async (req, res) => {
+router.get('/conversations', conversationLimiter, auth(), async (req, res) => {
   try {
     const user = await User.findById(req.user?.id);
     if (!user) {
@@ -55,7 +55,7 @@ router.get('/conversations', conversationLimiter, auth, async (req, res) => {
 });
 
 // POST /conversations - Create a new conversation
-router.post('/conversations', conversationLimiter, auth, async (req, res) => {
+router.post('/conversations', conversationLimiter, auth(), async (req, res) => {
   try {
     const { title = 'New Chat' } = req.body;
     
@@ -91,7 +91,7 @@ router.post('/conversations', conversationLimiter, auth, async (req, res) => {
 });
 
 // PUT /conversations/:id/title - Update conversation title
-router.put('/conversations/:id/title', conversationLimiter, auth, async (req, res) => {
+router.put('/conversations/:id/title', conversationLimiter, auth(), async (req, res) => {
   try {
     const { id } = req.params;
     const { title } = req.body;
@@ -129,7 +129,7 @@ router.put('/conversations/:id/title', conversationLimiter, auth, async (req, re
 });
 
 // DELETE /conversations/:id - Delete a conversation
-router.delete('/conversations/:id', conversationLimiter, auth, async (req, res) => {
+router.delete('/conversations/:id', conversationLimiter, auth(), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -160,7 +160,7 @@ router.delete('/conversations/:id', conversationLimiter, auth, async (req, res) 
 });
 
 // POST /conversations/:id/messages - Add a message to conversation
-router.post('/conversations/:id/messages', conversationLimiter, auth, async (req, res) => {
+router.post('/conversations/:id/messages', conversationLimiter, auth(), async (req, res) => {
   try {
     const { id } = req.params;
     const { sender, text } = req.body;
@@ -214,7 +214,7 @@ router.post('/conversations/:id/messages', conversationLimiter, auth, async (req
 });
 
 // GET /conversations/:id - Get a specific conversation
-router.get('/conversations/:id', conversationLimiter, auth, async (req, res) => {
+router.get('/conversations/:id', conversationLimiter, auth(), async (req, res) => {
   try {
     const { id } = req.params;
 

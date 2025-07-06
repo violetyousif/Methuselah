@@ -279,7 +279,7 @@ const Profile: React.FC = () => {
         <div style={styles.card} className="profile-card mobile-card-shadow">
       <Link href="/chatBot">
       < Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
-          Back
+          Home
         </Button>
       </Link>
       {/* <h2 style={styles.modalTitle}>User Profile - Health Data</h2> */}

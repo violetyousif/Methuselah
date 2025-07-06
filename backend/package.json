@@ -18,7 +18,6 @@
     "@huggingface/inference": "^4.0.6",
     "@mozilla/readability": "^0.6.0",
     "bcrypt": "^5.1.1",
-    "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -34,12 +33,14 @@
     "langchain": "^0.3.29",
     "mongodb": "^6.15.0",
     "mongoose": "^8.16.1",
+    "multer": "^2.0.1",
     "node-fetch": "^3.3.2",
     "ollama": "^0.5.16",
     "pdf-parse": "^1.1.1",
     "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
+    "@types/multer": "^2.0.0",
     "nodemon": "^3.1.9"
   }
 }

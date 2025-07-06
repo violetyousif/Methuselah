@@ -148,7 +148,7 @@ export default function Settings() {
       <div style={styles.card} className="settingsCard settings-card mobile-card-shadow">
         <Link href="/chatBot">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="settingsBackButton back-button-mobile">
-            Back
+            Home
           </Button>
         </Link>
 

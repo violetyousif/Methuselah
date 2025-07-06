@@ -1,3 +1,5 @@
+// Violet Yousif, 7/3/2025, Added to handle file chunking and ingestion from various formats
+
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
