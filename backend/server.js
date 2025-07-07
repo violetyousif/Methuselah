@@ -8,7 +8,6 @@
 // Violet Yousif, 7/6/2025, Added admin route directory
 
 import dotenv from 'dotenv';
-import path from 'path';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
 import cors from 'cors';          // for cross origin requests
@@ -28,7 +27,7 @@ import userData from './routes/userData.js';
 import userProfile from './routes/userProfile.js';
 import feedbackRoutes from './routes/feedback.js';
 import ragSearch from './routes/ragSearch.js';
-import ragChat   from './routes/ragChat.js';
+import ragChat from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
 import authCodes from './routes/authCodes.js';  // Importing auth codes for user authentication
 import userChatHist from './routes/userChatHist.js';
