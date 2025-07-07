@@ -72,6 +72,9 @@ app.use(cors({
   origin: 'http://localhost:3000', 
   credentials: true 
 }));
+// Add these lines BEFORE your route definitions
+app.use(express.json({ limit: '10mb' })); // Increase from default 100kb to 10mb
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.json());
 app.use(logger);  // Logs all incoming requests
 

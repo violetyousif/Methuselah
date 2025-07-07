@@ -1192,3 +1192,30 @@ html, body {
   }
 }
 
+/* Custom error colors - darker red instead of default bright red */
+.ant-form-item-has-error .ant-form-item-explain-error {
+  color: #8B0000 !important; /* Dark red */
+}
+
+.ant-form-item-has-error .ant-input,
+.ant-form-item-has-error .ant-input-password,
+.ant-form-item-has-error .ant-input:focus,
+.ant-form-item-has-error .ant-input-password:focus {
+  border-color: #8B0000 !important; /* Dark red border */
+  box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2) !important; /* Dark red shadow */
+}
+
+.ant-form-item-has-error .ant-form-item-label > label {
+  color: #8B0000 !important; /* Dark red label */
+}
+
+/* For Text component with type="danger" */
+.ant-typography-danger {
+  color: #8B0000 !important; /* Dark red for danger text */
+}
+
+/* For general validation messages */
+.ant-form-item-has-error .ant-form-item-explain {
+  color: #8B0000 !important;
+}
+
