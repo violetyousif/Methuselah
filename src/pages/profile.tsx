@@ -47,6 +47,7 @@ const Profile: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>(dayjs().format('YYYY-MM-DD'));
   const [sleepHours, setSleepHours] = useState<number>(0);
   const [exerciseHours, setExerciseHours] = useState<number>(0);
+  const [weight, setWeight] = useState<number>(0);
   const [calories, setCalories] = useState<number>(0);
   const [allMetrics, setAllMetrics] = useState<Record<string, any>>({});
   const [mealInputs, setMealInputs] = useState({
@@ -91,6 +92,7 @@ const Profile: React.FC = () => {
           sleepHours,
           exerciseHours,
           mood,
+          weight,
           calories,
           meals: mealInputs
         })
@@ -107,6 +109,7 @@ const Profile: React.FC = () => {
           exerciseHours,
           mood,
           calories,
+          weight,
           meals: mealInputs
         }
       }));
@@ -164,6 +167,7 @@ const Profile: React.FC = () => {
         dinner: existing.meals?.dinner || ''
       });
       setMood(existing.mood || '');
+      setWeight(existing.weight ?? 0);
     } else {
       setSleepHours(0);
       setExerciseHours(0);
@@ -174,7 +178,15 @@ const Profile: React.FC = () => {
         dinner: ''
       });
       setMood('');
-    }
+      // Try to get previous day's weight
+      const prevDate = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
+      const prev = allMetrics[prevDate];
+      if (prev && prev.weight > 0) {
+        setWeight(prev.weight);
+      } else {
+        setWeight(0);
+      }
+      }
   }, [selectedDate, allMetrics]); // depends on selected date or new data
 
 
@@ -376,12 +388,12 @@ const Profile: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Weight (lb)</span>} name="weight" rules={[
+        {/*<Form.Item label={<span style={styles.label}>Weight (lb)</span>} name="weight" rules={[
           { required: true, message: 'Please enter your weight' },
           { type: 'number', min: 0, message: 'Weight must be positive' }
         ]}>
           <InputNumber min={0} step={0.1} style={styles.inputNumber} />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item label={<span style={styles.label}>Height (inch)</span>} name="height" rules={[
           { required: true, message: 'Please enter your height' },
@@ -513,6 +525,15 @@ const Profile: React.FC = () => {
               <Select.Option value="excited">Excited</Select.Option>
               <Select.Option value="tired">Tired</Select.Option>
             </Select>
+          </Form.Item>
+          <Form.Item label={<span style={styles.metricsLabel}>Weight (lb)</span>}>
+            <InputNumber
+              min={0}
+              step={0.1}
+              value={weight}
+              onChange={(v) => v !== null && setWeight(v)}
+              style={{ width: '100%' }}
+            />
           </Form.Item>
           {/* <Form.Item label="Calories"> */}
           <Form.Item label={<span style={styles.metricsLabel}>Calories</span>}>
