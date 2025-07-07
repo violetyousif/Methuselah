@@ -1,5 +1,6 @@
 // Mohammad Hoque, 06/01/2025, Created Forgot Password page – allows users to request a reset link
 // Syed Rabbey, 07/04/2025, Added functionality to send reset code and navigate to verification page
+// Mohammad Hoque, 07/06/2025, Refactored styling for consistency with other auth pages and improved mobile responsiveness
 
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Typography } from 'antd';

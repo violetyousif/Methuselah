@@ -1,4 +1,6 @@
 // Mohammad Hoque, 7/3/2025, Added responsive placeholder text that dynamically adjusts based on screen size for better mobile UX
+// Mohammad Hoque, 7/6/2025, Added timestamp functionality to user messages for better chat history tracking
+
 import React, { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
 import { ClearOutlined, SendOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { ChatRole, SendBarProps } from './interface'
@@ -55,6 +57,7 @@ const SendBar = (props: SendBarProps) => {
       onSend({
         content,
         role: ChatRole.User,
+        timestamp: new Date().toISOString(),
       })
     }
   }
