@@ -48,8 +48,12 @@ export default function Home() {
           credentials: 'include',
         });
         if (res.ok) {
-        // Optional: Redirect logged-in users to dashboard or chatbot
-          router.push('/chatBot');
+          const data = await res.json();
+          if (data.role === 'user') {
+            router.push('/chatBot');
+          } else if (data.role === 'admin') {
+            router.push('/admin/adminUpload.tsx');
+          }
         }
       } catch (err) {
         console.error("Auth check failed:", err);

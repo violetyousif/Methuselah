@@ -6,6 +6,7 @@ import authAdmin from './admin/authAdmin.js';
 import graphStats from './admin/graphStats.js';
 //import queryStats from './admin/queryStats.js';
 import uploadData from './admin/uploadData.js';
+import uploadURL from './admin/uploadURL.js';
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use('/admin', authAdmin);
 router.use('/admin', graphStats);
 //router.use('/admin', queryStats);
 router.use('/admin', uploadData);
+router.use('/admin', uploadURL);
 
 export default router;

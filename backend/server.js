@@ -28,7 +28,7 @@ import ragSearch from './routes/ragSearch.js';
 import ragChat   from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
 import userChatHist from './routes/userChatHist.js';
-import adminRoutes from './routes/adminServer.js';
+import adminServer from './routes/adminServer.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -80,7 +80,7 @@ app.use('/api', healthMetrics);
 app.use('/api', userChatHist);
 
 // Admin Routes
-app.use('/api', adminRoutes); 
+app.use('/api', adminServer); 
 
 
 // Description: Start Server

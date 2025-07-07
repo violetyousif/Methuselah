@@ -481,7 +481,7 @@ const Chatbot = () => {
                       {editingChatId === chat.conversationId ? (
                         <Input
                           value={editingChatTitle}
-                          onChange={(e) => setEditingChatTitle(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingChatTitle(e.target.value)}
                           onPressEnter={handleSaveEditChat}
                           onBlur={handleSaveEditChat}
                           autoFocus
@@ -492,7 +492,7 @@ const Chatbot = () => {
                             backgroundColor: currentTheme === 'dark' ? '#3a3a3a' : '#ffffff',
                             color: currentTheme === 'dark' ? '#ffffff' : '#000000'
                           }}
-                          onKeyDown={(e) => {
+                          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                             if (e.key === 'Escape') {
                               handleCancelEdit()
                             }
@@ -535,7 +535,7 @@ const Chatbot = () => {
                             color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C',
                             opacity: 0.7
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         />
                       </Dropdown>
                     </div>

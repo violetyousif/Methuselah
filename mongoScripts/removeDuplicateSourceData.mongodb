@@ -1,0 +1,13 @@
+// mongoScripts/removeDuplicateData.mongodb
+// MongoDB Playground
+// To use, hit the play button or press Ctrl/Cmd+Enter
+
+// Replace with your database name
+use('Longevity');
+
+// Replace 'Biograph.pdf' with the source you want to delete
+const sourceToDelete = "Biograph.pdf";
+
+db.KnowledgeBase.deleteMany({
+  source: 'Biograph.pdf'
+});
