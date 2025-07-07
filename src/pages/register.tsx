@@ -5,9 +5,10 @@
 // Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
 // Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
+// Syed Rabbey, 7/5/2025, Added 2FA to account creation with verification logic. 
 
 import React, { useState, useEffect } from 'react'
-import { Form, Input, Button, Checkbox, Select } from 'antd'
+import { message, Form, Input, Button, Checkbox, Select } from 'antd'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ModalTerms from '../components/TermsModal'
@@ -33,6 +34,11 @@ function register() {
   const [termsVisible, setTermsVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [formData, setFormData] = useState<any>(null);
+
 
   // Force light mode for register page since user hasn't logged in yet
   useEffect(() => {
@@ -41,21 +47,56 @@ function register() {
 
   const onFinish = async (values: any) => {
     try {
-      // connect to backend API to register user
-      const res = await fetch('http://localhost:8080/api/register', {
+      // Send code to email
+      const res = await fetch('http://localhost:8080/api/send-reset-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: values.email, mode: 'register' })
+      });
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('Server said:', data);
+      throw new Error(data.message || 'Failed to send verification code');
+    }
+
+
+      //  Lock form, show code input
+      setFormData(values);
+      setIsVerifying(true);
+      setCodeSent(true);
+      setErrorMsg('');
+    } catch (error) {
+      console.error('Error sending code:', error);
+      setErrorMsg('Could not send verification code. Please try again.');
+    }
+  };
+
+  const handleVerifyCodeSubmit = async () => {
+    try {
+      const verifyRes = await fetch('http://localhost:8080/api/verify-reset-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, code: verificationCode })
+      });
+
+      if (!verifyRes.ok) throw new Error('Invalid or expired code');
+
+      // Register the user
+      const registerRes = await fetch('http://localhost:8080/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(values)
-      })
+        body: JSON.stringify(formData)
+      });
 
-      const result = await res.json()
-      if (!res.ok) throw new Error(result.message || 'Registration failed')
-      console.log('Registered successfully: ', result);
-      router.push('/login') // Redirects to login page if registration is successful
+      if (!registerRes.ok) throw new Error('Registration failed');
+
+      message.success('Successfully Registered! Redirecting...', 2);
+      setTimeout(() => router.push('/login'), 2000);
     } catch (error) {
-      if (!errorMsg) setErrorMsg('Registration failed. Please try again.');
-      console.error('ERROR - Registration failed: ', error);
+      console.error('Verification failed:', error);
+      setErrorMsg('Verification failed. Please check your code and try again.');
     }
   };
 
@@ -84,7 +125,7 @@ function register() {
               { pattern: /^[A-Za-z\s'-]+$/, message: "Only letters, dashes, spaces, and apostrophes are allowed" }
             ]}
           >
-            <Input placeholder="Jane" style={styles.placeholderStyle} />
+            <Input placeholder="Jane" style={styles.placeholderStyle} disabled={isVerifying} />
           </Form.Item>
 
           {/* Valid Email */}
@@ -97,7 +138,7 @@ function register() {
               { type: 'email', message: 'Please enter a valid email' }
             ]}
           >
-            <Input placeholder="janedoe@example.com" style={styles.placeholderStyle} />
+            <Input placeholder="janedoe@example.com" style={styles.placeholderStyle} disabled={isVerifying}/>
           </Form.Item>
 
           {/* Set password input to require at least 10 characters, 1 number, 1 special char, 1 uppercase, 1 lowercase */}
@@ -115,7 +156,7 @@ function register() {
               { pattern: /^[^\\'"<>`]*$/, message: 'Password cannot contain \\, \', ", <, >, or ` characters' }
             ]}
           >
-            <Input.Password type="password" placeholder="Minimum 10 characters" style={styles.placeholderStyle} />
+            <Input.Password type="password" placeholder="Minimum 10 characters" style={styles.placeholderStyle} disabled={isVerifying} />
           </Form.Item>
 
           { /* Confirm Password */}
@@ -136,7 +177,7 @@ function register() {
               })
             ]}
           >
-            <Input.Password placeholder="Verify Password" style={styles.placeholderStyle} />
+            <Input.Password placeholder="Verify Password" style={styles.placeholderStyle} disabled={isVerifying}/>
           </Form.Item>
 
 
@@ -179,6 +220,7 @@ function register() {
               type="date"
               style={styles.placeholderStyle}
               max={new Date().toISOString().split('T')[0]}
+              disabled={isVerifying}
             />
           </Form.Item>
 
@@ -201,6 +243,27 @@ function register() {
             </Checkbox>
           </Form.Item>
           <ModalTerms visible={termsVisible} onClose={() => setTermsVisible(false)} />
+
+          {codeSent && (
+            <Form.Item  label={<span style={styles.label}>Enter Verification Code sent to your email</span>}
+            required style={styles.rowSpacing}>
+              <Input
+                maxLength={6}
+                placeholder="Enter 6-digit code"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                style={styles.placeholderStyle}
+              />
+              <Button
+                type="primary"
+                style={styles.verifyButton}
+                onClick={handleVerifyCodeSubmit}
+                disabled={verificationCode.length !== 6}
+              >
+                Verify & Register
+              </Button>
+            </Form.Item>
+          )}
 
           { /* Submit Button */}
           <Form.Item style={styles.submitContainer}>
@@ -298,4 +361,15 @@ const styles = {
     color: '#e0e0e0',
     borderRadius: '1rem'
   },
+  verifyButton: {
+    marginTop: '10px',
+    width: '50%',
+    backgroundColor: '#203625',
+    borderRadius: '1rem',
+    color: '#fff',
+    display: 'block',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    fontSize: '1rem',
+},
 } as const;
