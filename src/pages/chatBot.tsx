@@ -579,20 +579,22 @@ const Chatbot = () => {
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
-            <ChatGPT
-              fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
-              conversationId={selectedChatId}
-              walletAddress={userData?.email || 'default-user'}
-              isLoggedIn={isLoggedIn}
-              inputBarColor="#9AB7A9"
-              assistantBubbleColor="#9AB7A9"
-              userBubbleColor="#318182"
-              userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
-              userName={userData?.firstName || 'User'}
-              chatMode={chatMode}
-            />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <ChatGPT
+                fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
+                conversationId={selectedChatId}
+                walletAddress={userData?.email || 'default-user'}
+                isLoggedIn={isLoggedIn}
+                inputBarColor="#9AB7A9"
+                assistantBubbleColor="#9AB7A9"
+                userBubbleColor="#318182"
+                userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
+                userName={userData?.firstName || 'User'}
+                chatMode={chatMode}
+              />
+            </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px', flexShrink: 0 }}>
             <ChatModeToggle mode={chatMode} onChange={setChatMode} />
           </div>
           {/*//// Prev code:
@@ -783,7 +785,7 @@ const styles = {
     backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
     transition: 'margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition matching sidebar
     height: '100vh',
-    overflow: 'hidden', // Let the content handle its own scrolling
+    overflow: 'hidden', // Prevent content area from scrolling
     '@media (max-width: 768px)': {
       marginLeft: 48 // Always use collapsed margin on mobile
     }
@@ -793,14 +795,24 @@ const styles = {
     maxWidth: '960px',
     margin: '0 auto',
     width: '100%',
-    paddingBottom: '60px',
-    height: '100%',
-    overflow: 'auto', // Enable scrolling for the content area
+    paddingBottom: '70px', // Increase padding to account for footer
+    height: '100vh',
+    overflow: 'hidden', // Remove scrolling from content area to prevent double scrollbars
+    display: 'flex',
+    flexDirection: 'column' as const,
+    // Hide scrollbars completely for this container
+    scrollbarWidth: 'none' as const, // Firefox
+    msOverflowStyle: 'none' as const, // IE/Edge
+    '&::-webkit-scrollbar': {
+      display: 'none' // Chrome/Safari
+    },
     '@media (maxWidth: 768px)': {
-      padding: '16px'
+      padding: '16px',
+      paddingBottom: '70px'
     },
     '@media (maxWidth: 480px)': {
-      padding: '12px'
+      padding: '12px',
+      paddingBottom: '70px'
     }
   },
   mobileOverlay: {
