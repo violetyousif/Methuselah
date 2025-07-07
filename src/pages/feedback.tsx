@@ -38,7 +38,7 @@ export default function FeedbackPage(){
             },
             credentials: 'include',
             body: JSON.stringify(values)
-            });
+        });
 
         const data = await res.json();
         if (res.ok) {
@@ -88,8 +88,7 @@ const styles = {
       borderColor: theme === 'dark' ? '#4b5563' : '#203625',
       borderRadius: '1rem'
     }
-}
-
+};
 
 
 return (
@@ -103,14 +102,6 @@ return (
 
         <h2 style={styles.header} className="feedback-header">Submit Feedback</h2>
 
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            label="Comments"
-            name="comments"
-            rules={[{ required: true, message: 'Please enter your feedback' }]}
-          >
-            <TextArea rows={4} className="feedback-textarea" />
-          </Form.Item>
 
           <Form.Item
             label="Rating"
@@ -124,7 +115,14 @@ return (
               ))}
             </Select>
           </Form.Item>
-
+          <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                    <Form.Item
+                      label="Comments"
+                      name="comments"
+                      rules={[{ required: true, message: 'Please enter your feedback' }]}
+                    >
+                      <TextArea rows={4} />
+                    </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" style={styles.submitButton} className="feedback-submit-button">
               Submit

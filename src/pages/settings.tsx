@@ -232,7 +232,7 @@ export default function Settings() {
             </Select>
           </div>
 
-          {/* Font Size Field */}
+          {/*Font Size Field */}
           <div>
             <div style={styles.label} className="settingsLabel">Font Size:</div>
             <Select value={fontSize} onChange={(val) => setFontSize(val)} style={styles.select} className="settingsInput">

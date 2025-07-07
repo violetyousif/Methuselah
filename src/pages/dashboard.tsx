@@ -1,21 +1,20 @@
 // Syed Rabbey, 5/26/25, Created a popup dashboard page with static charts and pre-written messages for the user. 
 //                       Dashboard component function is declared, an event handler is used to close the modal, 
 //                       and recharts functions are pulled to render sleep/exercise activity.
-
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
-
 // Syed Rabbey, 06/02/2025, Reformatted the code to change colors and add new data point.
 // Violet Yousif, 6/14/2025, Removed unused walletAddress prop from DashboardProps interface and component function parameters.
+// Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
+// Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
 
 import React from 'react'
-import { Modal } from 'antd'
+import { Modal, Tooltip } from 'antd'
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
   PieChart,
@@ -58,6 +57,65 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
   }
   return 'default'
 })
+
+const [userId, setUserId] = React.useState<string | null>(null);
+const [tips, setTips] = React.useState({ tip1: '', tip2: '', tip3: '' });
+const [firstName, setFirstName] = React.useState<string>('');
+
+
+React.useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') || 'default';
+    setCurrentTheme(storedTheme as 'default' | 'dark');
+}, [visible]);
+
+  //  Fetch userId from  backend
+React.useEffect(() => {
+  const fetchUserId = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/user-data', {
+        credentials: 'include',
+      });
+      const userData = await res.json();
+      setUserId(userData._id);
+      setFirstName(userData.firstName || 'Guest'); // <- store name
+    } catch (error) {
+      console.error('Failed to load user ID:', error);
+    }
+  };
+
+  fetchUserId();
+}, []);
+
+// Fetch insights when dashboard becomes visible
+React.useEffect(() => {
+  const fetchInsights = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/healthmetrics/insights', {
+        credentials: 'include',
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch insights');
+
+      const data = await res.json();
+
+      console.log("INSIGHTS RECEIVED IN REACT:", data); // Debug log
+
+      setTips({
+        tip1: data.tip1 || '',
+        tip2: data.tip2 || '',
+        tip3: data.tip3 || ''
+      });
+    } catch (error) {
+      console.error('Error fetching insights:', error);
+    }
+  };
+
+  if (visible) {
+    fetchInsights();
+  }
+}, [visible]);
+
+
 
 const isDark = currentTheme === 'dark';
 const axisColor = isDark ? '#B8FFF8' : '#000000';       // axes & legend
@@ -124,8 +182,19 @@ React.useEffect(() => {
       })
     }
   }
-  setLast7Data(arr)
+  setLast7Data(arr);
+
+
 }, [metrics])
+
+const sleepAvg = last7Data.length
+  ? (last7Data.reduce((acc, cur) => acc + cur.sleep, 0) / last7Data.length).toFixed(1)
+  : null;
+
+const exerciseDays = last7Data.filter(d => d.exercise > 0);
+const exerciseAvg = exerciseDays.length
+  ? (exerciseDays.reduce((acc, cur) => acc + cur.exercise, 0) / exerciseDays.length).toFixed(1)
+  : null;
 
   return (
     <Modal
@@ -146,7 +215,7 @@ React.useEffect(() => {
       wrapClassName="custom-dashboard-modal" 
     >
       <div style={styles.greeting}>
-        Welcome back, <strong>Guest</strong>! Here's a look at your recent health activity.
+        Welcome back, <strong>{firstName}</strong>! Here's a look at your recent health activity.
       </div>
 
       <div style={styles.chartSection}>
@@ -189,16 +258,20 @@ React.useEffect(() => {
           {last7Data.length === 0 ? (
             <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
           ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={last7Data}>
-                <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-                <XAxis dataKey="date" stroke={axisColor} />
-                <YAxis stroke={axisColor} />
-                <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-                <Legend wrapperStyle={legendStyle} />
-                <Bar dataKey={key} fill={fill} name={label.split(': ')[1]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={last7Data}>
+              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+              <XAxis dataKey="date" stroke={axisColor} />
+              <YAxis stroke={axisColor} />
+              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+              <Legend wrapperStyle={legendStyle} />
+              <Bar dataKey={key} name={label.split(': ')[1]}>
+                {last7Data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
           )}
           </div>
         ))}
@@ -223,14 +296,30 @@ React.useEffect(() => {
         </ResponsiveContainer>
       </div>
 
-      <div style={styles.tips}>
-        <p style={styles.tipPrimary}>☀️ It is recommended that you increase your Vitamin D intake.</p>
-        <p style={styles.tipNeutral}>
-          💪 To meet your weight gain goals, make sure you're getting{' '}
-          <span style={styles.tipHighlight}>consistent sleep</span> and{' '}
-          <span style={styles.tipHighlight}>planned exercise routines</span>.
-        </p>
-        <p style={styles.tipSecondary}>👏 Good job on your consistency! You earned it.</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
+        <Tooltip title="Methuselah analyzes your sleep trends over time to determine your wellness aspirations and journey.">
+          <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+            <p style={{ fontSize: '16px', margin: 0 }}>
+              {sleepAvg
+                ? <>You are sleeping an average of <strong style={{ color: '#000000' }}>{sleepAvg}</strong> hours a night!</>
+                : 'No sleep data reported yet.'}
+            </p>
+          </div>
+        </Tooltip>
+
+        <Tooltip title="Methuselah tracks your exercise logging activity – try to stay on track for Methuselah to generate the most tailored advice and direction for your wellbeing.">
+          <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+            <p style={{ fontSize: '16px', margin: 0 }}>
+              {exerciseAvg
+                ? <>Good job! You are exercising an average of <strong style={{ color: '#000000' }}>{exerciseAvg}</strong> hours this week.</>
+                : 'Begin tracking your exercise for tailored insights.'}
+            </p>
+          </div>
+        </Tooltip>
+
+        <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+          <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
+        </div>
       </div>
     </Modal>
   )
