@@ -5,6 +5,7 @@
 // Syed Rabbey, 06/02/2025, Reformatted the code to change colors and add new data point.
 // Violet Yousif, 6/14/2025, Removed unused walletAddress prop from DashboardProps interface and component function parameters.
 // Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
+// Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
 
 import React from 'react'
 import { Modal, Tooltip } from 'antd'
@@ -60,6 +61,7 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
 const [userId, setUserId] = React.useState<string | null>(null);
 const [tips, setTips] = React.useState({ tip1: '', tip2: '', tip3: '' });
 const [firstName, setFirstName] = React.useState<string>('');
+
 
 React.useEffect(() => {
     const storedTheme = localStorage.getItem('theme') || 'default';
@@ -180,8 +182,19 @@ React.useEffect(() => {
       })
     }
   }
-  setLast7Data(arr)
+  setLast7Data(arr);
+
+
 }, [metrics])
+
+const sleepAvg = last7Data.length
+  ? (last7Data.reduce((acc, cur) => acc + cur.sleep, 0) / last7Data.length).toFixed(1)
+  : null;
+
+const exerciseDays = last7Data.filter(d => d.exercise > 0);
+const exerciseAvg = exerciseDays.length
+  ? (exerciseDays.reduce((acc, cur) => acc + cur.exercise, 0) / exerciseDays.length).toFixed(1)
+  : null;
 
   return (
     <Modal
@@ -245,16 +258,20 @@ React.useEffect(() => {
           {last7Data.length === 0 ? (
             <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
           ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={last7Data}>
-                <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-                <XAxis dataKey="date" stroke={axisColor} />
-                <YAxis stroke={axisColor} />
-                <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-                <Legend wrapperStyle={legendStyle} />
-                <Bar dataKey={key} fill={fill} name={label.split(': ')[1]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={last7Data}>
+              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+              <XAxis dataKey="date" stroke={axisColor} />
+              <YAxis stroke={axisColor} />
+              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+              <Legend wrapperStyle={legendStyle} />
+              <Bar dataKey={key} name={label.split(': ')[1]}>
+                {last7Data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
           )}
           </div>
         ))}
@@ -280,22 +297,30 @@ React.useEffect(() => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
-        <Tooltip title="Methuselah analyzes your trends over time to determine your wellness aspirations and journey.">
+        <Tooltip title="Methuselah analyzes your sleep trends over time to determine your wellness aspirations and journey.">
           <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
-            <p style={{ fontSize: '16px', margin: 0 }}>{tips.tip1}</p>
+            <p style={{ fontSize: '16px', margin: 0 }}>
+              {sleepAvg
+                ? <>You are sleeping an average of <strong style={{ color: '#000000' }}>{sleepAvg}</strong> hours a night!</>
+                : 'No sleep data reported yet.'}
+            </p>
           </div>
         </Tooltip>
-        <Tooltip title="Methuselah tracks your active logging days – try to stay on track for Methuselah to generate the most tailored advice and direction for your wellbeing.">
+
+        <Tooltip title="Methuselah tracks your exercise logging activity – try to stay on track for Methuselah to generate the most tailored advice and direction for your wellbeing.">
           <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
-            <p style={{ fontSize: '16px', margin: 0 }}>{tips.tip2}</p>
+            <p style={{ fontSize: '16px', margin: 0 }}>
+              {exerciseAvg
+                ? <>Good job! You are exercising an average of <strong style={{ color: '#000000' }}>{exerciseAvg}</strong> hours this week.</>
+                : 'Begin tracking your exercise for tailored insights.'}
+            </p>
           </div>
         </Tooltip>
+
         <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
           <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
         </div>
       </div>
-
-
     </Modal>
   )
 }
