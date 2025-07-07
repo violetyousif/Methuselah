@@ -84,9 +84,6 @@ app.use(express.json());
 //app.use('/api/auth', userLoginRoutes);
 app.use(logger);  // Logs all incoming requests
 
-
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-
 // Description: MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("MongoDB Connected"))
