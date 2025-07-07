@@ -7,30 +7,25 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
-const { Title } = Typography;
-
 export default function ResetPassword() {
-  const [newPassword, setNewPassword] = useState('');
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { email } = router.query;
 
-  // Force light mode for reset password page since user hasn't logged in yet
   useEffect(() => {
     document.body.dataset.theme = 'default';
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: any) => {
     if (!email) return message.error('Missing email. Please restart the reset process.');
 
     setLoading(true);
-
     try {
       const res = await fetch('http://localhost:8080/api/auth/update-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword }),
+        body: JSON.stringify({ email, newPassword: values.newPassword }),
       });
 
       const data = await res.json();
@@ -49,104 +44,140 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="fadeIn settingsPage">
-      <div className="settingsCard">
+    <div style={styles.page}>
+      <div style={styles.card}>
         <Link href="/forgotPassword">
-          <Button icon={<ArrowLeftOutlined />} className="settingsBackButton">
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
             Back
           </Button>
         </Link>
 
-        <Title level={3} className="settingsHeader">Reset Your Password</Title>
+        <h1 style={styles.header}>Reset Your Password</h1>
 
-        <Form layout="vertical" onSubmitCapture={handleSubmit} className="settingsForm">
-          <Form.Item label="New Password" required>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+        >
+          <Form.Item
+            style={styles.rowSpacing}
+            label={<span style={styles.label}>New Password</span>}
+            name="newPassword"
+            rules={[
+              { required: true, message: 'Please enter a secure password' },
+              { min: 10, message: 'Password must be at least 10 characters long' },
+              { pattern: /.*\d.*/, message: 'Password must contain at least one number' },
+              { pattern: /.*[A-Z].*/, message: 'Password must contain at least one uppercase letter' },
+              { pattern: /.*[a-z].*/, message: 'Password must contain at least one lowercase letter' },
+              { pattern: /.*[!@#$%*].*/, message: 'Password must contain at least one special character (!,@,#,$,%,*)' },
+              { pattern: /^[^\\'\"<>`]*$/, message: 'Password cannot contain \\, \' , \" , < , > , or ` characters' }
+            ]}
+          >
             <Input.Password
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Enter new password"
-              className="settingsInput"
+              style={styles.placeholderStyle}
             />
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item
+            style={styles.rowSpacing}
+            label={<span style={styles.label}>Confirm Password</span>}
+            name="confirmPassword"
+            dependencies={['newPassword']}
+            rules={[
+              { required: true, message: 'Please confirm your password' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Passwords do not match'));
+                },
+              })
+            ]}
+          >
+            <Input.Password
+              placeholder="Confirm new password"
+              style={styles.placeholderStyle}
+            />
+          </Form.Item>
+
+          <Form.Item style={styles.submitContainer}>
             <Button
               type="primary"
               htmlType="submit"
-              className="settingsSaveButton"
+              style={styles.submitButton}
               loading={loading}
-              block
             >
               Reset Password
             </Button>
           </Form.Item>
         </Form>
       </div>
-
-      {/* Keep your global and local styles below */}
-      <style jsx global>{`
-        body[data-fontsize='regular'] { font-size: 16px; }
-        body[data-fontsize='large'] { font-size: 18px; }
-        body[data-fontsize='extra-large'] { font-size: 20px; }
-        body[data-fontsize='large'] input,
-        body[data-fontsize='large'] .settingsSaveButton {
-          font-size: 1.2em !important;
-        }
-        body[data-fontsize='extra-large'] input,
-        body[data-fontsize='extra-large'] .settingsSaveButton {
-          font-size: 1.4em !important;
-        }
-        body[data-theme='dark'] .settingsCard {
-          background-color: #27293d;
-          color: #F1F1EA;
-        }
-        body[data-theme='dark'] .settingsSaveButton {
-          background-color: #318182;
-        }
-      `}</style>
-
-      <style jsx>{`
-        .settingsPage {
-          min-height: 100vh;
-          background-color: var(--bg-color, #F1F1EB);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 40px;
-        }
-        .settingsCard {
-          background-color: #A0B6AA;
-          border-radius: 2rem;
-          padding: 40px;
-          width: 100%;
-          max-width: 480px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .settingsHeader {
-          text-align: center;
-          margin-bottom: 24px;
-          color: inherit;
-        }
-        .settingsForm {
-          margin-top: 24px;
-        }
-        .settingsInput {
-          border-radius: 12px;
-        }
-        .settingsSaveButton {
-          background-color: #203625;
-          border: none;
-          color: white;
-          border-radius: 9999px;
-        }
-        .settingsBackButton {
-          margin-bottom: 16px;
-          background-color: #203625;
-          color: white;
-          border-color: #203625;
-          border-radius: 9999px;
-        }
-      `}</style>
     </div>
   );
 }
+
+const styles = {
+  page: {
+    backgroundColor: '#F1F1EB',
+    display: 'block',
+    position: 'absolute' as const,
+    minHeight: '100vh',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    height: '100%',
+    width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    padding: '2rem'
+  },
+  card: {
+    maxWidth: 400,
+    margin: '1rem auto',
+    padding: '2rem',
+    backgroundColor: '#A0B6AA',
+    borderRadius: '2rem',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
+    paddingBottom: '24px'
+  },
+  rowSpacing: {
+    marginBottom: '0.6px'
+  },
+  backButton: {
+    marginBottom: '24px',
+    backgroundColor: '#203625',
+    color: 'white',
+    border: 'none',
+    borderRadius: '9999px'
+  },
+  header: {
+    color: '#1D1E2C',
+    textAlign: 'center' as const,
+    fontWeight: 'bold' as const
+  },
+  label: {
+    color: '#1D1E2C',
+    fontSize: '0.95rem',
+    display: 'block',
+    alignItems: 'center',
+    gap: '0.25rem',
+    marginTop: '0.5rem'
+  },
+  placeholderStyle: {
+    opacity: 0.8,
+    color: '#1D1E2C'
+  },
+  submitContainer: {
+    textAlign: 'center' as const
+  },
+  submitButton: {
+    marginTop: '8px',
+    width: '40%',
+    backgroundColor: '#203625',
+    color: '#e0e0e0',
+    borderRadius: '1rem'
+  }
+} as const;

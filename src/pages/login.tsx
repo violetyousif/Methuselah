@@ -124,7 +124,7 @@ function Login() {
           <p className="text-sm text-center mt-2">
             <span className="text-gray-600">Forgot your password? </span>
             <a href="/forgotPassword" className="text-blue-600 font-semibold hover:underline">
-              Reset it here
+              Reset 
             </a>
           </p>
 
