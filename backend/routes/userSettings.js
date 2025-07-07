@@ -67,7 +67,7 @@ router.get('/settings', settingsRateLimiter, auth(), async (req, res) => {
 });
 
 // PATCH route to update user settings
-router.patch('/updateSettings', auth(), settingsRateLimiter, async (req, res) => {
+router.patch('/updateSettings', settingsRateLimiter, auth(), async (req, res) => {
   try {
     const {
       firstName,
