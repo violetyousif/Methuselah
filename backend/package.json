@@ -34,9 +34,9 @@
     "langchain": "^0.3.29",
     "mongodb": "^6.15.0",
     "mongoose": "^8.16.1",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.4",
     "ollama": "^0.5.16",
-    "node-fetch": "^3.3.2",
     "pdf-parse": "^1.1.1",
     "tesseract.js": "^6.0.1"
   },

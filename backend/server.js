@@ -55,7 +55,11 @@ import userChatHist from './routes/userChatHist.js';
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
 
-// Description: Set up the express app and connect to MongoDB
+
+
+
+
+
 
 
 
@@ -78,6 +82,7 @@ app.use(express.json());
 app.use(logger);  // Logs all incoming requests
 
 
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
 // Description: MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
