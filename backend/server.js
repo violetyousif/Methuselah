@@ -16,7 +16,6 @@ import mongoose from 'mongoose';  // for database connection and operations
 import cors from 'cors';          // for cross origin requests
 import bcrypt from 'bcrypt';      // to encrypt passwords
 import jwt from 'jsonwebtoken';   // security: make sure user is logged in to access app session
-import path from 'path';
 import { fileURLToPath } from 'url';
  
 // Importing routes and middleware
