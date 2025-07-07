@@ -18,7 +18,7 @@ const uploadURLRateLimiter = RateLimit({
     message: { error: 'Too many requests, please try again later.' }
 });
 
-router.post('/uploadURL', auth('admin'), uploadURLRateLimiter, async (req, res) => {
+router.post('/uploadURL', uploadURLRateLimiter, auth('admin'), async (req, res) => {
     const { url } = req.body;
 
     if (!url) {
