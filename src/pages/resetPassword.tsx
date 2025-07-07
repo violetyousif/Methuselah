@@ -1,6 +1,6 @@
 // Syed Rabbey, 07/06/2025, Lets user enter new password after code verification, updates it in DB, and redirects to login.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -13,6 +13,11 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { email } = router.query;
+
+  // Force light mode for reset password page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
