@@ -71,11 +71,17 @@ router.post('/uploadData', uploadDataLimiter, auth('admin'), upload.single('file
     console.log(`[UPLOAD] File received: ${req.file?.originalname}`);
     console.log(`[UPLOAD] Stored at path: ${req.file?.path}`);
 
-    const filePath = req.file.path;
+    const uploadDir = path.resolve('./uploads/');
+    const filePath = fs.realpathSync(path.resolve(uploadDir, req.file.filename));
     const fileExtension = path.extname(req.file.originalname).toLowerCase();
     let text = '';
 
     console.log(`[UPLOAD]: Processing ${fileExtension} at ${filePath}`);
+
+    // Verify file path is within the upload directory
+    if (!filePath.startsWith(uploadDir)) {
+      throw new Error(`Invalid file path: ${filePath}`);
+    }
 
     // Verify file exists
     if (!fs.existsSync(filePath)) {
