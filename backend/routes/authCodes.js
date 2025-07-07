@@ -1,11 +1,16 @@
 //Syed Rabbey, 07/04/2025, File for handling POST /verify-reset-code and POST /update-password routes for password reset functionality
+//Syed Rabbey, 07/07/2025, Added storage for reset codes.
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js'; // Replace with your actual user model
 import rateLimit from 'express-rate-limit';
 import validator from 'validator';
+import resetCodes from '../utils/resetCodes.js';
+
 const router = express.Router();
+
+
 
 // Verify reset code
 router.post('/verify-reset-code', (req, res) => {
