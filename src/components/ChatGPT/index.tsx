@@ -72,7 +72,8 @@ const ChatGPT = ({
           <MessageItem
             message={{
               content: streamedMessage || currentMessage.current,
-              role: ChatRole.Assistant
+              role: ChatRole.Assistant,
+              timestamp: new Date().toISOString()
             }}
             assistantColor={assistantBubbleColor}
             userColor={userBubbleColor}

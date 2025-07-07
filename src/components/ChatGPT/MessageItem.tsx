@@ -3,6 +3,7 @@
 // Mizanur Mizan, 6/23/2025, Added extended interface for placing current avatar image next to the user messages
 // Syed Rabbey, 6/27/2025, Adjusted the display speed of the assistant's message to be more natural and readable.
 // Mohammad Hoque, 7/3/2025, Added user name display functionality - shows "Methuselah" under AI messages and user's first name under user messages, with improved name and timestamp positioning above message bubbles.
+// Mohammad Hoque, 7/6/2025, Enhanced timestamp display to show both date and time for better message history clarity
 
 
 import React, { useEffect, useState } from 'react'
@@ -28,8 +29,10 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
   const isUser = message.role === 'user'
   const bgColor = isUser ? userColor : assistantColor
 
-  const timestamp = new Date(message.timestamp || Date.now()).toLocaleTimeString('en-US', {
+  const timestamp = new Date(message.timestamp || Date.now()).toLocaleString('en-US', {
     timeZone: 'America/New_York',
+    month: 'short',
+    day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
     hour12: true
