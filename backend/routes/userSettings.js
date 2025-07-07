@@ -20,7 +20,7 @@ const settingsRateLimiter = rateLimit({
 });
 
 // GET route to fetch current user settings
-router.get('/settings', auth(), settingsRateLimiter, async (req, res) => {
+router.get('/settings', settingsRateLimiter, auth(), async (req, res) => {
   try {
     const user = await getUser.findById(req.user.id).select('-password');
     if (!user) {
