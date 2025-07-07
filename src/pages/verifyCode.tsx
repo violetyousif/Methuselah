@@ -1,4 +1,5 @@
 // Syed Rabbey, 07/04/2025, Page to verify code sent to user's email for password reset. Appears after user submits email for reset code.
+// Mohammad Hoque, 07/06/2025, Updated styling to match other auth pages - fixed background colors, centering, mobile responsiveness, and consistent design patterns.
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Typography } from 'antd';
 import { useRouter } from 'next/router';
@@ -13,6 +14,11 @@ export default function VerifyCodePage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const token = typeof window !== 'undefined' ? localStorage.getItem('resetToken') : null;
+
+  // Force light mode for verify code page since user hasn't logged in yet
+  useEffect(() => {
+    document.body.dataset.theme = 'default';
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,10 +41,10 @@ export default function VerifyCodePage() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div style={styles.page} className="verify-code-page">
+      <div style={styles.card} className="verify-code-card mobile-card-shadow">
         <Link href="/login">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton}>
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
             Back
           </Button>
         </Link>
@@ -61,12 +67,12 @@ export default function VerifyCodePage() {
 
           {error && <Text type="danger" style={{ color: 'red' }}>{error}</Text>}
 
-          <Form.Item>
+          <Form.Item style={styles.submitContainer}>
             <Button
               type="primary"
               htmlType="submit"
-              block
               style={styles.submitButton}
+              className="verify-code-submit-button"
             >
               Verify Code
             </Button>
@@ -79,26 +85,20 @@ export default function VerifyCodePage() {
 
 const styles = {
   page: {
-    backgroundColor: '#FFFFFF',
-    display: 'block',
-    position: 'absolute' as const,
+    backgroundColor: '#F1F1EB', // Changed to match other pages
     minHeight: '100vh',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    height: '100%',
-    width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    padding: '6rem 0',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '2rem 1rem', // Added horizontal padding for better mobile experience
   },
   card: {
     maxWidth: 400,
-    margin: '1rem auto',
+    width: '100%',
     padding: '2rem',
-    backgroundColor: '#A0B6AA',
-    borderRadius: '20px',
+    backgroundColor: '#A0B6AA', // Changed to match other pages
+    borderRadius: '2rem', // Changed to match other pages
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)', // Added consistent box shadow
     paddingBottom: '24px',
   },
   backButton: {
@@ -131,9 +131,12 @@ const styles = {
     opacity: 0.8,
     color: '#1D1E2C',
   },
+  submitContainer: {
+    textAlign: 'center' as const
+  },
   submitButton: {
     marginTop: '8px',
-    width: '100%',
+    width: '40%', // Changed to match register page width
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'

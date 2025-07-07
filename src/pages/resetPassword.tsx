@@ -1,6 +1,7 @@
-// Syed Rabbey, 07/06/2025, 07/07/2025 Lets user enter new password after code verification, updates it in DB, and redirects to login. Updated color scheme and styles. Added requirements for new password.
+// Syed Rabbey, 07/06/2025, Lets user enter new password after code verification, updates it in DB, and redirects to login.
+
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, Typography, message } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';

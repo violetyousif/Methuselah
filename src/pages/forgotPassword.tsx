@@ -63,7 +63,11 @@ export default function ForgotPassword() {
         <p  className="forgot-password-subtext">Enter your email and we'll send a reset code.</p>
 
         <Form layout="vertical" onSubmitCapture={handleSubmit}>
-          <Form.Item label={<span style={styles.label}>Email</span>} required>
+          <Form.Item 
+            style={styles.rowSpacing}
+            label={<span style={styles.label}>Email</span>} 
+            required
+          >
             <Input
               type="email"
               value={email}
@@ -97,27 +101,21 @@ export default function ForgotPassword() {
 
 const styles = {
   page: {
-    backgroundColor: '#FFFFFF',
-    display: 'block',
-    position: 'absolute' as const,
+    backgroundColor: '#F1F1EB', // Changed from dark '#1D1E2C' to light for consistency
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     minHeight: '100vh',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    height: '100%',
-    width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    padding: '6rem 0',
+    padding: '2rem 1rem',
+    position: 'relative' as const,
   },
   card: {
     maxWidth: 400,
-    margin: '1rem auto',
+    width: '100%', // Make it fully responsive
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '2rem',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)'
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
   },
   backButton: {
     marginBottom: '24px',
@@ -149,6 +147,8 @@ const styles = {
     backgroundColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem'
+  },
+  rowSpacing: {
+    marginBottom: '0.6px'
   }
-
-};
+} as const;
