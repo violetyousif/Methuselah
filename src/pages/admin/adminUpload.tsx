@@ -1,21 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, Button, message, Typography, Card, Spin } from 'antd';
-import { UploadOutlined, InboxOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import Link from 'next/link';
+import { Upload, Button, message, notification, Typography, Spin } from 'antd';
+import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import type { UploadRequestOption } from 'rc-upload/lib/interface';
 
 const { Dragger } = Upload;
 const { Title, Paragraph } = Typography;
 
+
 function AdminUpload() {
   const [uploading, setUploading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [userData, setUserData] = useState<any>(null);
   const router = useRouter();
+
+  useEffect(() => {
+  async function checkLogin() {
+    try {
+      const res = await fetch('http://localhost:8080/api/checkAuth', {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Not authenticated');
+      const data = await res.json();
+      setUserData(data.user);
+      setIsLoggedIn(true);
+    } catch (err) {
+      setIsLoggedIn(false);
+      router.push('/login'); // or redirect elsewhere
+    }
+  }
+    checkLogin();
+  }, []);
+
 
   useEffect(() => {
     document.body.dataset.theme = 'default';
   }, []);
-
 
   const customRequest = async ({ file, onSuccess, onError }: UploadRequestOption) => {
     setUploading(true);
@@ -24,25 +44,33 @@ function AdminUpload() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8080/api/admin/uploadData', {
+      const res = await fetch('http://localhost:8080/api/admin/uploadData', {
         method: 'POST',
         credentials: 'include',
-        body: formData
+        body: formData,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        message.success(`Upload successful: ${data.chunks} chunks processed.`);
+      const data = await res.json();
+      if (res.status === 401) {
+        notification.error({ message: 'Unauthorized: Admin login required.' });
+        router.push('/login'); // Optional: redirect to login
+        return;
+      }
+      if (res.ok) {
+        //message.success(`Upload successful: ${data.chunks} chunks processed.`);
+        notification.success({
+          message: 'Upload Successful',
+          description: `File uploaded successfully. ${data.chunks} chunks processed.`,
+        });
         onSuccess?.(data, new XMLHttpRequest());
       } else {
-        message.error(data.message || 'Upload failed');
-        onError?.(new Error(data.message || 'Upload failed'));
+        notification.error({ message: data.notification || 'Upload failed' });
+        onError?.(new Error(data.notification || 'Upload failed'));
       }
     } catch (err) {
       console.error('Upload error:', err);
       const errorMsg = (err instanceof Error && err.message) ? err.message : 'Unknown error';
-      message.error('Upload failed: ' + errorMsg);
+      notification.error({ message: 'Upload failed: ' + errorMsg });
       if (err instanceof Error) {
         onError?.(err);
       } else {
@@ -56,13 +84,40 @@ function AdminUpload() {
   return (
     <div style={styles.page} className="admin-upload-page">
       <div style={styles.card} className="admin-upload-card">
-        <Link href="/admin">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
-            Back
-          </Button>
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            style={styles.logoutBtn}
+            onClick={async () => {
+              try {
+                const res = await fetch('http://localhost:8080/api/logout', {
+                  method: 'POST',
+                  credentials: 'include',
+                });
 
-        <Title level={3} style={styles.header}>Upload Pretraining Content</Title>
+                if (res.ok) {
+                  setIsLoggedIn(false);
+                  setUserData(null);
+                  document.body.dataset.theme = 'default';
+                  document.body.dataset.fontsize = 'regular';
+                  document.body.style.backgroundColor = '#ffffff';
+                  document.body.style.color = '#333333';
+                  router.push('/');
+                } else {
+                  message.error('Logout failed.');
+                }
+              } catch (error) {
+                console.error('Logout error:', error);
+                notification.error({ message: 'Server error during logout.' });
+              }
+            }}
+          >
+            Logout
+          </Button>
+        </div>
+
+        <Title level={3} style={styles.header}>
+          Upload Pretraining Content
+        </Title>
         <Paragraph>Upload a file to ingest into the AI system.</Paragraph>
 
         <Dragger
@@ -125,113 +180,105 @@ const styles = {
     boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
   },
-  backButton: {
-    marginBottom: '24px',
-    backgroundColor: '#203625',
-    color: 'white',
+  logoutBtn: {
+    background: 'none',
     border: 'none',
-    borderRadius: '9999px'
+    color: '#1D1E2C',
+    padding: 0,
+    boxShadow: 'none',
+    textAlign: 'left' as const,
+    cursor: 'pointer',
+    fontSize: 16,
+    textDecoration: 'none',
+    borderRadius: '3rem',
   },
   header: {
     color: '#1D1E2C',
     textAlign: 'center',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   submitContainer: {
-    textAlign: 'center'
+    textAlign: 'center',
   },
   submitButton: {
     marginTop: '16px',
     width: '40%',
     backgroundColor: '#203625',
     color: '#e0e0e0',
-    borderRadius: '1rem'
-  }
+    borderRadius: '1rem',
+  },
 } as const;
 
 
 
-// import React, { useState } from 'react';
-// import { Upload, Button, message, Typography, Card, Spin } from 'antd';
-// import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 
-// const { Dragger } = Upload;
-// const { Title, Paragraph } = Typography;
+// return (
+//   <div style={styles.page} className="admin-upload-page">
+//     <div style={styles.card} className="admin-upload-card">
+//       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+//         <Button
+//           style={styles.logoutBtn}
+//           onClick={async () => {
+//             try {
+//               const res = await fetch('http://localhost:8080/api/logout', {
+//                 method: 'POST',
+//                 credentials: 'include',
+//               });
 
-// const AdminUpload: React.FC = () => {
-//   const [uploading, setUploading] = useState(false);
-
-//   const customRequest = async ({ file, onSuccess, onError }: any) => {
-//     setUploading(true);
-
-//     const formData = new FormData();
-//     formData.append('file', file);
-
-//     try {
-//       const response = await fetch('http://localhost:8080/api/admin/uploadData', {
-//         method: 'POST',
-//         credentials: 'include',
-//         body: formData
-//       });
-
-//       const data = await response.json();
-
-//       if (response.ok) {
-//         message.success(`Upload successful: ${data.chunks} chunks processed.`);
-//         onSuccess?.(data, new XMLHttpRequest());
-//       } else {
-//         message.error(data.message || 'Upload failed');
-//         onError?.(new Error(data.message || 'Upload failed'));
-//       }
-//     } catch (err: any) {
-//       console.error('Upload error:', err);
-//       message.error('Upload failed: ' + err.message);
-//       onError?.(err);
-//     } finally {
-//       setUploading(false);
-//     }
-//   };
-
-//   return (
-//     <div style={{ padding: '2rem max(2rem, 10%)' }}>
-//       <Card style={{ background: '#fafafa', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-//         <Title level={3}>Upload Pretraining Content</Title>
-//         <Paragraph>
-//           Upload PDF, CSV, text, Excel, JSON, or image files for ingestion into the AI system.
-//         </Paragraph>
-
-//         <Dragger
-//           name="file"
-//           multiple={false}
-//           accept=".pdf,.txt,.json,.csv,.xls,.xlsx,.png,.jpg,.jpeg"
-//           customRequest={customRequest}
-//           disabled={uploading}
+//               if (res.ok) {
+//                 setIsLoggedIn(false);
+//                 setUserData(null);
+//                 document.body.dataset.theme = 'default';
+//                 document.body.dataset.fontsize = 'regular';
+//                 document.body.style.backgroundColor = '#ffffff';
+//                 document.body.style.color = '#333333';
+//                 router.push('/');
+//               } else {
+//                 message.error('Logout failed.');
+//               }
+//             } catch (error) {
+//               console.error('Logout error:', error);
+//               message.error('Server error during logout.');
+//             }
+//           }}
 //         >
-//           <p className="ant-upload-drag-icon">
-//             <InboxOutlined />
-//           </p>
-//           <p className="ant-upload-text">Click or drag file to upload</p>
-//           <p className="ant-upload-hint">
-//             Supports PDF, TXT, JSON, CSV, XLS(X), JPG, PNG.
-//           </p>
-//         </Dragger>
+//           Logout
+//         </Button>
+//       </div>
 
-//         <div style={{ marginTop: '1rem', textAlign: 'right' }}>
-//           <Button
-//             type="primary"
-//             icon={<UploadOutlined />}
-//             loading={uploading}
-//             disabled={uploading}
-//             onClick={() => message.info('Use the drag area above to upload')}
-//           >
-//             {uploading ? 'Uploading...' : 'Submit File'}
-//           </Button>
-//         </div>
+//       <Title level={3} style={styles.header}>
+//         Upload Pretraining Content
+//       </Title>
+//       <Paragraph>Upload a file to ingest into the AI system.</Paragraph>
 
-//         {uploading && <Spin style={{ marginTop: '1rem' }} />}
-//       </Card>
+//       <Dragger
+//         name="file"
+//         multiple={false}
+//         accept=".pdf,.txt,.json,.csv,.xls,.xlsx,.png,.jpg,.jpeg"
+//         customRequest={customRequest}
+//         disabled={uploading}
+//       >
+//         <p className="ant-upload-drag-icon">
+//           <InboxOutlined />
+//         </p>
+//         <p className="ant-upload-text">Click or drag file to this area to upload</p>
+//         <p className="ant-upload-hint">Supports PDF, TXT, JSON, CSV, XLS(X), JPG, PNG.</p>
+//       </Dragger>
+
+//       <div style={styles.submitContainer}>
+//         <Button
+//           type="primary"
+//           icon={<UploadOutlined />}
+//           loading={uploading}
+//           disabled={uploading}
+//           onClick={() => message.info('Use the drag area above to upload')}
+//           style={styles.submitButton}
+//         >
+//           {uploading ? 'Uploading...' : 'Submit File'}
+//         </Button>
+//       </div>
+
+//       {uploading && <Spin style={{ marginTop: '1rem' }} />}
 //     </div>
-//   );
-// };
-
-// export default AdminUpload;
+//   </div>
+// );

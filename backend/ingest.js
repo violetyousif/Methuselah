@@ -15,9 +15,9 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
 import { MongoClient } from 'mongodb';
-import { HfInference } from '@huggingface/inference';
+import { InferenceClient } from '@huggingface/inference';
 
-const hf = new HfInference(process.env.HF_API_KEY);
+const hf = new InferenceClient({ apiKey: process.env.HF_API_KEY });
 // MongoDB client to Atlas cluster
 const client = new MongoClient(process.env.MONGODB_URI);
 await client.connect();

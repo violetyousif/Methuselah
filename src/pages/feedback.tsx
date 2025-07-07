@@ -51,10 +51,6 @@ export default function FeedbackPage(){
             message.error('Server error');
         }
     };
-    
-
-
-
 
 const styles = {
     page: {

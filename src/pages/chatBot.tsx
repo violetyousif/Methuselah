@@ -397,7 +397,7 @@ const Chatbot = () => {
                       {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')}
                     </Text>
                   </div>
-                  {/* Logout button */}
+                  {/* Logout button will replace Login/Register buttons for logged in users */}
                   <div style={styles.authButtons}>
                     {!isLoggedIn && (
                       <>

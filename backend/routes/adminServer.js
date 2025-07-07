@@ -10,6 +10,8 @@ import uploadData from './admin/uploadData.js';
 const router = express.Router();
 
 // All admin routes are prefixed with /admin
+// Because it's called prior through /api in server.js
+// This allows us to have a single entry point for all admin routes
 router.use('/admin', authAdmin);
 router.use('/admin', graphStats);
 //router.use('/admin', queryStats);

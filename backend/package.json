@@ -15,7 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@huggingface/inference": "^4.0.6",
+    "@huggingface/inference": "^4.3.2",
     "@mozilla/readability": "^0.6.0",
     "bcrypt": "^5.1.1",
     "cookie": "^1.0.2",

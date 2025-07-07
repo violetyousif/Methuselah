@@ -17,8 +17,11 @@ const auth = (requiredRole = null) => (req, res, next) => {
   const token = req.cookies.token;
   //console.log("Token from cookie:", token);    // This should only be for debugging and deleted or commented out otherwise
   //const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Access Denied: No token provided' });
-
+  if (!token) {
+    return res.status(401).json({
+      message: 'Unauthorized: No authentication token provided',
+    });
+  }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = {
@@ -26,7 +29,7 @@ const auth = (requiredRole = null) => (req, res, next) => {
       email: decoded.email,
       role: decoded.role || 'user'  // Default to 'user' if no role is provided
     };
-    
+
     if (requiredRole && req.user.role !== requiredRole) {
       return res.status(403).json({ message: 'Access Denied: Insufficient privileges' });
     }
