@@ -23,6 +23,8 @@ export default function ForgotPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    await onFinish({ email });
+  };
 
   const onFinish = async (values: any) => {
     try {
@@ -37,7 +39,6 @@ export default function ForgotPassword() {
       if (res.ok) {
         localStorage.setItem('resetToken', data.token);
         router.push(`/verifyCode?email=${encodeURIComponent(values.email)}`);
-
       } else {
         setMessage(data.message || 'Failed to send code.');
       }
@@ -150,4 +151,4 @@ const styles = {
     borderRadius: '1rem'
   }
 
-};}
+};

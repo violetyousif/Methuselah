@@ -4,17 +4,16 @@
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed deprecated Ant Design Modal properties like bodyStle and maskStyle.
 // Syed Rabbey, 06/02/2025, Reformatted the code to change colors and add new data point.
 // Violet Yousif, 6/14/2025, Removed unused walletAddress prop from DashboardProps interface and component function parameters.
-// Syed Rabbey, 7/2/2025, 
+// Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
 
 import React from 'react'
-import { Modal } from 'antd'
+import { Modal, Tooltip } from 'antd'
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
   PieChart,
@@ -280,10 +279,20 @@ React.useEffect(() => {
         </ResponsiveContainer>
       </div>
 
-      <div style={{ color: 'black', fontSize: '20px' }}>
-        <p style={{ fontSize: '16px' }}>{tips.tip1}</p>
-        <p style={{ fontSize: '16px' }}>{tips.tip2}</p>
-        <p style={{ fontSize: '16px', color: '#42c9c9' }}>{tips.tip3}</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
+        <Tooltip title="Methuselah analyzes your trends over time to determine your wellness aspirations and journey.">
+          <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+            <p style={{ fontSize: '16px', margin: 0 }}>{tips.tip1}</p>
+          </div>
+        </Tooltip>
+        <Tooltip title="Methuselah tracks your active logging days – try to stay on track for Methuselah to generate the most tailored advice and direction for your wellbeing.">
+          <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+            <p style={{ fontSize: '16px', margin: 0 }}>{tips.tip2}</p>
+          </div>
+        </Tooltip>
+        <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+          <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
+        </div>
       </div>
 
 
