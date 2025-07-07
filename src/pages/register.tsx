@@ -6,7 +6,7 @@
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
 // Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select } from 'antd'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
