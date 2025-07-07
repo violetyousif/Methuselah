@@ -37,6 +37,7 @@ import { fileURLToPath } from 'url';
  
 // Importing routes and middleware
 import logger from './middleware/logger.js';
+//import userLoginRoutes from './routes/userLogin.js';
 import userLogin from './routes/userLogin.js';
 import userRegister from './routes/userRegister.js';
 import userLogout from './routes/userLogout.js';
@@ -73,7 +74,7 @@ app.use(cors({
   credentials: true 
 }));
 app.use(express.json());
-app.use('/api/auth', userLoginRoutes);
+//app.use('/api/auth', userLoginRoutes);
 app.use(logger);  // Logs all incoming requests
 
 
@@ -92,6 +93,7 @@ app.get('/', (req, res) => {
   });
 
 // Protected Routes
+app.use('/api', userLogin);
 app.use('/api', userRegister);
 app.use('/api', userLogout);
 app.use('/api', checkAuth);

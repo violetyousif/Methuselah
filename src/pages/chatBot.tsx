@@ -394,7 +394,9 @@ const Chatbot = () => {
                   <div onClick={() => router.push('/profile')} style={{ cursor: 'pointer' }}>
                     <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={styles.avatar} />
                     <Text strong style={{ display: 'block', marginTop: 8 }}>
-                      {userData?.firstName && userData?.lastName ? (`${userData.firstName} ${userData.lastName}`) : ('Guest')}
+                      {userData?.firstName
+                        ? `${userData.firstName}${userData.lastName ? ' ' + userData.lastName : ''}`
+                        : ''}
                     </Text>
                   </div>
                   {/* Logout button */}
