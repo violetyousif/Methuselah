@@ -6,7 +6,7 @@
 // Date: 6/18/2025
 // Description: updated for proper user authentication
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -31,7 +31,7 @@ export default function FeedbackPage(){
     // Handles form submission: sends POST request with feedback data and token
     const handleSubmit = async (values: any) => {
     try{
-        const res = await fetch('http://localhost:8080/api/submit-feedback', {
+        const res = await fetch('http://localhost:8080/api/feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export default function FeedbackPage(){
         const data = await res.json();
         if (res.ok) {
             message.success('Feedback submitted!');
-            router.push('/');
+            router.push('/chatBot');
         } else {
             message.error(data.message || 'Submission failed');
         }
@@ -51,7 +51,6 @@ export default function FeedbackPage(){
             message.error('Server error');
         }
     };
-    
 
 const styles = {
     page: {
@@ -95,9 +94,9 @@ const styles = {
 return (
     <div style={styles.page} className="feedback-page">
       <div style={styles.card} className="feedback-card mobile-card-shadow">
-        <Link href="/">
+        <Link href="/chatBot">
           <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
-            Back
+            Home
           </Button>
         </Link>
 

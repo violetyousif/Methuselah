@@ -19,7 +19,7 @@ const profileRateLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later.' },
 });
 
-router.patch('/profile', auth, profileRateLimiter, async (req, res) => {
+router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
   console.log('User making profile update:', req.user.id);
   try {
     const { firstName, lastName, email, dateOfBirth, gender, weight, height, activityLevel, sleepHours } = req.body;

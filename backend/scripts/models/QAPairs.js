@@ -1,4 +1,5 @@
-// Purpose: This file defines the QAPair model for MongoDB using Mongoose
+// Violet Yousif, 07/03/2025, created model type to define the QAPair model for MongoDB using Mongoose
+
 import mongoose from 'mongoose';
 
 const QAPairSchema = new mongoose.Schema({

@@ -15,7 +15,7 @@ const router = express.Router();
 import rateLimit from 'express-rate-limit';
 
 
-import Feedback from '../models/Feedback.js';
+import Feedback from '../models/feedback.js';
 import User from '../models/User.js';
 import auth from '../middleware/auth.js';
 
@@ -30,9 +30,9 @@ const feedbackLimiter = rateLimit({
 });
 
 
-// POST /submit-feedback
+// POST /feedback
 // This route accepts feedback from logged-in users and stores it in the database
-router.post('/submit-feedback', feedbackLimiter, auth, async (req, res) => {
+router.post('/feedback', feedbackLimiter, auth(), async (req, res) => {
     try{
         // Destructure feedback data from request body
         const {rating, comments, sessionID, conversationID} = req.body;

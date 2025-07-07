@@ -53,7 +53,7 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
   }
 
 // POST /api/ragChat
-router.post('/ragChat', chatLimiter, auth, async (req, res) => {
+router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
   console.log('ragChat HIT');
   try {
     //Grab and sanity-check the question

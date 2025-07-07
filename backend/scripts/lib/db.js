@@ -1,5 +1,5 @@
+// Violet Yousif, 07/03/2025, created db.js script to connect to MongoDB and export the query function
 
-// Purpose: Connect to MongoDB and export the query function
 import mongoose from 'mongoose';
 import { config } from 'dotenv';
 

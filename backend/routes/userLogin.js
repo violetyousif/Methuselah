@@ -111,7 +111,7 @@ router.post('/update-password', updatePasswordLimiter, async (req, res) => {
   user.password = await bcrypt.hash(newPassword, salt);
   await user.save();
 
-  // ✅ Important: Don't sign in here. Just send success.
+  // Important: Don't sign in here. Just send success.
   res.status(200).json({ message: 'Password updated successfully' });
 });
 
@@ -151,6 +151,8 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
+    // TODO: Check why this was changed from getUser to User -- it removes the security of the getUser function
+    //    const user = await getUser.findOne({ email: { $eq: email.trim().toLowerCase() } });
     const user = await User.findOne({ email: { $eq: email.trim().toLowerCase() } });
     if (!user) {
       console.log('User not found');
@@ -170,7 +172,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     try {
       token = jwt.sign(
         // Assigning data User(collection) variable: _id and email to userId and email respectively
-        {  userId: user._id, email: user.email }, 
+        {  userId: user._id, email: user.email.toLowerCase(), role: user.role },
         process.env.JWT_SECRET, // Secret key to prove its from our server (authentication)
         { expiresIn: '1h' }     // Token will expire in 1 hour
         );

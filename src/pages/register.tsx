@@ -7,8 +7,8 @@
 // Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
 // Syed Rabbey, 7/5/2025, Added 2FA to account creation with verification logic. 
 
-import React, { useState, useEffect } from 'react'
-import { message, Form, Input, Button, Checkbox, Select } from 'antd'
+import { useState, useEffect } from 'react'
+import { Form, Input, Button, Checkbox, Select, notification, message } from 'antd'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ModalTerms from '../components/TermsModal'
@@ -92,7 +92,8 @@ function register() {
 
       if (!registerRes.ok) throw new Error('Registration failed');
 
-      message.success('Successfully Registered! Redirecting...', 2);
+      //notification.success({ message: 'Successfully Registered! Redirecting...' });
+      message.success('Successfully Registered! Redirecting...');
       setTimeout(() => router.push('/login'), 2000);
     } catch (error) {
       console.error('Verification failed:', error);
@@ -251,7 +252,7 @@ function register() {
                 maxLength={6}
                 placeholder="Enter 6-digit code"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVerificationCode(e.target.value)}
                 style={styles.placeholderStyle}
               />
               <Button

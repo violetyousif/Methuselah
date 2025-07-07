@@ -1,0 +1,14 @@
+// Violet Yousif
+// Date: 07/05/2025
+// Description: This script updates all Users documents in the MongoDB database to set a default role of "user" for those that do not have a role defined.
+//              Preparing for an admin side of the website.  
+
+use('Longevity');
+
+// Set the "role" field to "user" for all users that don't already have one
+const result = db.Users.updateMany(
+  { role: { $exists: false } },
+  { $set: { role: "user" } }
+);
+
+console.log(`Matched: ${result.matchedCount}, Modified: ${result.modifiedCount}`);
