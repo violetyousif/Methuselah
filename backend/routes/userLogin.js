@@ -20,7 +20,9 @@ import express from 'express';
 const router = express.Router();
 import User from '../models/User.js'; 
 import nodemailer from 'nodemailer';
-const resetCodes = new Map();
+import resetCodes from '../utils/resetCodes.js';
+
+
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
 //import cookie from 'cookie'; // Don't need anymore, using res.cookie() directly from server.js and middleware
@@ -42,22 +44,41 @@ const resetCodeLimiter = rateLimit({
 
 // 1. Send reset code
 router.post('/send-reset-code', resetCodeLimiter, async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email: {$eq: email}});
-  if (!user) return res.status(404).json({ message: 'Email not found.' });
+  const { email, mode } = req.body;
+
+  // Optional safety check
+  if (!email || !mode) {
+    return res.status(400).json({ message: 'Email and mode are required.' });
+  }
+
+  const user = await User.findOne({ email: { $eq: email } });
+
+  if (mode === 'reset' && !user) {
+    return res.status(404).json({ message: 'Email not found.' });
+  }
+
+  if (mode === 'register' && user) {
+    return res.status(409).json({ message: 'Email already registered.' });
+  }
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   resetCodes.set(email, code);
 
-  await transporter.sendMail({
-    from: `"Methuselah" <${process.env.MAIL_USER}>`,
-    to: email,
-    subject: 'Password Reset Code',
-    text: `Your 6-digit password reset code is: ${code}`,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Methuselah" <${process.env.MAIL_USER}>`,
+      to: email,
+      subject: 'Methuselah Verification Code',
+      text: `Your 6-digit verification code is: ${code}`,
+    });
 
-  res.json({ message: 'Code sent' });
+    res.status(200).json({ message: 'Verification code sent' });
+  } catch (err) {
+    console.error('Email send failed:', err);
+    res.status(500).json({ message: 'Failed to send verification email' });
+  }
 });
+
 
 // 2. Verify code
 router.post('/verify-reset-code', (req, res) => {

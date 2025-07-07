@@ -28,10 +28,10 @@ export default function ForgotPassword() {
 
   const onFinish = async (values: any) => {
     try {
-      const res = await fetch('http://localhost:8080/api/auth/send-reset-code', {
+      const res = await fetch('http://localhost:8080/api/send-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: values.email })
+        body: JSON.stringify({ email, mode: 'reset' })
       });
 
       const data = await res.json();
@@ -60,7 +60,7 @@ export default function ForgotPassword() {
         </Link>
 
         <h2 className="forgot-password-header">Forgot Password?</h2>
-        <p  className="forgot-password-subtext">Enter your email and we'll send a reset link.</p>
+        <p  className="forgot-password-subtext">Enter your email and we'll send a reset code.</p>
 
         <Form layout="vertical" onSubmitCapture={handleSubmit}>
           <Form.Item label={<span style={styles.label}>Email</span>} required>
@@ -97,7 +97,7 @@ export default function ForgotPassword() {
 
 const styles = {
   page: {
-    backgroundColor: '#1D1E2C',
+    backgroundColor: '#FFFFFF',
     display: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',

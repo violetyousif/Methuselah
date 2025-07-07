@@ -18,7 +18,7 @@ export default function VerifyCodePage() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:8080/api/auth/verify-reset-code', {
+      const res = await fetch('http://localhost:8080/api/verify-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, token }),
@@ -79,7 +79,7 @@ export default function VerifyCodePage() {
 
 const styles = {
   page: {
-    backgroundColor: '#1D1E2C',
+    backgroundColor: '#FFFFFF',
     display: 'block',
     position: 'absolute' as const,
     minHeight: '100vh',
@@ -97,7 +97,7 @@ const styles = {
     maxWidth: 400,
     margin: '1rem auto',
     padding: '2rem',
-    backgroundColor: '#F1F1EB',
+    backgroundColor: '#A0B6AA',
     borderRadius: '20px',
     paddingBottom: '24px',
   },
