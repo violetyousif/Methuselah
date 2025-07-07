@@ -17,7 +17,7 @@ const userDataRateLimiter = rateLimit({
 });
 
 // Only left user-data named with dash because of prev students routes
-router.get('/user-data', auth(), userDataRateLimiter, async (req, res) => {
+router.get('/user-data', userDataRateLimiter, auth(), async (req, res) => {
   try {
     const user = await getUser.findById(req.user.id).select('-password'); // Exclude password
     if (!user) return res.status(404).json({ message: 'User not found' });
