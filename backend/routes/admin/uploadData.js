@@ -7,6 +7,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import auth from '../../middleware/auth.js';
+import rateLimit from 'express-rate-limit';
 import {
   //loadFromURL,
   loadPDF,
@@ -21,6 +22,13 @@ import {
 } from '../../scripts/chunkAndIngest.js';
 
 const router = express.Router();
+
+// Configure rate limiter: maximum of 10 requests per minute
+const uploadDataLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: { error: 'Too many requests, please try again later.' }
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -54,7 +62,7 @@ const upload = multer({
 });
 
 // Admin file upload endpoint
-router.post('/uploadData', auth('admin'), upload.single('file'), async (req, res) => {
+router.post('/uploadData', uploadDataLimiter, auth('admin'), upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
