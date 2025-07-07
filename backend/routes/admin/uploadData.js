@@ -152,8 +152,14 @@ router.post('/uploadData', uploadDataLimiter, auth('admin'), upload.single('file
     console.error('Upload processing error:', error);
     
     // Clean up file if it exists
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (req.file) {
+      const uploadDir = path.resolve('./uploads/');
+      const normalizedPath = path.resolve(req.file.path);
+      if (normalizedPath.startsWith(uploadDir) && fs.existsSync(normalizedPath)) {
+        fs.unlinkSync(normalizedPath);
+      } else {
+        console.error('Invalid file path detected:', req.file.path);
+      }
     }
 
     res.status(500).json({
