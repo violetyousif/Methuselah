@@ -121,10 +121,10 @@ const Chatbot = () => {
         if (res.ok) {
           const settings = await res.json();
           const theme = settings.preferences?.theme || 'default';
-          const fontSize = settings.preferences?.fontSize || 'regular';
+          // const fontSize = settings.preferences?.fontSize || 'regular';
           
           document.body.dataset.theme = theme;
-          document.body.dataset.fontsize = fontSize;
+          document.body.dataset.fontsize = 'regular'; // Always use regular font size
           setCurrentTheme(theme as 'default' | 'dark');
         } else {
           // Fallback to defaults if can't load from database

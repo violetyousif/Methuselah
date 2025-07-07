@@ -150,8 +150,8 @@
 
 /* Font size control for theme settings (Mohammad Hoque) */
 body[data-fontsize='regular'] { font-size: 16px; }
-body[data-fontsize='large'] { font-size: 17px; }
-body[data-fontsize='extra-large'] { font-size: 18px; }
+/* body[data-fontsize='large'] { font-size: 17px; }
+body[data-fontsize='extra-large'] { font-size: 18px; } */
 
 /* Animation - global fade in */
 @keyframes fadeIn {
@@ -525,6 +525,7 @@ body[data-theme='default'] .custom-modal .ant-btn-primary {
 
 /* ------------- FONT SIZE CONTROL (Mohammad Hoque) ------------- */
 body[data-fontsize='regular'] { font-size: 16px; }
+/* 
 body[data-fontsize='large'] { font-size: 17px; }
 body[data-fontsize='extra-large'] { font-size: 18px; }
 
@@ -540,6 +541,7 @@ body[data-fontsize='extra-large'] input,
 body[data-fontsize='extra-large'] .ant-select-selector {
   font-size: 2.5em !important;
 }
+*/
 
 /* ---- Added by: Violet Yousif - 06/02/25 ---- */
 /* Link styles */

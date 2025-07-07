@@ -22,7 +22,7 @@ import ImgCrop from 'antd-img-crop'
 const { Option } = Select
 
 export default function Settings() {
-  const [fontSize, setFontSize] = useState('regular')
+  // const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -43,25 +43,25 @@ export default function Settings() {
           setFirstName(settings.firstName || '');
           setLastName(settings.lastName || '');
           setProfilePic(settings.profilePic || '');
-          setFontSize(settings.preferences?.fontSize || 'regular');
+          // setFontSize(settings.preferences?.fontSize || 'regular');
           setTheme((settings.preferences?.theme as 'default' | 'dark') || 'default');
           
           // Apply theme and fontSize to UI immediately
           document.body.dataset.theme = settings.preferences?.theme || 'default';
-          document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
+          // document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
         } else {
           console.warn('Failed to load settings from backend, using defaults');
-          setFontSize('regular');
+          // setFontSize('regular');
           setTheme('default');
           document.body.dataset.theme = 'default';
-          document.body.dataset.fontsize = 'regular';
+          // document.body.dataset.fontsize = 'regular';
         }
       } catch (error) {
         console.error('Error loading settings:', error);
-        setFontSize('regular');
+        // setFontSize('regular');
         setTheme('default');
         document.body.dataset.theme = 'default';
-        document.body.dataset.fontsize = 'regular';
+        // document.body.dataset.fontsize = 'regular';
       }
     };
 
@@ -101,9 +101,9 @@ export default function Settings() {
   }, [theme])
 
 
-  useEffect(() => {
-    document.body.dataset.fontsize = fontSize
-  }, [fontSize])
+  // useEffect(() => {
+  //   document.body.dataset.fontsize = fontSize
+  // }, [fontSize])
 
   const handleSave = async () => {
   const settings = {
@@ -113,7 +113,7 @@ export default function Settings() {
     profilePic,
     preferences: {
       theme,
-      fontSize,
+      // fontSize,
   }
   };
 
@@ -131,7 +131,7 @@ export default function Settings() {
       message.success('Settings updated successfully!');
       // Apply updated preferences immediately to UI
       document.body.dataset.theme = theme;
-      document.body.dataset.fontsize = fontSize;
+      // document.body.dataset.fontsize = fontSize;
     } else {
       message.error(data.message || 'Failed to update settings');
     }
@@ -233,14 +233,14 @@ export default function Settings() {
           </div>
 
           {/*Font Size Field */}
-          <div>
+          {/* <div>
             <div style={styles.label} className="settingsLabel">Font Size:</div>
             <Select value={fontSize} onChange={(val) => setFontSize(val)} style={styles.select} className="settingsInput">
               <Option value="regular">Regular</Option>
               <Option value="large">Large</Option>
               <Option value="extra-large">Extra Large</Option>
             </Select>
-          </div>
+          </div> */}
 
           <Button type="primary" onClick={handleSave} style={styles.primaryButton} className="settingsSaveButton">
             Save Changes
@@ -248,7 +248,7 @@ export default function Settings() {
         </div>
       </div>
       <style jsx global>{`
-        body[data-fontsize='regular'] {
+        /* body[data-fontsize='regular'] {
           font-size: 16px;
         }
         body[data-fontsize='large'] {
@@ -268,7 +268,7 @@ export default function Settings() {
         body[data-fontsize='extra-large'] input,
         body[data-fontsize='extra-large'] .ant-select-selector {
           font-size: 2.5em !important;
-        }
+        } */
         /* Fix for the Select dropdown arrow visibility in dark mode */
         body[data-theme='dark'] .ant-select-arrow {
         color: #F1F1EA !important; /* light color for dark bg */
