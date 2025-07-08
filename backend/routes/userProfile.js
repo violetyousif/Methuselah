@@ -19,10 +19,10 @@ const profileRateLimiter = rateLimit({
   message: { message: 'Too many requests, please try again later.' },
 });
 
-router.patch('/profile', auth(), profileRateLimiter, async (req, res) => {
+router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
   console.log('User making profile update:', req.user.id);
   try {
-    const { firstName, lastName, email, dateOfBirth, gender, weight, height, activityLevel, sleepHours } = req.body;
+    const { firstName, lastName, email, dateOfBirth, gender, /* weight, */ height, activityLevel, sleepHours } = req.body;
     
     const user = await getUser.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -33,7 +33,7 @@ router.patch('/profile', auth(), profileRateLimiter, async (req, res) => {
     if (email !== undefined) user.email = email;
     if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
     if (gender !== undefined) user.gender = gender;
-    if (weight !== undefined) user.weight = weight;
+    // if (weight !== undefined) user.weight = weight;
     if (height !== undefined) user.height = height;
     if (activityLevel !== undefined) user.activityLevel = activityLevel;
     if (sleepHours !== undefined) user.sleepHours = sleepHours;
@@ -43,7 +43,7 @@ router.patch('/profile', auth(), profileRateLimiter, async (req, res) => {
     // Save health metrics as time-series data to act as audit trail for dashboard.
     const healthMetricsUpdate = {};
 
-    if (weight !== undefined) healthMetricsUpdate.weight = weight;
+    // if (weight !== undefined) healthMetricsUpdate.weight = weight;
     if (sleepHours !== undefined) healthMetricsUpdate.sleepHours = sleepHours;
     if (activityLevel !== undefined) healthMetricsUpdate.activityLevel = activityLevel;
 
@@ -61,7 +61,7 @@ router.patch('/profile', auth(), profileRateLimiter, async (req, res) => {
     // Save to HealthMetricsHistory (audit trail) for dashboard insights.
     const historyEntries = [];
 
-    if (weight !== undefined) {
+    /* if (weight !== undefined) {
       historyEntries.push({
         userId: user._id,
         metric: 'weight',
@@ -70,7 +70,7 @@ router.patch('/profile', auth(), profileRateLimiter, async (req, res) => {
         recordedAt: new Date(),
         source: 'profile'
       });
-    }
+    } */
 
     if (sleepHours !== undefined) {
       historyEntries.push({

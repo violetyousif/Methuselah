@@ -6,8 +6,10 @@
 // Date: 6/18/2025
 // Description: updated for proper user authentication
 
+// Syed Rabbey, 07/07/2025, added toast message
+
 import { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, message } from 'antd';
+import { Form, Input, Button, Select, message, notification } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
@@ -42,13 +44,28 @@ export default function FeedbackPage(){
 
         const data = await res.json();
         if (res.ok) {
-            message.success('Feedback submitted!');
-            router.push('/chatBot');
+          notification.success({
+            message: 'Thank You!',
+            description: 'Your feedback has been submitted successfully.',
+            placement: 'topRight',
+            duration: 4
+          });
+          router.push('/chatBot');
         } else {
-            message.error(data.message || 'Submission failed');
+          notification.error({
+            message: 'Submission Failed',
+            description: data.message || 'Something went wrong. Please try again.',
+            placement: 'topRight',
+            duration: 4
+          });
         }
         } catch (err) {
-            message.error('Server error');
+          notification.error({
+            message: 'Server Error',
+            description: 'Could not submit feedback. Please try again later.',
+            placement: 'topRight',
+            duration: 4
+          });
         }
     };
 

@@ -1,5 +1,6 @@
 // /routes/admin/uploadURL.js
 import express from 'express';
+import RateLimit from 'express-rate-limit';
 import auth from '../../middleware/auth.js';
 import {
     loadFromURL,
@@ -10,7 +11,14 @@ import {
 
 const router = express.Router();
 
-router.post('/uploadURL', auth('admin'), async (req, res) => {
+// Configure rate limiter: max 100 requests per 15 minutes
+const uploadURLRateLimiter = RateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: { error: 'Too many requests, please try again later.' }
+});
+
+router.post('/uploadURL', uploadURLRateLimiter, auth('admin'), async (req, res) => {
     const { url } = req.body;
 
     if (!url) {

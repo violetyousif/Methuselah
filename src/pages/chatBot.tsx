@@ -16,7 +16,7 @@
 
 
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin } from 'antd'
+import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin, notification } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import Profile from './profile'
@@ -265,7 +265,11 @@ const Chatbot = () => {
       setChatHistory(updatedConvs)
       setEditingChatId(null)
       setEditingChatTitle('')
-      message.success('Chat name updated successfully!')
+      notification.success({
+        message: 'Chat name updated successfully!',
+        placement: 'topRight',
+        duration: 3
+      });
     }
   }
 
@@ -305,7 +309,11 @@ const Chatbot = () => {
           setSelectedChatId(newId)
         }
       }
-      message.success('Chat deleted successfully!')
+      notification.success({
+        message: 'Chat deleted successfully!',
+        placement: 'topRight',
+        duration: 3
+      });
     } catch (error) {
       console.error('Error deleting chat:', error);
       message.error('Failed to delete chat. Please try again.');
