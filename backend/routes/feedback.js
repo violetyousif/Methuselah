@@ -1,14 +1,6 @@
-// Edited by: Viktor Gjorgjevski
-// Date: 06/12/2025
-// Added POST route for submitting feedback using authentication middleware
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/18/2025
-// Future proofed incase structure ever changes. CHanged middle ware by using auth instead of old authmiddleware
-
-// Edited by: Viktor Gjorgjevski
-// Date: 06/22/2025
-// Added rate limiting to prevent abuse of the API
+// Viktor Gjorgjevski, 06/12/2025: Added POST route for submitting feedback using authentication middleware
+// Viktor Gjorgjevski, 06/18/2025: Future proofed in case structure ever changes. Changed middleware by using auth instead of old authmiddleware
+// Viktor Gjorgjevski, 06/22/2025: Added rate limiting to prevent abuse of the API
 
 import express from 'express';
 const router = express.Router();

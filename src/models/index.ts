@@ -30,7 +30,7 @@ export interface UserData {
   lastName?: string
   email?: string
   gender?: 'female' | 'male' | 'other' | 'prefer not to say'
-  age: number
+  dateOfBirth: string // ISO format, e.g. '1990-01-01'
   weight: number // kg
   height: number // cm
   activityLevel: 'sedentary' | 'moderate' | 'active'

@@ -6,7 +6,7 @@
 // Mohammad Hoque, 7/6/2025, Enhanced timestamp display to show both date and time for better message history clarity
 
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'

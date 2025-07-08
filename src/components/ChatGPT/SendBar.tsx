@@ -1,7 +1,7 @@
 // Mohammad Hoque, 7/3/2025, Added responsive placeholder text that dynamically adjusts based on screen size for better mobile UX
 // Mohammad Hoque, 7/6/2025, Added timestamp functionality to user messages for better chat history tracking
 
-import React, { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
+import { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
 import { ClearOutlined, SendOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { ChatRole, SendBarProps } from './interface'
 import Show from './Show'
@@ -41,13 +41,13 @@ const SendBar = (props: SendBarProps) => {
     }
   }
 
-  const handleClear = () => {
-    if (inputRef.current) {
-      inputRef.current.value = ''
-      inputRef.current.style.height = 'auto'
-      onClear()
-    }
-  }
+  // const handleClear = () => {
+  //   if (inputRef.current) {
+  //     inputRef.current.value = ''
+  //     inputRef.current.style.height = 'auto'
+  //     onClear()
+  //   }
+  // }
 
   const handleSend = () => {
     const content = inputRef.current?.value
@@ -129,7 +129,7 @@ const SendBar = (props: SendBarProps) => {
       <div className="send-bar">
         {/* File upload Button */}
 
-        {/* <div
+      {/* <div
         className="send-bar"
         style={{
           background: '#9AB7A9',
@@ -139,12 +139,11 @@ const SendBar = (props: SendBarProps) => {
           alignItems: 'center',
           gap: '8px'
         }}
-      >
-        </div> */}
-        
-        <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
+      > */}
+        {/* <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
           <FolderOpenOutlined className="chat-icon-black-outline" />
-        </button>
+        </button> */}
+        
 
         {/* Hidden File Input */}
         <input
@@ -173,7 +172,7 @@ const SendBar = (props: SendBarProps) => {
 
         {/* <button className="button" title="Clear" disabled={disabled} onClick={handleClear}>
           <ClearOutlined className="chat-icon-black-outline" />
-        </button>} */}
+        </button>*/}
       </div>
     </Show>
   )

@@ -30,7 +30,6 @@ import '@/styles/globals.css'
 import DeleteModal from '@/components/DeleteModal';
 
 
-
 const { Sider, Content } = Layout
 const { Text } = Typography
 
@@ -46,7 +45,7 @@ const Chatbot = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const chatMode = 'conversational';
+  //const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
   const [editingChatTitle, setEditingChatTitle] = useState('')  
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
@@ -624,7 +623,7 @@ const Chatbot = () => {
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            //<div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <ChatGPT
                 fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
                 conversationId={selectedChatId}
@@ -635,13 +634,13 @@ const Chatbot = () => {
                 userBubbleColor="#F1F1EA"
                 userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
                 userName={userData?.firstName || 'User'}
-                chatMode={chatMode}
               />
-            </div>
+            //</div>
+
           )}
-          {/*<div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
+          {/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
             <ChatModeToggle mode={chatMode} onChange={setChatMode} />
-          </div>*/}
+          </div> */}
           {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT

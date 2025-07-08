@@ -10,7 +10,7 @@
 import dotenv from 'dotenv';
 
 import path from 'path';
-import lusca from 'lusca';
+//import lusca from 'lusca';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
 import cors from 'cors';          // for cross origin requests
