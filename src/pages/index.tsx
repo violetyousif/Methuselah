@@ -40,28 +40,29 @@ export default function Home() {
   //   }
   // }
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('http://localhost:8080/api/checkAuth', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.role === 'user') {
-            router.push('/chatBot');
-          } else if (data.role === 'admin') {
-            router.push('/admin/adminUpload.tsx');
-          }
-        }
-      } catch (err) {
-        console.error("Auth check failed:", err);
-      }
-    };
+  ////// IF USED, COMMENT BACK OUT BC IT BREAKS LANDING PAGE WHEN NOT LOGGED IN
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     try {
+  //       const res = await fetch('http://localhost:8080/api/checkAuth', {
+  //         method: 'GET',
+  //         credentials: 'include',
+  //       });
+  //       if (res.ok) {
+  //         const data = await res.json();
+  //         if (data.role === 'user') {
+  //           router.push('/chatBot');
+  //         } else if (data.role === 'admin') {
+  //           router.push('/admin/adminUpload.tsx');
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Auth check failed:", err);
+  //     }
+  //   };
 
-    checkAuth();
-  }, []);
+  //   checkAuth();
+  // }, []);
 
 
   useEffect(() => {
