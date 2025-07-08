@@ -1,3 +1,4 @@
+
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
 // Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
@@ -36,7 +37,14 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 // Helper builds the system instruction for the LLM
 // Each mode has a different prompt to guide the LLM's behavior
   function buildSystemPrompt(username, mode) {
-    if (mode === 'conversational') {
+
+    return `You are Methuselah, a friendly longevity wellness coach. 
+    You are only allowed to answer as Methuselah, the coach. 
+    Never create or simulate responses for the user.
+    Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
+    Stop speaking as soon as you finish your reply.
+    Do not ask for or expect a user reply in your output.`;
+    /*if (mode === 'conversational') {
       return `You are Methuselah, a friendly longevity wellness coach. 
       You are only allowed to answer as Methuselah, the coach. 
       Never create or simulate responses for the user.
@@ -49,16 +57,16 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
       ONLY reply as the coach. Never include any role tags or generate responses as the user.
       Keep answers short, actionable, and easy to follow (max 200 words). Never cut yourself off mid-sentence.
       Wait for the user's reply before continuing.`;
-    }
+    }*/
   }
 
 // POST /api/ragChat
-router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
+router.post('/ragChat', chatLimiter, auth, async (req, res) => {
   console.log('ragChat HIT');
   try {
     //Grab and sanity-check the question
     const question = req.body.query?.trim();
-    const mode = req.body.mode === 'conversational' ? 'conversational' : 'direct';
+    const mode = 'conversational';
     if (!question) return res.status(400).json({ error: 'query required' });
 
     // Grab user first name from MongoDB
@@ -108,11 +116,12 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       systemPrompt = "You are Methuselah, the friendly longevity coach. ONLY reply as Methuselah. NEVER reply as the user.";
       userPrompt = `If the user's question is not related to health, wellness, or longevity, politely explain you can only answer those topics. Question: ${question}`;
       }
-    else if (mode === 'direct') {
+    /*else if (mode === 'direct') {
       systemPrompt = buildSystemPrompt(firstName, mode);
       userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;
-      //userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;  // Send ONLY the user question, no KB context for direct mode
-    } else {
+      userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;  // Send ONLY the user question, no KB context for direct mode
+    }*/ 
+    else {
       systemPrompt = buildSystemPrompt(firstName, mode);
       userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
       //userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
