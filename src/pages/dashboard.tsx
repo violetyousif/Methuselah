@@ -23,6 +23,7 @@ import {
   Label
 } from 'recharts'
 import dayjs from 'dayjs';
+import { Tooltip as RechartsTooltip } from 'recharts';
 
 interface DashboardProps {
   visible: boolean
@@ -157,7 +158,7 @@ React.useEffect(() => {
   const styles = getStyles(currentTheme)
 const [metrics, setMetrics] = React.useState<Record<string, any>>({});
 const [last7Data, setLast7Data] = React.useState<
-  { date: string; sleep: number; exercise: number; calories: number }[]
+  { date: string; sleep: number; exercise: number; calories: number; weight: number }[]
 >([]);
 
 React.useEffect(() => {
@@ -169,7 +170,7 @@ React.useEffect(() => {
 
 React.useEffect(() => {
   const today = dayjs()
-  const arr: { date: string; sleep: number; exercise: number; calories: number }[] = []
+  const arr: { date: string; sleep: number; exercise: number; calories: number; weight: number }[] = []
   for (let i = 6; i >= 0; i--) {
     const d = today.subtract(i, 'day').format('YYYY-MM-DD')
     const m = metrics[d]
@@ -178,7 +179,8 @@ React.useEffect(() => {
         date: dayjs(d).format('ddd'),
         sleep: m.sleepHours,
         exercise: m.exerciseHours,
-        calories: m.calories
+        calories: m.calories,
+        weight: m.weight ?? 0
       })
     }
   }
@@ -263,7 +265,7 @@ const exerciseAvg = exerciseDays.length
               <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
               <XAxis dataKey="date" stroke={axisColor} />
               <YAxis stroke={axisColor} />
-              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+              <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
               <Legend wrapperStyle={legendStyle} />
               <Bar dataKey={key} name={label.split(': ')[1]}>
                 {last7Data.map((_, index) => (
@@ -276,6 +278,41 @@ const exerciseAvg = exerciseDays.length
           </div>
         ))}
       </div>
+      {/* Second row: Weight chart */}
+      <div style={{ ...styles.chartSection, justifyContent: 'center' }}>
+        <div
+          style={{
+            ...styles.chartContainer,
+            flex: '0 1 33%',
+            maxWidth: '400px',
+            minWidth: '280px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          <h3 style={styles.chartTitle}>Last 7 Days: Weight (lb)</h3>
+          {last7Data.length === 0 ? (
+            <div style={styles.noDataMessage}>No weight data reported for the last 7 days.</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={last7Data}>
+                <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+                <XAxis dataKey="date" stroke={axisColor} />
+                <YAxis stroke={axisColor} />
+                <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+                <Legend wrapperStyle={legendStyle} />
+                <Bar dataKey="weight" fill="#7FB285" name="Weight (lb)">
+                  {last7Data.map((_, index) => (
+                    <Cell key={`cell-weight-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
 
       {/* <div style={styles.pieChartSection}>
         <h3 style={styles.chartTitle}>Diet Breakdown</h3>
@@ -286,7 +323,7 @@ const exerciseAvg = exerciseDays.length
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip contentStyle={{
+            <RechartsTooltip contentStyle={{
               background: isDark ? '#232323' : '#fff',
               color: isDark ? '#5eead4' : '#203625'
             }} />

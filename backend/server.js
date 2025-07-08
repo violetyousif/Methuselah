@@ -17,7 +17,7 @@ import cors from 'cors';          // for cross origin requests
 import bcrypt from 'bcrypt';      // to encrypt passwords
 import jwt from 'jsonwebtoken';   // security: make sure user is logged in to access app session
 import { fileURLToPath } from 'url';
- 
+
 // Importing routes and middleware
 import logger from './middleware/logger.js';
 import userLogin from './routes/userLogin.js';
@@ -64,8 +64,8 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' })); // Increase from default 100kb to 10mb
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.json());
-//app.use(lusca.csrf()); // Add CSRF protection middleware - no 
 
+//app.use(lusca.csrf()); // Add CSRF protection middleware
 //app.use('/api/auth', userLoginRoutes);
 app.use(logger);  // Logs all incoming requests
 

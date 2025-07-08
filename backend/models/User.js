@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
   agreedToTerms: { type: Boolean, default: false, required: true },
   longestStreak: { type: Number, default: 0 },
   // Health-related fields for profile data (add to table):
-  weight: { type: Number }, // kg --> change to lbs
+  // weight: { type: Number }, // kg --> change to lbs
   height: { type: Number }, // cm --> change to ft or inches
   activityLevel: { type: String, enum: ['sedentary', 'moderate', 'active'], default: 'moderate' },
   sleepHours: { type: Number, default: 8 },
