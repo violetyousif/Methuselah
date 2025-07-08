@@ -65,10 +65,9 @@ export const useChatGPT = (
   const [healthData, setHealthData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [disabled] = useState<boolean>(false)
-  const [greetingSent, setGreetingSent] = useState(false);
   const [streamedMessage, setStreamedMessage] = useState<string>('');
 
-
+  const greetingAttempted = useRef<Set<string>>(new Set());
 
   const controller = useRef<AbortController | null>(null)
   const currentMessage = useRef<string>('')
@@ -90,52 +89,54 @@ export const useChatGPT = (
       }
     }
     fetchHealthData()
+  }, [isLoggedIn])
 
-
-    //// Prev code (DON'T DELETE):
-    // const fetchHealthData = async () => {
-    //    if (walletAddress) {
-    //      const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
-    //      const data = await response.json()
-    //      setHealthData(data || null)
-    //  }
-    // }
-    // fetchHealthData()
-
-
-    const loadConversation = async () => {
+  useEffect(() => {
+    const loadConversationAndInitGreeting = async () => {
+      console.log('Loading conversation:', conversationId, 'healthData available:', !!healthData);
+      
       const conv = await getConversation(conversationId)
       setCurrentConversation(conv || null)
+      
+      // Initialize greeting immediately after loading conversation if conditions are met
+      if (healthData && conversationId && (!conv?.messages || conv.messages.length === 0)) {
+        // Check if we've already attempted greeting for this conversation
+        if (!greetingAttempted.current.has(conversationId)) {
+          console.log('Sending greeting for conversation:', conversationId);
+          greetingAttempted.current.add(conversationId);
+          
+          try {
+            const userName = healthData.firstName || 'traveler';
+            await addMessage(
+              conversationId,
+              ChatRole.Assistant,
+              `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
+            );
+            
+            console.log('Greeting sent successfully, refreshing conversation:', conversationId);
+            
+            // Force a re-render and update conversation data
+            const updatedConv = await getConversation(conversationId);
+            setCurrentConversation(updatedConv || null);
+            forceUpdate(); // Force component re-render to show the greeting
+          } catch (error) {
+            console.error('Error sending greeting:', error);
+            greetingAttempted.current.delete(conversationId);
+          }
+        }
+      } else if (conv && conv.messages && conv.messages.length > 0) {
+        // Mark as attempted if conversation already has messages
+        greetingAttempted.current.add(conversationId);
+      }
     }
-    loadConversation()
-
-  }, [conversationId, isLoggedIn])
+    
+    loadConversationAndInitGreeting()
+  }, [conversationId, isLoggedIn, healthData])
 
   //// Prev code (DON'T DELETE):
   // }, [conversationId, walletAddress])
 
-  useEffect(() => {
-    const initializeGreeting = async () => {
-      if (!healthData || greetingSent) return;
-
-      const conv = await getConversation(conversationId);
-      const hasNoMessages = conv?.messages.length === 0;
-
-      if (hasNoMessages) {
-        const userName = healthData.firstName || 'traveler';
-        await addMessage(
-          conversationId,
-          ChatRole.Assistant,
-          `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
-        );
-        const updatedConv = await getConversation(conversationId)
-        setCurrentConversation(updatedConv || null);
-        setGreetingSent(true);
-      }
-    }
-    
-    initializeGreeting()
-  }, [healthData, greetingSent, conversationId]);
+  // Greeting initialization is now handled in the loadConversation useEffect above
 
 
 
