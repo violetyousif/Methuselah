@@ -105,17 +105,7 @@ const SendBar = (props: SendBarProps) => {
       }
       loading={loading}
     >
-      <div
-        className="send-bar"
-        style={{
-          background: '#9AB7A9',
-          borderRadius: 12,
-          padding: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}
-      >
+      <div className="send-bar">
         {/* File upload Button */}
         <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
           <FolderOpenOutlined className="chat-icon-black-outline" />
@@ -138,15 +128,6 @@ const SendBar = (props: SendBarProps) => {
           placeholder={placeholder}
           autoComplete="off"
           rows={1}
-          style={{
-            flex: 1,
-            border: 'none',
-            borderRadius: 8,
-            padding: '8px',
-            backgroundColor: '#F1F1EA',
-            color: '#1E1E1E',
-            fontSize: 'inherit' // Let CSS handle responsive font sizing
-          }}
           onKeyDown={onKeydown}
           onInput={onInputAutoSize}
         />

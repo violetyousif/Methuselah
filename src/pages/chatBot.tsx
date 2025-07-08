@@ -473,7 +473,7 @@ const Chatbot = () => {
                     <div
                       key={chat.conversationId}
                       style={{
-                        ...styles.chatItem,
+                        ...styles.chatItem(currentTheme),
                         backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
                         display: 'flex',
                         justifyContent: 'space-between',
@@ -754,13 +754,13 @@ const styles = {
     margin: '16px 0 8px',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
   }),
-  chatItem: {
+  chatItem: (theme: 'default' | 'dark') => ({
     padding: '8px 12px',
     marginBottom: '8px',
     borderRadius: '8px',
     cursor: 'pointer',
-    color: '#203625'
-  },
+    color: theme === 'dark' ? '#E2E8F0' : '#203625' // Light color for dark mode, original for light mode
+  }),
   bottomButtons: {
     padding: '16px',
     display: 'flex',
