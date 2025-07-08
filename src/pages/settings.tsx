@@ -23,7 +23,7 @@ import ImgCrop from 'antd-img-crop'
 const { Option } = Select
 
 export default function Settings() {
-  const [fontSize, setFontSize] = useState('regular')
+  // const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -44,25 +44,25 @@ export default function Settings() {
           setFirstName(settings.firstName || '');
           setLastName(settings.lastName || '');
           setProfilePic(settings.profilePic || '');
-          setFontSize(settings.preferences?.fontSize || 'regular');
+          // setFontSize(settings.preferences?.fontSize || 'regular');
           setTheme((settings.preferences?.theme as 'default' | 'dark') || 'default');
           
           // Apply theme and fontSize to UI immediately
           document.body.dataset.theme = settings.preferences?.theme || 'default';
-          document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
+          // document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
         } else {
           console.warn('Failed to load settings from backend, using defaults');
-          setFontSize('regular');
+          // setFontSize('regular');
           setTheme('default');
           document.body.dataset.theme = 'default';
-          document.body.dataset.fontsize = 'regular';
+          // document.body.dataset.fontsize = 'regular';
         }
       } catch (error) {
         console.error('Error loading settings:', error);
-        setFontSize('regular');
+        // setFontSize('regular');
         setTheme('default');
         document.body.dataset.theme = 'default';
-        document.body.dataset.fontsize = 'regular';
+        // document.body.dataset.fontsize = 'regular';
       }
     };
 
@@ -116,9 +116,9 @@ export default function Settings() {
   }, [theme])
 
 
-  useEffect(() => {
-    document.body.dataset.fontsize = fontSize
-  }, [fontSize])
+  // useEffect(() => {
+  //   document.body.dataset.fontsize = fontSize
+  // }, [fontSize])
 
   const handleSave = async () => {
   const settings = {
@@ -128,7 +128,7 @@ export default function Settings() {
     profilePic,
     preferences: {
       theme,
-      fontSize,
+      // fontSize,
   }
   };
 
@@ -151,7 +151,7 @@ export default function Settings() {
       });
       // Apply updated preferences immediately to UI
       document.body.dataset.theme = theme;
-      document.body.dataset.fontsize = fontSize;
+      // document.body.dataset.fontsize = fontSize;
     } else {
       notification.error({
         message: 'Save Failed',
@@ -230,7 +230,7 @@ export default function Settings() {
                   }}
                   accept="image/*"
                 >
-                  <Button icon={<UploadOutlined />} style={styles.uploadButton}>Upload Custom Profile Pic</Button>
+                  <Button icon={<UploadOutlined />} style={styles.uploadButton} className="settingsUploadButton">Upload Custom Profile Pic</Button>
                 </Upload>
               </ImgCrop>
             </div>
@@ -263,14 +263,14 @@ export default function Settings() {
           </div>
 
           {/*Font Size Field */}
-          <div>
+          {/* <div>
             <div style={styles.label} className="settingsLabel">Font Size:</div>
             <Select value={fontSize} onChange={(val) => setFontSize(val)} style={styles.select} className="settingsInput">
               <Option value="regular">Regular</Option>
               <Option value="large">Large</Option>
               <Option value="extra-large">Extra Large</Option>
             </Select>
-          </div>
+          </div> */}
 
           <Button type="primary" onClick={handleSave} style={styles.primaryButton} className="settingsSaveButton">
             Save Changes
@@ -278,34 +278,83 @@ export default function Settings() {
         </div>
       </div>
       <style jsx global>{`
-        body[data-fontsize='regular'] {
-          font-size: 16px;
+        /* Modern input and select styling for settings page */
+        .settingsPage .ant-input,
+        .settingsPage .ant-select-selector {
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 0.9)' : 'rgba(230, 230, 220, 0.9)'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          border-radius: 6px !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          transition: all 0.2s ease-in-out !important;
         }
-        body[data-fontsize='large'] {
-          font-size: 18px;
+
+        .settingsPage .ant-input:hover,
+        .settingsPage .ant-select:hover .ant-select-selector {
+          border-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.5)' : 'rgba(32, 54, 37, 0.5)'} !important;
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 1.0)' : 'rgba(230, 230, 220, 1.0)'} !important;
         }
-        body[data-fontsize='extra-large'] {
-          font-size: 20px;
+
+        .settingsPage .ant-input:focus,
+        .settingsPage .ant-input-focused,
+        .settingsPage .ant-select-focused .ant-select-selector {
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          box-shadow: 0 0 0 2px ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.2)'} !important;
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 1.0)' : 'rgba(230, 230, 220, 1.0)'} !important;
         }
-        body[data-fontsize='large'] h1,
-        body[data-fontsize='large'] h2,
-        body[data-fontsize='large'] input,
-        body[data-fontsize='large'] .ant-select-selector {
-          font-size: 2em !important;
+
+        .settingsPage .ant-select-arrow {
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
         }
-        body[data-fontsize='extra-large'] h1,
-        body[data-fontsize='extra-large'] h2,
-        body[data-fontsize='extra-large'] input,
-        body[data-fontsize='extra-large'] .ant-select-selector {
-          font-size: 2.5em !important;
+
+        .settingsPage .ant-select-dropdown {
+          background-color: ${theme === 'dark' ? 'rgba(39, 41, 61, 0.95)' : '#ffffff'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          border-radius: 6px !important;
+          backdrop-filter: blur(10px) !important;
         }
-        /* Fix for the Select dropdown arrow visibility in dark mode */
-        body[data-theme='dark'] .ant-select-arrow {
-        color: #F1F1EA !important; /* light color for dark bg */
+
+        .settingsPage .ant-select-item {
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          border-radius: 4px !important;
+          margin: 2px 4px !important;
         }
-        body[data-theme='dark'] .ant-select-selector {
-        background-color: #1D1E2C !important;
-        color: #F1F1EA !important;
+
+        .settingsPage .ant-select-item-option-selected {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.1)'} !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+        }
+
+        .settingsPage .ant-select-item-option:hover {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.1)' : 'rgba(32, 54, 37, 0.05)'} !important;
+        }
+
+        .settingsPage .ant-select-item-option-active {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.15)' : 'rgba(32, 54, 37, 0.08)'} !important;
+        }
+
+        /* Upload button styles */
+        .settingsPage .ant-upload .ant-btn {
+          background-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          color: #ffffff !important;
+          border-radius: 6px !important;
+        }
+
+        .settingsPage .ant-upload .ant-btn:hover {
+          background-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+          border-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+        }
+
+        /* Button styles */
+        .settingsPage .ant-btn-primary {
+          background-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-radius: 6px !important;
+        }
+
+        .settingsPage .ant-btn-primary:hover {
+          background-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+          border-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
         }
       `}</style>
       <style jsx>{`
@@ -352,17 +401,19 @@ const getStyles = (theme: 'default' | 'dark') => ({
   },
   input: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '12px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   select: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '12px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   primaryButton: {
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
@@ -375,7 +426,7 @@ const getStyles = (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderRadius: '1rem'
+    borderRadius: '9999px'
   },
   backButton: {
     marginBottom: '24px',
