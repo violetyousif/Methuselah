@@ -136,10 +136,10 @@ const SendBar = (props: SendBarProps) => {
           gap: '8px'
         }}
       >
-        {/* File upload Button */}
+        {/* File upload Button
         <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
           <FolderOpenOutlined className="chat-icon-black-outline" />
-        </button>
+        </button> */}
 
         {/* Hidden File Input */}
         <input
@@ -177,7 +177,7 @@ const SendBar = (props: SendBarProps) => {
 
         {/* <button className="button" title="Clear" disabled={disabled} onClick={handleClear}>
           <ClearOutlined className="chat-icon-black-outline" />
-        </button> */}
+        </button>*/}
       </div>
     </Show>
   )
