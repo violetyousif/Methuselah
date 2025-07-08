@@ -61,7 +61,13 @@ router.post(
 );
 
 /* ----------  GET /my-files  ---------- */
-router.get('/my-files', auth, async (req, res) => {
+const myFilesLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each user/IP to 10 requests per windowMs
+  message: 'Too many requests to fetch files, please try again after 15 minutes.'
+});
+
+router.get('/my-files', auth, myFilesLimiter, async (req, res) => {
   try {
     const userId = req.user.id;
 
