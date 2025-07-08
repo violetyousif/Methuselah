@@ -23,11 +23,67 @@ interface MessageItemProps extends ChatMessageItemProps {
   userName?: string
 }
 
+// Theme-aware color function
+const getThemeColors = () => {
+  if (typeof window === 'undefined') {
+    return {
+      assistantBg: '#f8f9fa',
+      userBg: '#e3f2fd',
+      textColor: '#2d3748',
+      nameColor: '#888',
+      timestampColor: '#aaa'
+    }
+  }
+  
+  const isDark = document.body.dataset.theme === 'dark'
+  
+  if (isDark) {
+    return {
+      assistantBg: '#2a3441', // Lighter background closer to sidebar color for better readability
+      userBg: '#2d2f3a',      // Slightly lighter than assistant for distinction
+      textColor: '#e0e0e0',
+      nameColor: '#9ca3af',
+      timestampColor: '#6b7280'
+    }
+  }
+  
+  return {
+    assistantBg: '#f8f9fa',
+    userBg: '#e3f2fd', 
+    textColor: '#2d3748',
+    nameColor: '#888',
+    timestampColor: '#aaa'
+  }
+}
+
 const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
   const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
   
   const isUser = message.role === 'user'
-  const bgColor = isUser ? userColor : assistantColor
+  
+  // Get theme-aware colors
+  const [themeColors, setThemeColors] = useState(getThemeColors())
+  
+  // Update colors when theme changes
+  useEffect(() => {
+    const updateColors = () => {
+      setThemeColors(getThemeColors())
+    }
+    
+    // Listen for theme changes
+    const observer = new MutationObserver(() => {
+      updateColors()
+    })
+    
+    if (typeof window !== 'undefined') {
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+      })
+    }
+    
+    return () => observer.disconnect()
+  }, [])
 
   const timestamp = new Date(message.timestamp || Date.now()).toLocaleString('en-US', {
     timeZone: 'America/New_York',
@@ -63,7 +119,7 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
       <div className={`message-header ${isUser ? 'align-right' : 'align-left'}`} style={{ marginBottom: '4px' }}>
         <span style={{
           fontSize: '12px',
-          color: '#888',
+          color: themeColors.nameColor,
           fontWeight: '600',
           marginRight: '8px'
         }}>
@@ -71,7 +127,7 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
         </span>
         <span style={{
           fontSize: '11px',
-          color: '#aaa',
+          color: themeColors.timestampColor,
           fontWeight: '400'
         }}>
           {timestamp}
@@ -103,11 +159,11 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
 
       <div
         style={{
-          background: isUser ? '#F1F1EA' : assistantColor,
+          background: isUser ? themeColors.userBg : themeColors.assistantBg,
           borderRadius: '12px',
           padding: '8px 14px',
           maxWidth: '100%',
-          color: '#1E1E1E',
+          color: themeColors.textColor,
           lineHeight: 1.4
         }}
       >
