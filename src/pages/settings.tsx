@@ -248,34 +248,83 @@ export default function Settings() {
         </div>
       </div>
       <style jsx global>{`
-        /* body[data-fontsize='regular'] {
-          font-size: 16px;
+        /* Modern input and select styling for settings page */
+        .settingsPage .ant-input,
+        .settingsPage .ant-select-selector {
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 0.9)' : 'rgba(230, 230, 220, 0.9)'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          border-radius: 6px !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          transition: all 0.2s ease-in-out !important;
         }
-        body[data-fontsize='large'] {
-          font-size: 18px;
+
+        .settingsPage .ant-input:hover,
+        .settingsPage .ant-select:hover .ant-select-selector {
+          border-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.5)' : 'rgba(32, 54, 37, 0.5)'} !important;
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 1.0)' : 'rgba(230, 230, 220, 1.0)'} !important;
         }
-        body[data-fontsize='extra-large'] {
-          font-size: 20px;
+
+        .settingsPage .ant-input:focus,
+        .settingsPage .ant-input-focused,
+        .settingsPage .ant-select-focused .ant-select-selector {
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          box-shadow: 0 0 0 2px ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.2)'} !important;
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 1.0)' : 'rgba(230, 230, 220, 1.0)'} !important;
         }
-        body[data-fontsize='large'] h1,
-        body[data-fontsize='large'] h2,
-        body[data-fontsize='large'] input,
-        body[data-fontsize='large'] .ant-select-selector {
-          font-size: 2em !important;
+
+        .settingsPage .ant-select-arrow {
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
         }
-        body[data-fontsize='extra-large'] h1,
-        body[data-fontsize='extra-large'] h2,
-        body[data-fontsize='extra-large'] input,
-        body[data-fontsize='extra-large'] .ant-select-selector {
-          font-size: 2.5em !important;
-        } */
-        /* Fix for the Select dropdown arrow visibility in dark mode */
-        body[data-theme='dark'] .ant-select-arrow {
-        color: #F1F1EA !important; /* light color for dark bg */
+
+        .settingsPage .ant-select-dropdown {
+          background-color: ${theme === 'dark' ? 'rgba(39, 41, 61, 0.95)' : '#ffffff'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          border-radius: 6px !important;
+          backdrop-filter: blur(10px) !important;
         }
-        body[data-theme='dark'] .ant-select-selector {
-        background-color: #1D1E2C !important;
-        color: #F1F1EA !important;
+
+        .settingsPage .ant-select-item {
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          border-radius: 4px !important;
+          margin: 2px 4px !important;
+        }
+
+        .settingsPage .ant-select-item-option-selected {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.1)'} !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+        }
+
+        .settingsPage .ant-select-item-option:hover {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.1)' : 'rgba(32, 54, 37, 0.05)'} !important;
+        }
+
+        .settingsPage .ant-select-item-option-active {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.15)' : 'rgba(32, 54, 37, 0.08)'} !important;
+        }
+
+        /* Upload button styles */
+        .settingsPage .ant-upload .ant-btn {
+          background-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          color: #ffffff !important;
+          border-radius: 6px !important;
+        }
+
+        .settingsPage .ant-upload .ant-btn:hover {
+          background-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+          border-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+        }
+
+        /* Button styles */
+        .settingsPage .ant-btn-primary {
+          background-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-radius: 6px !important;
+        }
+
+        .settingsPage .ant-btn-primary:hover {
+          background-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+          border-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
         }
       `}</style>
       <style jsx>{`
@@ -322,36 +371,38 @@ const getStyles = (theme: 'default' | 'dark') => ({
   },
   input: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '12px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   select: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '12px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   primaryButton: {
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderRadius: '9999px',
+    borderRadius: '6px',
     marginTop: '16px'
   },
   uploadButton: {
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderRadius: '1rem'
+    borderRadius: '6px'
   },
   backButton: {
     marginBottom: '24px',
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
-    borderRadius: '9999px'
+    borderRadius: '6px'
   }
 })

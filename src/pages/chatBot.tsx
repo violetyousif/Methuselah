@@ -491,8 +491,10 @@ const Chatbot = () => {
                           style={{ 
                             flex: 1, 
                             marginRight: 8,
-                            backgroundColor: currentTheme === 'dark' ? '#3a3a3a' : '#ffffff',
-                            color: currentTheme === 'dark' ? '#ffffff' : '#000000'
+                            backgroundColor: currentTheme === 'dark' ? 'rgba(45, 47, 65, 0.8)' : '#ffffff',
+                            color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+                            borderColor: currentTheme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)',
+                            borderRadius: '6px'
                           }}
                           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                             if (e.key === 'Escape') {
@@ -636,7 +638,7 @@ export default Chatbot
 const styles = {
   layout: (theme: 'default' | 'dark') => ({
     minHeight: '100vh',
-    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF'
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#FFFFFF'
   }),
   sider: (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#2b4240' : '#8AA698',
@@ -782,7 +784,7 @@ const styles = {
   },
   contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
     marginLeft: collapsed ? 48 : 250,
-    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#FFFFFF',
     transition: 'margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition matching sidebar
     height: '100vh',
     overflow: 'hidden', // Prevent content area from scrolling

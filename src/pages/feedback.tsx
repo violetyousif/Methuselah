@@ -114,43 +114,116 @@ return (
         </Form>
       </div>
       
-      {/* Global styles for dropdown and error messages */}
+      {/* Global styles for dropdown and modern input styling */}
       <style jsx global>{`
-        /* Fix for the Select dropdown visibility in dark mode */
-        body[data-theme='dark'] .ant-select-dropdown {
-          background-color: #27293d !important;
-          border: 1px solid #318182 !important;
+        /* Modern input and select styling for feedback page */
+        .feedback-page .ant-input,
+        .feedback-page .ant-select-selector {
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 0.9)' : 'rgba(230, 230, 220, 0.9)'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          border-radius: 6px !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          transition: all 0.2s ease-in-out !important;
         }
-        body[data-theme='dark'] .ant-select-item {
-          background-color: #27293d !important;
-          color: #F1F1EA !important;
+
+        .feedback-page .ant-input:hover,
+        .feedback-page .ant-select:hover .ant-select-selector {
+          border-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.5)' : 'rgba(32, 54, 37, 0.5)'} !important;
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 1.0)' : 'rgba(230, 230, 220, 1.0)'} !important;
         }
-        body[data-theme='dark'] .ant-select-item:hover {
-          background-color: #318182 !important;
+
+        .feedback-page .ant-input:focus,
+        .feedback-page .ant-input-focused,
+        .feedback-page .ant-select-focused .ant-select-selector {
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          box-shadow: 0 0 0 2px ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.2)'} !important;
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 1.0)' : 'rgba(230, 230, 220, 1.0)'} !important;
         }
-        body[data-theme='dark'] .ant-select-item-option-selected {
-          background-color: #318182 !important;
+
+        .feedback-page .ant-select-arrow {
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
         }
-        body[data-theme='dark'] .ant-select-arrow {
-          color: #F1F1EA !important;
+
+        .feedback-page .ant-select-dropdown {
+          background-color: ${theme === 'dark' ? 'rgba(39, 41, 61, 0.95)' : '#ffffff'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          border-radius: 6px !important;
+          backdrop-filter: blur(10px) !important;
+          box-shadow: ${theme === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 4px 16px rgba(0, 0, 0, 0.1)'} !important;
         }
-        body[data-theme='dark'] .ant-select-selector {
-          background-color: #1D1E2C !important;
-          border-color: #318182 !important;
-          color: #F1F1EA !important;
+
+        .feedback-page .ant-select-item {
+          background-color: transparent !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          border-radius: 4px !important;
+          margin: 2px 4px !important;
+        }
+
+        .feedback-page .ant-select-item-option-selected {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.1)'} !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+        }
+
+        .feedback-page .ant-select-item-option:hover {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.05)'} !important;
+        }
+
+        .feedback-page .ant-select-item-option-active {
+          background-color: ${theme === 'dark' ? 'rgba(49, 129, 130, 0.2)' : 'rgba(32, 54, 37, 0.08)'} !important;
+        }
+
+        /* Button styles */
+        .feedback-page .ant-btn-primary {
+          background-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-color: ${theme === 'dark' ? '#318182' : '#203625'} !important;
+          border-radius: 6px !important;
+        }
+
+        .feedback-page .ant-btn-primary:hover {
+          background-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
+          border-color: ${theme === 'dark' ? '#3a9394' : '#2a4730'} !important;
         }
         
         /* Fix error message colors */
-        body[data-theme='dark'] .ant-form-item-explain-error {
-          color: #ff7875 !important; /* Softer red for dark mode */
-        }
-        body[data-theme='default'] .ant-form-item-explain-error {
-          color: #dc3545 !important; /* Standard red for light mode */
+        .feedback-page .ant-form-item-explain-error {
+          color: ${theme === 'dark' ? '#ff7875' : '#dc3545'} !important;
         }
         
         /* Fix placeholder text visibility */
-        body[data-theme='dark'] .ant-select-selection-placeholder {
-          color: #8c8c8c !important;
+        .feedback-page .ant-select-selection-placeholder {
+          color: ${theme === 'dark' ? '#8c8c8c' : '#999999'} !important;
+        }
+
+        /* Global dark mode styles for feedback dropdowns - ensure they override default styles */
+        body[data-theme='dark'] .feedback-page .ant-select-dropdown,
+        body[data-theme='dark'] .ant-select-dropdown {
+          background-color: rgba(39, 41, 61, 0.95) !important;
+          border: 1px solid rgba(49, 129, 130, 0.3) !important;
+          border-radius: 6px !important;
+          backdrop-filter: blur(10px) !important;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        body[data-theme='dark'] .feedback-page .ant-select-item,
+        body[data-theme='dark'] .ant-select-item {
+          background-color: transparent !important;
+          color: #F1F1EA !important;
+        }
+
+        body[data-theme='dark'] .feedback-page .ant-select-item-option-selected,
+        body[data-theme='dark'] .ant-select-item-option-selected {
+          background-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+        }
+
+        body[data-theme='dark'] .feedback-page .ant-select-item:hover,
+        body[data-theme='dark'] .ant-select-item:hover {
+          background-color: rgba(49, 129, 130, 0.2) !important;
+        }
+
+        body[data-theme='dark'] .feedback-page .ant-select-item-option-active,
+        body[data-theme='dark'] .ant-select-item-option-active {
+          background-color: rgba(49, 129, 130, 0.2) !important;
         }
       `}</style>
     </div>
@@ -178,7 +251,7 @@ const getStyles = (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
-    borderRadius: '9999px'
+    borderRadius: '6px'
   },
   header: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
@@ -193,23 +266,25 @@ const getStyles = (theme: 'default' | 'dark') => ({
     marginBottom: 4
   },
   input: {
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '8px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   select: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625',
+    backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '8px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   primaryButton: {
     width: '100%',
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
-    borderRadius: '1rem'
+    borderRadius: '6px'
   }
 });
