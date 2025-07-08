@@ -146,7 +146,8 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
 
     let chatResp;
     try {
-      chatResp = await hf.chatCompletion({ ...baseChatConfig, options: { wait_for_model: false } });
+      chatResp = await hf.chatCompletion({ 
+        ...baseChatConfig, options: { wait_for_model: false } });
     } catch (err) {
       if (err.message?.includes('Model loading')) {
         console.warn('Model cold-start: retrying with wait_for_model: true');
