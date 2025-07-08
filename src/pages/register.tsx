@@ -5,7 +5,7 @@
 // Viktor Gjorgjevski, 06/03/2025, Added user profile pic option when registering right under gender. Added it to onFinish function to be sent to database as well
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
 // Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
-// Syed Rabbey, 7/5/2025, Added 2FA to account creation with verification logic. 
+// Syed Rabbey, 7/5/2025, 7/7/2025, Added 2FA to account creation with verification logic. Added toast notifications for success and error messages.
 
 import { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select, notification, message } from 'antd'
@@ -60,15 +60,25 @@ function register() {
       throw new Error(data.message || 'Failed to send verification code');
     }
 
-
       //  Lock form, show code input
       setFormData(values);
       setIsVerifying(true);
       setCodeSent(true);
-      setErrorMsg('');
+
+      notification.success({
+        message: 'Verification Code Sent',
+        description: 'Please check your email and enter the 6-digit code to complete registration.',
+        placement: 'topRight',
+        duration: 4,
+      });
     } catch (error) {
       console.error('Error sending code:', error);
-      setErrorMsg('Could not send verification code. Please try again.');
+      notification.error({
+        message: 'Code Send Failed',
+        description: 'Could not send verification code. Please try again later.',
+        placement: 'topRight',
+        duration: 4,
+      });
     }
   };
 
@@ -92,12 +102,22 @@ function register() {
 
       if (!registerRes.ok) throw new Error('Registration failed');
 
-      //notification.success({ message: 'Successfully Registered! Redirecting...' });
-      message.success('Successfully Registered! Redirecting...');
+      notification.success({
+        message: 'Registration Complete',
+        description: 'Your account was successfully created. Redirecting to login...',
+        placement: 'topRight',
+        duration: 4,
+      });
+
       setTimeout(() => router.push('/login'), 2000);
     } catch (error) {
       console.error('Verification failed:', error);
-      setErrorMsg('Verification failed. Please check your code and try again.');
+      notification.error({
+        message: 'Verification Failed',
+        description: 'Invalid or expired code. Please check and try again.',
+        placement: 'topRight',
+        duration: 4,
+      });
     }
   };
 

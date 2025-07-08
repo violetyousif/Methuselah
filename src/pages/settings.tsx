@@ -7,9 +7,10 @@
 // Violet Yousif, 6/16/2025, Removed unused walletAddress prop from Settings component function parameters.
 // Violet Yousuf, 6/16/2025, Removed dateOfBirth field since it's handled by profile endpoint
 // Mizanur Mizan, 6/24/2025, Added upload handler for custom avatar image
+// Syed Rabbey, 7/7/2025, Added toast message for succesful profile picture update and setting save.
 
 import { useState, useEffect } from 'react'
-import { Button, Select, Input, DatePicker, message } from 'antd'
+import { Button, Select, Input, DatePicker, message, notification } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import moment from 'moment'
@@ -82,17 +83,31 @@ export default function Settings() {
       })
 
       if (res.ok) {
-        setProfilePic(base64)
-        message.success('Profile picture updated!')
+        setProfilePic(base64);
+        notification.success({
+          message: 'Profile Picture Updated',
+          description: 'Your new avatar has been successfully saved.',
+          placement: 'topRight',
+          duration: 3,
+        });
       } else {
-        const data = await res.json()
-        message.error(data.message || 'Failed to update profile picture')
+        notification.error({
+          message: 'Upload Failed',
+          description: 'Could not update profile picture.',
+          placement: 'topRight',
+          duration: 3,
+        });
       }
     } catch (err) {
-      console.error('Upload failed', err)
-      message.error('Failed to update profile picture')
+      console.error('Upload failed', err);
+      notification.error({
+        message: 'Upload Failed',
+        description: 'Could not update profile picture.',
+        placement: 'topRight',
+        duration: 3,
+      });
     }
-  }
+  };
   reader.readAsDataURL(file)
   }
 
@@ -128,16 +143,31 @@ export default function Settings() {
     const data = await res.json();
 
     if (res.ok) {
-      message.success('Settings updated successfully!');
+      notification.success({
+        message: 'Settings Saved',
+        description: 'Your preferences have been successfully updated.',
+        placement: 'topRight',
+        duration: 4,
+      });
       // Apply updated preferences immediately to UI
       document.body.dataset.theme = theme;
       // document.body.dataset.fontsize = fontSize;
     } else {
-      message.error(data.message || 'Failed to update settings');
+      notification.error({
+        message: 'Save Failed',
+        description: data.message || 'Could not update your settings.',
+        placement: 'topRight',
+        duration: 4,
+      });
     }
   } catch (error) {
     console.error('Error saving settings:', error);
-    message.error('Error saving settings');
+    notification.error({
+      message: 'Save Failed',
+      description: 'Something went wrong while saving your settings.',
+      placement: 'topRight',
+      duration: 4,
+    });
   }
 };
 

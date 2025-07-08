@@ -1,7 +1,7 @@
 // Syed Rabbey, 07/04/2025, Page to verify code sent to user's email for password reset. Appears after user submits email for reset code.
 // Mohammad Hoque, 07/06/2025, Updated styling to match other auth pages - fixed background colors, centering, mobile responsiveness, and consistent design patterns.
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, notification } from 'antd';
 import { useRouter } from 'next/router';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
@@ -30,9 +30,15 @@ export default function VerifyCodePage() {
         body: JSON.stringify({ email, code, token }),
       });
       const data = await res.json();
-      if (res.ok) {
-        router.push(`/resetPassword?email=${email}`);
-      } else {
+    if (res.ok) {
+      notification.success({
+        message: 'Code Verified!',
+        description: 'You may now reset your password.',
+        placement: 'topRight',
+        duration: 3,
+      });
+      router.push(`/resetPassword?email=${email}`);
+    } else {
         setError(data.message || 'Invalid code');
       }
     } catch (err) {

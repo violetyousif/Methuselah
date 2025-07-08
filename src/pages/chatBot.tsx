@@ -16,7 +16,7 @@
 
 
 import ChatGPT from '@/components/ChatGPT'
-import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin } from 'antd'
+import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin, notification } from 'antd'
 import { MenuOutlined, SettingOutlined, CameraOutlined, BulbOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import Profile from './profile'
@@ -26,7 +26,7 @@ import { ethers } from 'ethers'
 import { getConversations, addConversation, updateConversationTitle, deleteConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
-import ChatModeToggle from './ChatModeToggle';
+//import ChatModeToggle from './ChatModeToggle';
 import DeleteModal from '@/components/DeleteModal';
 
 
@@ -46,7 +46,7 @@ const Chatbot = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
+  const chatMode = 'conversational';
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
   const [editingChatTitle, setEditingChatTitle] = useState('')  
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
@@ -265,7 +265,11 @@ const Chatbot = () => {
       setChatHistory(updatedConvs)
       setEditingChatId(null)
       setEditingChatTitle('')
-      message.success('Chat name updated successfully!')
+      notification.success({
+        message: 'Chat name updated successfully!',
+        placement: 'topRight',
+        duration: 3
+      });
     }
   }
 
@@ -305,7 +309,11 @@ const Chatbot = () => {
           setSelectedChatId(newId)
         }
       }
-      message.success('Chat deleted successfully!')
+      notification.success({
+        message: 'Chat deleted successfully!',
+        placement: 'topRight',
+        duration: 3
+      });
     } catch (error) {
       console.error('Error deleting chat:', error);
       message.error('Failed to delete chat. Please try again.');
@@ -630,9 +638,9 @@ const Chatbot = () => {
               />
             </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px', flexShrink: 0 }}>
+          {/*<div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
             <ChatModeToggle mode={chatMode} onChange={setChatMode} />
-          </div>
+          </div>*/}
           {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT
