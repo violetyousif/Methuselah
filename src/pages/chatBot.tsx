@@ -632,7 +632,7 @@ const Chatbot = () => {
                 isLoggedIn={isLoggedIn}
                 inputBarColor="#9AB7A9"
                 assistantBubbleColor="#9AB7A9"
-                userBubbleColor="#318182"
+                userBubbleColor="#F1F1EA"
                 userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
                 userName={userData?.firstName || 'User'}
                 chatMode={chatMode}

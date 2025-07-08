@@ -23,45 +23,44 @@ interface MessageItemProps extends ChatMessageItemProps {
   userName?: string
 }
 
-// Theme-aware color function
-const getThemeColors = () => {
-  if (typeof window === 'undefined') {
+const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
+  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
+  
+  const isUser = message.role === 'user'
+  
+  // Get theme-aware colors - use original colors for light mode, dark colors for dark mode
+  const getThemeColors = () => {
+    if (typeof window === 'undefined') {
+      return {
+        assistantBg: assistantColor, // Use the original prop colors
+        userBg: userColor,
+        textColor: '#2d3748',
+        nameColor: '#888',
+        timestampColor: '#aaa'
+      }
+    }
+    
+    const isDark = document.body.dataset.theme === 'dark'
+    
+    if (isDark) {
+      return {
+        assistantBg: '#2a3441', // Lighter background closer to sidebar color for better readability
+        userBg: '#2d2f3a',      // Original dark mode user message background
+        textColor: '#e0e0e0',
+        nameColor: '#9ca3af',
+        timestampColor: '#6b7280'
+      }
+    }
+    
     return {
-      assistantBg: '#f8f9fa',
-      userBg: '#e3f2fd',
+      assistantBg: assistantColor, // Use the original prop colors for light mode
+      userBg: userColor,           // Use the original prop colors for light mode
       textColor: '#2d3748',
       nameColor: '#888',
       timestampColor: '#aaa'
     }
   }
   
-  const isDark = document.body.dataset.theme === 'dark'
-  
-  if (isDark) {
-    return {
-      assistantBg: '#2a3441', // Lighter background closer to sidebar color for better readability
-      userBg: '#2d2f3a',      // Slightly lighter than assistant for distinction
-      textColor: '#e0e0e0',
-      nameColor: '#9ca3af',
-      timestampColor: '#6b7280'
-    }
-  }
-  
-  return {
-    assistantBg: '#f8f9fa',
-    userBg: '#e3f2fd', 
-    textColor: '#2d3748',
-    nameColor: '#888',
-    timestampColor: '#aaa'
-  }
-}
-
-const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
-  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
-  
-  const isUser = message.role === 'user'
-  
-  // Get theme-aware colors
   const [themeColors, setThemeColors] = useState(getThemeColors())
   
   // Update colors when theme changes
@@ -83,7 +82,7 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
     }
     
     return () => observer.disconnect()
-  }, [])
+  }, [assistantColor, userColor]) // Add dependencies to re-run when prop colors change
 
   const timestamp = new Date(message.timestamp || Date.now()).toLocaleString('en-US', {
     timeZone: 'America/New_York',
