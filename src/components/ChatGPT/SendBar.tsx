@@ -41,13 +41,13 @@ const SendBar = (props: SendBarProps) => {
     }
   }
 
-  const handleClear = () => {
-    if (inputRef.current) {
-      inputRef.current.value = ''
-      inputRef.current.style.height = 'auto'
-      onClear()
-    }
-  }
+  // const handleClear = () => {
+  //   if (inputRef.current) {
+  //     inputRef.current.value = ''
+  //     inputRef.current.style.height = 'auto'
+  //     onClear()
+  //   }
+  // }
 
   const handleSend = () => {
     const content = inputRef.current?.value
@@ -129,7 +129,7 @@ const SendBar = (props: SendBarProps) => {
       <div className="send-bar">
         {/* File upload Button */}
 
-<!--       <div
+      {/* <div
         className="send-bar"
         style={{
           background: '#9AB7A9',
@@ -139,9 +139,8 @@ const SendBar = (props: SendBarProps) => {
           alignItems: 'center',
           gap: '8px'
         }}
-      >
- -->
-        <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
+      > */}
+        {/* <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
           <FolderOpenOutlined className="chat-icon-black-outline" />
         </button> */}
 
