@@ -99,7 +99,7 @@ const Profile: React.FC = () => {
       if (!res.ok) throw new Error('Submission failed');
       notification.success({
         message: 'Health Metrics Saved',
-        description: 'Your sleep, mood, and meals were successfully recorded.',
+        description: 'Your wellness updates were successfully recorded.',
         placement: 'topRight',
         duration: 4,
       });

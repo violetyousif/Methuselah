@@ -46,7 +46,7 @@ function Login() {
       if (response.ok) {
         notification.success({
           message: 'Successfully Logged In',
-          description: `Welcome back, ${data.user.firstName || 'User'}!`,
+          description: `Welcome, ${data.user.firstName || 'User'}!`,
           placement: 'topRight',
           duration: 3
         });
