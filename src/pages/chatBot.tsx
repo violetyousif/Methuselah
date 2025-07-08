@@ -625,7 +625,7 @@ const Chatbot = () => {
           {selectedChatId && (
             //<div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <ChatGPT
-                fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
+                fetchPath="http://localhost:8080/api/ragChat"  // Updated to use full URL for RAG chat endpoint
                 conversationId={selectedChatId}
                 walletAddress={userData?.email || 'default-user'}
                 isLoggedIn={isLoggedIn}
