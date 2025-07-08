@@ -1,4 +1,6 @@
-import pdfParse from 'pdf-parse';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 import { parse as csvParse } from 'csv-parse/sync';
 
 export async function extractTextFromFile(buffer, mimetype, originalName) {
