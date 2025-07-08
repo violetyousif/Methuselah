@@ -266,6 +266,35 @@ footer {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
+/* Collapsed sidebar button specific dark mode styles */
+[data-theme='dark'] .collapsed-sidebar-button {
+  background-color: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .collapsed-sidebar-button:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: none !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
+}
+
+[data-theme='dark'] .collapsed-sidebar-button:focus {
+  background-color: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+[data-theme='dark'] .collapsed-sidebar-button:active {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+/* ------------------------------------------------------ */
+
 /* Sidebar transition enhancement */
 .ant-layout-sider {
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
@@ -1219,5 +1248,157 @@ html, body {
 /* For general validation messages */
 .ant-form-item-has-error .ant-form-item-explain {
   color: #8B0000 !important;
+}
+
+/* Dark mode button styles for sidebar buttons */
+[data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-text) {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-text):hover {
+  background-color: #256c6f !important;
+  border-color: #256c6f !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-text):focus {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-btn-primary:hover {
+  background-color: #256c6f !important;
+  border-color: #256c6f !important;
+}
+
+/* Sidebar button specific dark mode styles */
+[data-theme='dark'] .sidebar-button {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+  border: 1px solid #318182 !important;
+}
+
+[data-theme='dark'] .sidebar-button:hover {
+  background-color: #256c6f !important;
+  border-color: #256c6f !important;
+  color: #ffffff !important;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .sidebar-button:focus {
+  background-color: #318182 !important;
+  border-color: #318182 !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+[data-theme='dark'] .sidebar-button:active {
+  background-color: #1f5456 !important;
+  border-color: #1f5456 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure default theme buttons also work correctly */
+[data-theme='default'] .sidebar-button {
+  background-color: #F1F1EA !important;
+  border-color: #F1F1EA !important;
+  color: #000000 !important;
+  border: 1px solid #F1F1EA !important;
+}
+
+[data-theme='default'] .sidebar-button:hover {
+  background-color: #e0e0e0 !important;
+  border-color: #e0e0e0 !important;
+  color: #000000 !important;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Hamburger menu button dark mode styles */
+[data-theme='dark'] .hamburger-button {
+  background-color: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .hamburger-button:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .hamburger-button:focus {
+  background-color: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+/* Ensure default theme hamburger button works correctly */
+[data-theme='default'] .hamburger-button {
+  background-color: transparent !important;
+  border: none !important;
+  color: #000000 !important;
+}
+
+[data-theme='default'] .hamburger-button:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border: none !important;
+  color: #000000 !important;
+}
+
+/* Logout button specific styles - keep simple like light mode */
+.logout-button {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  text-decoration: none !important;
+  border-radius: 3rem !important;
+  padding: 0 !important;
+}
+
+[data-theme='dark'] .logout-button {
+  color: #F1F1EA !important;
+  background: none !important;
+  border: none !important;
+}
+
+[data-theme='default'] .logout-button {
+  color: #1D1E2C !important;
+  background: none !important;
+  border: none !important;
+}
+
+.logout-button:hover,
+.logout-button:focus,
+.logout-button:active {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+[data-theme='dark'] .logout-button:hover,
+[data-theme='dark'] .logout-button:focus,
+[data-theme='dark'] .logout-button:active {
+  color: #F1F1EA !important;
+  background: none !important;
+  border: none !important;
+}
+
+[data-theme='default'] .logout-button:hover,
+[data-theme='default'] .logout-button:focus,
+[data-theme='default'] .logout-button:active {
+  color: #1D1E2C !important;
+  background: none !important;
+  border: none !important;
 }
 
