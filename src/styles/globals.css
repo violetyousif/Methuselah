@@ -6,14 +6,14 @@
 /* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
 /* Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.*/
 
-/* timestamp {
+.timestamp {
   font-size: 12px;
   margin-bottom: 4px;
-  color: #000;
+  color: #aaa;
 }
 
 [data-theme='dark'] .timestamp {
-  color: #F1F1EA;
+  color: #6b7280;
 }
 
 .message-name {
@@ -23,7 +23,7 @@
 }
 
 [data-theme='dark'] .message-name {
-  color: #aaa;
+  color: #9ca3af;
 }
 
 .message-header {
@@ -35,7 +35,7 @@
 }
 
 [data-theme='dark'] .message-header {
-  color: #aaa;
+  color: #9ca3af;
 }
 
 .message-header.align-right {

@@ -412,11 +412,12 @@ const Chatbot = () => {
           <div className="sidebar-content" style={{ animation: 'slideInFromLeft 0.4s ease-out' }}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-                <div style={styles.avatarContainer}>
+                <div style={styles.avatarContainer(currentTheme)}>
                   <Button
+                    type="text"
                     icon={<MenuOutlined />}
                     onClick={() => handleSidebarToggle(true)}
-                    style={styles.menuButton}
+                    style={styles.menuButton(currentTheme)}
                     className="hamburger-button"
                   />
                   <div onClick={() => router.push('/profile')} style={{ cursor: 'pointer' }}>
@@ -630,7 +631,7 @@ const Chatbot = () => {
                 isLoggedIn={isLoggedIn}
                 inputBarColor="#9AB7A9"
                 assistantBubbleColor="#9AB7A9"
-                userBubbleColor="#318182"
+                userBubbleColor="#F1F1EA"
                 userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
                 userName={userData?.firstName || 'User'}
               />
@@ -682,7 +683,7 @@ const styles = {
     backgroundColor: theme === 'dark' ? '#1D1E2C' : '#FFFFFF'
   }),
   sider: (theme: 'default' | 'dark') => ({
-    backgroundColor: theme === 'dark' ? '#2b4240' : '#8AA698',
+    backgroundColor: theme === 'dark' ? '#3D3E4C' : '#8AA698',
     padding: 0,
     display: 'flex',
     flexDirection: 'column' as const,
@@ -756,19 +757,21 @@ const styles = {
     backgroundColor: 'transparent',
     border: 'none'
   },
-  avatarContainer: {
-    backgroundColor: '#8AA698',
+  avatarContainer: (theme: 'default' | 'dark') => ({
+    backgroundColor: theme === 'dark' ? '#5A5C73' : '#8AA698',
     padding: '16px',
     textAlign: 'center' as const,
     position: 'relative' as const
-  },
-  menuButton: {
+  }),
+  menuButton: (theme: 'default' | 'dark') => ({
     position: 'absolute' as React.CSSProperties['position'],
     left: 8,
     top: 8,
-    backgroundColor: 'transparent',
-    border: 'none'
-  },
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
+    color: theme === 'dark' ? '#ffffff !important' : '#000000 !important',
+    boxShadow: 'none !important'
+  }),
   avatar: {
     marginTop: 16
   },

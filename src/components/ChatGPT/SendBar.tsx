@@ -143,6 +143,7 @@ const SendBar = (props: SendBarProps) => {
         {/* <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
           <FolderOpenOutlined className="chat-icon-black-outline" />
         </button> */}
+        
 
         {/* Hidden File Input */}
         <input
