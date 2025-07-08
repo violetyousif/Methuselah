@@ -7,7 +7,7 @@
 // Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
 // Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
 
-import React from 'react'
+import * as React from 'react'
 import { Modal, Tooltip } from 'antd'
 import {
   BarChart,

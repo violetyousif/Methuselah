@@ -1,5 +1,5 @@
 //Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
-import React from 'react';
+import * as React from 'react';
 
 interface ChatModeToggleProps {
   mode: 'direct' | 'conversational';

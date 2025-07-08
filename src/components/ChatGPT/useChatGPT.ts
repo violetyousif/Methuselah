@@ -4,11 +4,17 @@
 // Mizanur Mizan, 6/25/2025, Connected backend llm question response to chatbot frontend
 // Syed Rabbey, 6/27/2025, Integrated user's first name into chat greeting and question prompts.
 // Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
+// Violet Yousif, 7/7/2025, Fixed personalized health context to user questions based on health data.
 
 import { useEffect, useReducer, useRef, useState } from 'react'
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 import { ChatGPTProps, ChatMessage, ChatRole } from './interface'
+// You cannot directly "call" User.js from the frontend. Instead, you must create secure backend API endpoints that use your User.js model to fetch or update user data.
+// Example (backend, e.g. Express):
+// In your backend (Node.js/Express), import User.js and define an endpoint:
+
+// Never import or use User.js directly in frontend code.
 import {
   getConversation,
   addMessage,
@@ -17,6 +23,7 @@ import {
   Conversation,
   UserData
 } from '../../models'
+import app from 'next/app'
 
 const scrollDown = throttle(
   () => {
@@ -29,13 +36,13 @@ const scrollDown = throttle(
 const requestMessage = async (
   url: string,
   query: string,
-  chatMode: 'direct' | 'conversational',
+  //chatMode: 'direct' | 'conversational',
   // messages: ChatMessage[],
   controller: AbortController | null
 ) => {
   const response = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify({ query, mode: chatMode }),
+    body: JSON.stringify({ query }),
     credentials: 'include',     // Include cookies for session management request
     headers: { 'Content-Type': 'application/json' },
     signal: controller?.signal
@@ -54,10 +61,66 @@ const requestMessage = async (
   return response.json(); // ragChat returns JSON { answer, contextDocs }
 };
 
+
+// Get the average sleep hours over the past 7 days
+function calculateAvgSleepHours(dates: Record<string, any>): number | null {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(now.getDate() - 6); // Include today
+
+  let totalSleep = 0;
+  let count = 0;
+
+  for (const [dateStr, data] of Object.entries(dates)) {
+    const date = new Date(dateStr);
+
+    // Only include dates within the past 7 days
+    if (date >= sevenDaysAgo && date <= now && typeof data.sleepHours === 'number') {
+      totalSleep += data.sleepHours;
+      count++;
+    }
+  }
+
+  return count > 0 ? totalSleep / count : null;
+}
+
+
+function buildPersonalizedContext(healthData: UserData | null): string {
+  if (!healthData) return '';
+  // calculate age based on todays date and birthdate
+  const {
+    dateOfBirth,
+    weight,
+    height,
+    gender,
+    //sleepHours,
+    activityLevel,
+    //goal,
+    //medications,
+    //conditions
+  } = healthData;
+
+  // Calculate age from dateOfBirth
+  let age = new Date().getFullYear() - new Date(healthData.dateOfBirth).getFullYear();
+  let context = `This user is a ${age}-year-old ${gender}, weighing ${weight} kg and standing ${height} cm tall. `;
+  if (activityLevel) context += `They have a(n) ${activityLevel} activity level. `;
+  if (calculateAvgSleepHours) context += `They sleep about ${calculateAvgSleepHours} hours on average. `;
+  // if (goal) context += `Their current wellness goal is: ${goal}. `;
+  // if (conditions && conditions.length > 0) context += `They have the following conditions: ${conditions.join(', ')}. `;
+  // if (medications && medications.length > 0) context += `Current medications include: ${medications.join(', ')}. `;
+
+  return context.trim();
+}
+
+
+
 export const useChatGPT = (
-  props: ChatGPTProps & { conversationId: string; walletAddress: string; isLoggedIn?: boolean; chatMode: 'direct' | 'conversational' }
-) => {
-  const { conversationId, isLoggedIn = false, chatMode } = props;
+  props: ChatGPTProps & { 
+    conversationId: string; 
+    //walletAddress: string; 
+    //isLoggedIn?: boolean; chatMode: 'direct' | 'conversational' 
+    }) => {
+  const { conversationId, isLoggedIn = false } = props;
   // const { fetchPath, conversationId, walletAddress } = props  // Original Web3 version
   const fetchPath = 'http://localhost:8080/api/ragChat'
   const [, forceUpdate] = useReducer((x) => !x, false)
@@ -67,7 +130,7 @@ export const useChatGPT = (
   const [disabled] = useState<boolean>(false)
   const [greetingSent, setGreetingSent] = useState(false);
   const [streamedMessage, setStreamedMessage] = useState<string>('');
-
+  const [isFallback, setIsFallback] = useState<boolean>(false); 
 
 
   const controller = useRef<AbortController | null>(null)
@@ -114,28 +177,49 @@ export const useChatGPT = (
   //// Prev code (DON'T DELETE):
   // }, [conversationId, walletAddress])
 
-  useEffect(() => {
-    const initializeGreeting = async () => {
-      if (!healthData || greetingSent) return;
+useEffect(() => {
+  const initializeGreeting = async () => {
+    if (!healthData || !conversationId) return;
 
-      const conv = await getConversation(conversationId);
-      const hasNoMessages = conv?.messages.length === 0;
+    const conv = await getConversation(conversationId);
+    if (!conv || conv.messages.length > 0) return;
 
-      if (hasNoMessages) {
-        const userName = healthData.firstName || 'traveler';
-        await addMessage(
-          conversationId,
-          ChatRole.Assistant,
-          `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
-        );
-        const updatedConv = await getConversation(conversationId)
-        setCurrentConversation(updatedConv || null);
-        setGreetingSent(true);
-      }
-    }
+    const userName = healthData.firstName || 'traveler';
+    const greeting = `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`;
+
+    // Ensure this is only added once and not streamed
+    await addMessage(conversationId, ChatRole.Assistant, greeting);
+    const updatedConv = await getConversation(conversationId);
+    setCurrentConversation(updatedConv || null);
+  };
+
+  initializeGreeting();
+}, [healthData, conversationId]);
+
+
+
+  // useEffect(() => {
+  //   const initializeGreeting = async () => {
+  //     if (!healthData || greetingSent) return;
+
+  //     const conv = await getConversation(conversationId);
+  //     const hasNoMessages = conv?.messages.length === 0;
+
+  //     if (hasNoMessages) {
+  //       const userName = healthData.firstName || 'traveler';
+  //       await addMessage(
+  //         conversationId,
+  //         ChatRole.Assistant,
+  //         `Greetings, ${userName}. I am Methuselah, a wise old man who has lived for centuries. Ask me what you seek, and I shall share my wisdom.`
+  //       );
+  //       const updatedConv = await getConversation(conversationId)
+  //       setCurrentConversation(updatedConv || null);
+  //       setGreetingSent(true);
+  //     }
+  //   }
     
-    initializeGreeting()
-  }, [healthData, greetingSent, conversationId]);
+  //   initializeGreeting()
+  // }, [healthData, greetingSent, conversationId]);
 
 
 
@@ -184,10 +268,14 @@ export const useChatGPT = (
       // currentMessage.current = ''
       controller.current = new AbortController()
       setLoading(true);
+      setIsFallback(false); // Reset fallback state (short/direct answers)
       
-      const data = await requestMessage(fetchPath, query, chatMode, controller.current);
+      const data = await requestMessage(fetchPath, query, controller.current);
       const assistantReply = data.answer;
-      // Fake message typing effect
+      const isFallbackResponse = !data.contextDocs || data.contextDocs.length === 0;
+      setIsFallback(isFallbackResponse); 
+
+      // Fake typing effect
       let currentText = '';
       const words = assistantReply.split(' ');
 
@@ -245,12 +333,21 @@ export const useChatGPT = (
       console.error('Error saving message:', error);
     });
 
-    const healthPrompt = healthData
-      ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
-      : '' ;
+    // const healthPrompt = healthData
+    //   ? `User: ${healthData.age} years, ${healthData.weight}kg, ${healthData.height}cm, ${healthData.activityLevel}, ${healthData.sleepHours}h sleep—`
+    //   : '' ;
 
-    const fullQuery = `${healthPrompt}${message.content}`;
+    // const fullQuery = `${healthPrompt}${message.content}`;
+    // fetchMessage(fullQuery);
+
+    const personalContext = buildPersonalizedContext(healthData);
+    const fullQuery = personalContext
+      ? `${personalContext}\n\nUser's question: ${message.content}`
+      : message.content;
+
     fetchMessage(fullQuery);
+
+
     /* const fullMessage = { ...message, content: `${healthPrompt}${message.content}` }
     fetchMessage([
       ...((currentConversation?.messages || []).map(msg => ({
@@ -284,10 +381,10 @@ export const useChatGPT = (
     messages: currentConversation?.messages || [],
     currentMessage,
     streamedMessage,
+    isFallback,
     onSend,
     onClear,
     onStop
-} 
-
-}
+};
+};
 

@@ -152,6 +152,25 @@ function chunkText(text, chunkSize = 500) {
   return chunks.filter(chunk => chunk.length > 100);
 }
 
+async function generateTopic(text) {
+  try {
+    const prompt = `Provide a short topic or category that best summarizes the following content:\n\n${text}\n\nTopic:`;
+    const result = await hf.textGeneration({
+      model: 'HuggingFaceH4/zephyr-7b-beta',
+      inputs: prompt,
+      parameters: {
+        max_new_tokens: 10,
+        return_full_text: false
+      }
+    });
+    return result?.generated_text?.trim() || 'General';
+  } catch (error) {
+    console.error('Topic generation failed:', error);
+    return 'General';
+  }
+}
+
+
 async function embedAndStoreChunks(chunks, sourceName) {
   await initializeMongo();
   const docs = [];
@@ -168,6 +187,7 @@ async function embedAndStoreChunks(chunks, sourceName) {
       text,
       embedding,
       hash,
+      topic,
       timestamp: new Date(),
     });
   }

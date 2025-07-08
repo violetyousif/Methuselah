@@ -1,6 +1,6 @@
 // Mohammad Hoque, 6/19/2025, Created a modal to explain Activity Level options for user profile clarity.
 
-import React from 'react';
+import * as React from 'react';
 import { Modal, Typography, Button, Space } from 'antd';
 
 const { Title, Paragraph, Text } = Typography;

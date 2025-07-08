@@ -35,22 +35,28 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
 // Helper builds the system instruction for the LLM
 // Each mode has a different prompt to guide the LLM's behavior
-  function buildSystemPrompt(username, mode) {
-    if (mode === 'conversational') {
-      return `You are Methuselah, a friendly longevity wellness coach. 
-      You are only allowed to answer as Methuselah, the coach. 
-      Never create or simulate responses for the user.
-      Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
-      Stop speaking as soon as you finish your reply.
-      Do not ask for or expect a user reply in your output.`;
-    } else {
-      // Default = Direct mode
-      return `You are a longevity wellness coach named Methuselah speaking to ${username}.
-      ONLY reply as the coach. Never include any role tags or generate responses as the user.
-      Keep answers short, actionable, and easy to follow (max 200 words). Never cut yourself off mid-sentence.
-      Wait for the user's reply before continuing.`;
-    }
-  }
+  // function buildSystemPrompt(username, mode) {
+  //   if (mode === 'conversational') {
+  //     return `You are Methuselah, a friendly longevity wellness coach. 
+  //     You are only allowed to answer as Methuselah, the coach. 
+  //     Never create or simulate responses for the user.
+  //     Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
+  //     Stop speaking as soon as you finish your reply.
+  //     Do not ask for or expect a user reply in your output.`;
+  //   } else {
+  //     // Default = Direct mode
+  //     return `You are a longevity wellness coach named Methuselah speaking to ${username}.
+  //     ONLY reply as the coach. Never include any role tags or generate responses as the user.
+  //     Keep answers short, actionable, and easy to follow (max 200 words). Never cut yourself off mid-sentence.
+  //     Wait for the user's reply before continuing.`;
+  //   }
+  // }
+function buildSystemPrompt(username) {
+  return `You are Methuselah, a friendly longevity wellness coach.
+  Only speak as Methuselah. Do not simulate a conversation.
+  Give clear, concise, and helpful answers to ${username}'s wellness questions.`;
+}
+
 
 // POST /api/ragChat
 router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
@@ -58,7 +64,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
   try {
     //Grab and sanity-check the question
     const question = req.body.query?.trim();
-    const mode = req.body.mode === 'conversational' ? 'conversational' : 'direct';
+    //const mode = req.body.mode === 'conversational' ? 'conversational' : 'direct';
     if (!question) return res.status(400).json({ error: 'query required' });
 
     // Grab user first name from MongoDB
@@ -74,7 +80,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       inputs: question,
     });
 
-    //Vector search: top-4 matching passages
+    //Vector search: top-4 matching passages (this is where the pretraining gets used)
     const docs = await kb.aggregate([
       {
         $vectorSearch: {
@@ -85,38 +91,63 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
           limit: 4
         }
       },
-      { $project: { _id: 0, text: 1 } }
+      {
+        $project: {
+          _id: 0,
+          text: 1,
+          //topic: 1,
+          source: 1
+        }
+      }
     ]).toArray();
 
     const context = docs.map(d => d.text).join('\n---\n');
 
-    // Error handling for vague user input
-    const vagueInputs = ['help', 'help me', 'what should I do', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks', 'thank you'];
-    const isVague = vagueInputs.some(v => question.toLowerCase().includes(v));
 
+  const isVague = ['help', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks'].some(v =>
+    question.toLowerCase().includes(v)
+  );
 
+  let systemPrompt = buildSystemPrompt(firstName);
+  let userPrompt;
 
-    let userPrompt;
-    let systemPrompt;
-    // Forces the direct mode toggle to avoid knowledge base context.
-    if (isVague) {
-      systemPrompt = `You are Methuselah, the friendly longevity coach. ONLY speak as Methuselah. NEVER reply as the user. Greet ${firstName} and invite them to share a health or wellness goal.`;
-      userPrompt = "";
-      //`Greet the user as Methuselah, a wise and friendly wellness coach, and invite them to share their health goals or concerns. Only write your own reply as Methuselah.`;
-    } 
-    else if (!context || context.length < 20) {
-      systemPrompt = "You are Methuselah, the friendly longevity coach. ONLY reply as Methuselah. NEVER reply as the user.";
-      userPrompt = `If the user's question is not related to health, wellness, or longevity, politely explain you can only answer those topics. Question: ${question}`;
-      }
-    else if (mode === 'direct') {
-      systemPrompt = buildSystemPrompt(firstName, mode);
-      userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;
-      //userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;  // Send ONLY the user question, no KB context for direct mode
-    } else {
-      systemPrompt = buildSystemPrompt(firstName, mode);
-      userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
-      //userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
-    }
+  if (isVague) {
+    // Greet user and invite a wellness question
+    systemPrompt = `You are Methuselah, the friendly longevity coach. Only speak as Methuselah. Never reply as the user.`;
+    userPrompt = `Greet ${firstName} and invite them to share a health or wellness goal.`;
+  } else if (!context || context.length < 20) {
+    // Fallback when vector search fails
+    userPrompt = question; // Just pass the user input
+  } else {
+    // Provide vector-based context
+    userPrompt = `Based on the following information:\n${context}\n\nAnswer this question:\n${question}`;
+  }
+
+    // // Error handling for vague user input
+    // const vagueInputs = ['help', 'help me', 'what should I do', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks', 'thank you'];
+    // const isVague = vagueInputs.some(v => question.toLowerCase().includes(v));
+    //
+    // let userPrompt;
+    // let systemPrompt;
+    // // Forces the direct mode toggle to avoid knowledge base context.
+    // if (isVague) {
+    //   systemPrompt = `You are Methuselah, the friendly longevity coach. ONLY speak as Methuselah. NEVER reply as the user. Greet ${firstName} and invite them to share a health or wellness goal.`;
+    //   userPrompt = "";
+    //   //`Greet the user as Methuselah, a wise and friendly wellness coach, and invite them to share their health goals or concerns. Only write your own reply as Methuselah.`;
+    // } 
+    // else if (!context || context.length < 20) {
+    //   systemPrompt = "You are Methuselah, the friendly longevity coach. ONLY reply as Methuselah. NEVER reply as the user.";
+    //   userPrompt = `If the user's question is not related to health, wellness, or longevity, politely explain you can only answer those topics. Question: ${question}`;
+    //   }
+    // else if (mode === 'direct') {
+    //   systemPrompt = buildSystemPrompt(firstName, mode);
+    //   userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;
+    //   //userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;  // Send ONLY the user question, no KB context for direct mode
+    // } else {
+    //   systemPrompt = buildSystemPrompt(firstName, mode);
+    //   userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
+    //   //userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
+    // }
 
     //const systemPrompt = buildSystemPrompt(firstName, mode);
 
@@ -127,10 +158,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
         { role: 'system', content: systemPrompt },
         // { role: 'assistant', content: `Context:\n${context}` },
         // { role: 'user',      content: question }
-        {
-          role: 'user',
-          content: userPrompt
-        }
+        { role: 'user', content: userPrompt }
       ],
       max_tokens: 800,
       temperature: 0.2,
