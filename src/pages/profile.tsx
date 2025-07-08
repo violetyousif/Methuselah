@@ -23,6 +23,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat);
 import { Calendar, Modal } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
+import ActivityLevelModal from '../components/ActivityLevelModal';
 
 /* Old Code
 interface ProfileProps {
@@ -510,13 +511,19 @@ const Profile: React.FC = () => {
           <Button
             icon={<CalendarOutlined />}
             onClick={() => setCalendarVisible(true)}
-            style={{ marginLeft: 'auto' }}
+            style={{ 
+              marginLeft: 'auto',
+              backgroundColor: currentTheme === 'dark' ? '#318182' : '#203625',
+              color: '#ffffff',
+              borderColor: currentTheme === 'dark' ? '#318182' : '#203625',
+              borderRadius: '12px'
+            }}
           >
             Calendar
           </Button>
         </div>
         <Modal
-          title="Select a Date"
+          title={<span style={styles.modalTitle}>Select a Date</span>}
           open={calendarVisible}
           onCancel={() => setCalendarVisible(false)}
           footer={null}
@@ -532,43 +539,60 @@ const Profile: React.FC = () => {
           />
         </Modal>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }} className="profile-date-navigation">
-          <Button icon={<LeftOutlined />} onClick={() => {
-            const prev = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
-            setSelectedDate(prev);
-            const existing = allMetrics[prev];
-            setSleepHours(existing?.sleepHours || 0);
-            setExerciseHours(existing?.exerciseHours || 0);
-            setCalories(existing?.calories || 0);
-          }} />
+          <Button 
+            icon={<LeftOutlined />} 
+            style={styles.navigationButton}
+            onClick={() => {
+              const prev = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
+              setSelectedDate(prev);
+              const existing = allMetrics[prev];
+              setSleepHours(existing?.sleepHours || 0);
+              setExerciseHours(existing?.exerciseHours || 0);
+              setCalories(existing?.calories || 0);
+            }} 
+          />
 
-          {/* <h3 style={{ margin: 0 }}>{selectedDate}</h3> */}
-          <h3 style={{ margin: 0 }}>{dayjs(selectedDate).format('MMMM Do, YYYY')}</h3>
+          <h3 style={styles.dateHeader}>{dayjs(selectedDate).format('MMMM Do, YYYY')}</h3>
 
-          <Button icon={<RightOutlined />} onClick={() => {
-            const next = dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD');
-            if (dayjs(next).isAfter(dayjs(), 'day')) return; // prevent future dates
-            setSelectedDate(next);
-            const existing = allMetrics[next];
-            setSleepHours(existing?.sleepHours || 0);
-            setExerciseHours(existing?.exerciseHours || 0);
-            setCalories(existing?.calories || 0);
-          }} />
+          <Button 
+            icon={<RightOutlined />} 
+            style={styles.navigationButton}
+            onClick={() => {
+              const next = dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD');
+              if (dayjs(next).isAfter(dayjs(), 'day')) return; // prevent future dates
+              setSelectedDate(next);
+              const existing = allMetrics[next];
+              setSleepHours(existing?.sleepHours || 0);
+              setExerciseHours(existing?.exerciseHours || 0);
+              setCalories(existing?.calories || 0);
+            }} 
+          />
         </div>
 
         <Form layout="vertical">
-          {/* <Form.Item label="Sleep Hours"> */}
           <Form.Item label={<span style={styles.metricsLabel}>Sleep Hours</span>}>
-            <InputNumber min={0} max={12} value={sleepHours} onChange={(v) => v !== null && setSleepHours(v)} style={{ width: '100%' }} />
+            <InputNumber 
+              min={0} 
+              max={12} 
+              value={sleepHours} 
+              onChange={(v) => v !== null && setSleepHours(v)} 
+              style={styles.inputNumber} 
+            />
           </Form.Item>
-          {/* <Form.Item label="Exercise Hours"> */}
           <Form.Item label={<span style={styles.metricsLabel}>Exercise Hours</span>}>
-            <InputNumber min={0} max={12} value={exerciseHours} onChange={(v) => v !== null && setExerciseHours(v)} style={{ width: '100%' }} />
+            <InputNumber 
+              min={0} 
+              max={12} 
+              value={exerciseHours} 
+              onChange={(v) => v !== null && setExerciseHours(v)} 
+              style={styles.inputNumber} 
+            />
           </Form.Item>
           <Form.Item label={<span style={styles.metricsLabel}>Mood</span>}>
             <Select
               value={mood}
               onChange={setMood}
-              style={{ width: '100%' }}
+              style={styles.select}
               placeholder="Select your mood"
             >
               <Select.Option value="happy">Happy</Select.Option>
@@ -579,6 +603,7 @@ const Profile: React.FC = () => {
               <Select.Option value="tired">Tired</Select.Option>
             </Select>
           </Form.Item>
+
           <Form.Item label={<span style={styles.metricsLabel}>Weight (lb)</span>}>
             <InputNumber
               min={0}
@@ -590,7 +615,12 @@ const Profile: React.FC = () => {
           </Form.Item>
           {/* <Form.Item label="Calories"> */}
           <Form.Item label={<span style={styles.metricsLabel}>Calories</span>}>
-            <InputNumber min={0} value={calories} onChange={(v) => v !== null && setCalories(v)} style={{ width: '100%' }} />
+            <InputNumber 
+              min={0} 
+              value={calories} 
+              onChange={(v) => v !== null && setCalories(v)} 
+              style={styles.inputNumber} 
+            />
           </Form.Item>
 
           <Form.Item label={<span style={styles.metricsLabel}>Breakfast</span>}>
@@ -598,6 +628,7 @@ const Profile: React.FC = () => {
               value={mealInputs.breakfast}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, breakfast: e.target.value })}
               placeholder="E.g. 2 eggs, toast, orange juice"
+              style={styles.input}
               autoSize
             />
           </Form.Item>
@@ -607,6 +638,7 @@ const Profile: React.FC = () => {
               value={mealInputs.lunch}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, lunch: e.target.value })}
               placeholder="E.g. chicken sandwich, salad"
+              style={styles.input}
               autoSize
             />
           </Form.Item>
@@ -616,6 +648,7 @@ const Profile: React.FC = () => {
               value={mealInputs.dinner}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, dinner: e.target.value })}
               placeholder="E.g. salmon, rice, broccoli"
+              style={styles.input}
               autoSize
             />
           </Form.Item>
@@ -630,28 +663,266 @@ const Profile: React.FC = () => {
 }
 ]} />
 </div>
-</div>
-  )}
 
+      {/* Global styles for dropdown and error messages - consistent with feedback and settings */}
+      <style jsx global>{`
+        /* Fix for the Select dropdown visibility in dark mode */
+        body[data-theme='dark'] .ant-select-dropdown {
+          background-color: rgba(39, 41, 61, 0.95) !important;
+          border: 1px solid rgba(49, 129, 130, 0.3) !important;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        }
+        body[data-theme='dark'] .ant-select-item {
+          background-color: transparent !important;
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-select-item:hover {
+          background-color: rgba(49, 129, 130, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-select-item-option-selected {
+          background-color: rgba(49, 129, 130, 0.3) !important;
+        }
+        body[data-theme='dark'] .ant-select-arrow {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-select-selector {
+          background-color: rgba(25, 27, 38, 0.9) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+          border-radius: 6px !important;
+        }
+        
+        /* Fix error message colors */
+        body[data-theme='dark'] .ant-form-item-explain-error {
+          color: #ff7875 !important; /* Softer red for dark mode */
+        }
+        body[data-theme='default'] .ant-form-item-explain-error {
+          color: #dc3545 !important; /* Standard red for light mode */
+        }
+        
+        /* Fix form validation styling */
+        body[data-theme='dark'] .ant-form-item-has-error .ant-input {
+          border-color: #ff7875 !important;
+        }
+        body[data-theme='dark'] .ant-form-item-has-error .ant-input:focus {
+          border-color: #ff7875 !important;
+          box-shadow: 0 0 0 2px rgba(255, 120, 117, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-form-item-has-error .ant-select-selector {
+          border-color: #ff7875 !important;
+        }
+        body[data-theme='dark'] .ant-form-item-has-error .ant-input-number {
+          border-color: #ff7875 !important;
+        }
+        
+        /* Fix placeholder text visibility */
+        body[data-theme='dark'] .ant-select-selection-placeholder {
+          color: #8c8c8c !important;
+        }
+        
+        /* Fix Input and TextArea placeholder text */
+        body[data-theme='dark'] .ant-input::placeholder,
+        body[data-theme='dark'] .ant-input-number-input::placeholder {
+          color: #8c8c8c !important;
+        }
+        
+        /* Fix InputNumber styling in dark mode */
+        body[data-theme='dark'] .ant-input-number {
+          background-color: rgba(25, 27, 38, 0.9) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+          border-radius: 6px !important;
+        }
+        body[data-theme='dark'] .ant-input-number-input {
+          background-color: transparent !important;
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-input-number-handler-wrap {
+          background-color: rgba(25, 27, 38, 0.9) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+        }
+        body[data-theme='dark'] .ant-input-number-handler {
+          color: #F1F1EA !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+        }
+        body[data-theme='dark'] .ant-input-number-handler:hover {
+          background-color: rgba(49, 129, 130, 0.2) !important;
+          color: #ffffff !important;
+        }
+        /* Fix InputNumber addon (like "hours" text) styling */
+        body[data-theme='dark'] .ant-input-number-group-addon {
+          background-color: rgba(255, 255, 255, 0.08) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+          border-radius: 0 6px 6px 0 !important;
+        }
+        
+        /* Fix TextArea styling in dark mode */
+        body[data-theme='dark'] .ant-input {
+          background-color: rgba(25, 27, 38, 0.9) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+          border-radius: 6px !important;
+        }
+        body[data-theme='dark'] .ant-input:focus,
+        body[data-theme='dark'] .ant-input-focused {
+          border-color: rgba(49, 129, 130, 0.8) !important;
+          box-shadow: 0 0 0 2px rgba(49, 129, 130, 0.15) !important;
+        }
+        /* Fix Select focus styling */
+        body[data-theme='dark'] .ant-select-focused .ant-select-selector {
+          border-color: rgba(49, 129, 130, 0.8) !important;
+          box-shadow: 0 0 0 2px rgba(49, 129, 130, 0.15) !important;
+        }
+        /* Fix InputNumber focus styling */
+        body[data-theme='dark'] .ant-input-number-focused {
+          border-color: rgba(49, 129, 130, 0.8) !important;
+          box-shadow: 0 0 0 2px rgba(49, 129, 130, 0.15) !important;
+        }
+        
+        /* Fix Modal styling in dark mode */
+        body[data-theme='dark'] .ant-modal-content {
+          background-color: rgba(39, 41, 61, 0.95) !important;
+          color: #F1F1EA !important;
+          border-radius: 12px !important;
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(49, 129, 130, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-modal-header {
+          background-color: transparent !important;
+          border-color: rgba(49, 129, 130, 0.2) !important;
+          border-radius: 12px 12px 0 0 !important;
+        }
+        body[data-theme='dark'] .ant-modal-title {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-modal-close {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-modal-close:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        /* Fix Date Input styling */
+        body[data-theme='dark'] input[type="date"] {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+          border-radius: 6px !important;
+        }
+        body[data-theme='dark'] input[type="date"]::-webkit-calendar-picker-indicator {
+          filter: invert(1);
+          opacity: 0.7;
+        }
+        body[data-theme='dark'] input[type="date"]::-webkit-calendar-picker-indicator:hover {
+          opacity: 1;
+        }
+        
+        /* Fix Tabs styling in dark mode */
+        body[data-theme='dark'] .ant-tabs-tab {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-tabs-tab-active {
+          color: #318182 !important;
+        }
+        body[data-theme='dark'] .ant-tabs-tab:hover {
+          color: #318182 !important;
+        }
+        body[data-theme='dark'] .ant-tabs-ink-bar {
+          background-color: #318182 !important;
+        }
+        body[data-theme='dark'] .ant-tabs-content-holder {
+          background-color: transparent !important;
+        }
+        body[data-theme='dark'] .ant-tabs-nav {
+          border-color: #318182 !important;
+        }
+        body[data-theme='dark'] .ant-tabs-nav::before {
+          border-color: #318182 !important;
+        }
+        
+        /* Fix Button hover and disabled states */
+        body[data-theme='dark'] .ant-btn-primary:hover {
+          background-color: rgba(49, 129, 130, 0.8) !important;
+          border-color: rgba(49, 129, 130, 0.8) !important;
+        }
+        body[data-theme='dark'] .ant-btn-default:hover {
+          background-color: #318182 !important;
+          border-color: #318182 !important;
+          color: #ffffff !important;
+        }
+        body[data-theme='dark'] .ant-btn:disabled,
+        body[data-theme='dark'] .ant-btn[disabled] {
+          background-color: #333333 !important;
+          border-color: #444444 !important;
+          color: #666666 !important;
+        }
+        body[data-theme='dark'] .ant-btn-loading-icon {
+          color: #F1F1EA !important;
+        }
+        
+        /* Fix navigation button hover effects */
+        body[data-theme='dark'] .profile-date-navigation .ant-btn:hover {
+          background-color: rgba(49, 129, 130, 0.2) !important;
+          border-color: rgba(49, 129, 130, 0.5) !important;
+          color: #F1F1EA !important;
+        }
+
+        /* Light mode input styling - darker than page background */
+        body[data-theme='default'] .ant-input {
+          background-color: rgba(230, 230, 220, 0.9) !important;
+        }
+        body[data-theme='default'] .ant-input-number {
+          background-color: rgba(230, 230, 220, 0.9) !important;
+        }
+        body[data-theme='default'] .ant-input-number-handler-wrap {
+          background-color: rgba(230, 230, 220, 0.9) !important;
+        }
+        body[data-theme='default'] .ant-select-selector {
+          background-color: rgba(230, 230, 220, 0.9) !important;
+        }
+      `}</style>
+
+      {/* Activity Level Modal */}
+      <ActivityLevelModal
+        visible={activityModalVisible}
+        onClose={() => setActivityModalVisible(false)}
+        selected={selectedActivityLevel}
+        onSelect={(level) => {
+          setSelectedActivityLevel(level);
+          form.setFieldsValue({ activityLevel: level });
+          setActivityModalVisible(false);
+        }}
+      />
+    </div>
+  )
+}
 
 export default Profile
 
 const getStyles = (theme: 'default' | 'dark') => ({
   page: {
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB', // Only dark changed
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB',
     minHeight: '100vh',
-    padding: '6rem'
+    padding: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'flex-start'
   },
   modalTitle: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     fontWeight: 'bold',
-    fontSize: '1.1rem'
+    fontSize: '24px',
+    textAlign: 'center' as const,
+    marginBottom: '32px'
   },
   card: {
     maxWidth: 600,
+    width: '100%',
     margin: 'auto',
-    padding: '2rem',
-    backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA', // Only dark changed
+    padding: '40px',
+    backgroundColor: theme === 'dark' ? '#27293d' : '#A0B6AA',
     borderRadius: '2rem',
     boxShadow: theme === 'dark' 
       ? '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(49,129,130,0.2)' 
@@ -674,48 +945,62 @@ const getStyles = (theme: 'default' | 'dark') => ({
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     marginBottom: 4
   },
+  navigationButton: {
+    backgroundColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.1)' : 'rgba(32, 54, 37, 0.1)',
+    color: theme === 'dark' ? '#F1F1EA' : '#203625',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)',
+    borderRadius: '6px',
+    borderWidth: '1px'
+  },
+  dateHeader: {
+    margin: 0,
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
+  },
   input: {
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
-    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '8px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   inputNumber: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
-    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '8px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   select: {
     width: '100%',
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff', // Only dark changed
-    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+    borderColor: theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
-    borderRadius: '8px'
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
   option: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     backgroundColor: theme === 'dark' ? '#1D1E2C' : '#ffffff'
   },
   primaryButton: {
-    backgroundColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
-    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderRadius: '1rem',
+    borderRadius: '9999px',
     marginRight: '8px'
   },
   cancelButton: {
-    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB', // Only dark changed
-    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#F1F1EB',
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: theme === 'dark' ? '#F1F1EA' : '#203625',
-    borderRadius: '1rem'
+    borderRadius: '9999px'
   },
   backButton: {
     marginBottom: '24px',
-    backgroundColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderColor: theme === 'dark' ? '#318182' : '#203625', // Only dark changed
+    borderColor: theme === 'dark' ? '#318182' : '#203625',
     borderRadius: '9999px'
   },
   rowSpacing: {

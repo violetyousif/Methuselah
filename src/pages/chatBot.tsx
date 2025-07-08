@@ -30,7 +30,6 @@ import '@/styles/globals.css'
 import DeleteModal from '@/components/DeleteModal';
 
 
-
 const { Sider, Content } = Layout
 const { Text } = Typography
 
@@ -121,10 +120,10 @@ const Chatbot = () => {
         if (res.ok) {
           const settings = await res.json();
           const theme = settings.preferences?.theme || 'default';
-          const fontSize = settings.preferences?.fontSize || 'regular';
+          // const fontSize = settings.preferences?.fontSize || 'regular';
           
           document.body.dataset.theme = theme;
-          document.body.dataset.fontsize = fontSize;
+          document.body.dataset.fontsize = 'regular'; // Always use regular font size
           setCurrentTheme(theme as 'default' | 'dark');
         } else {
           // Fallback to defaults if can't load from database
@@ -354,38 +353,58 @@ const Chatbot = () => {
             <Button 
               icon={<MenuOutlined />} 
               onClick={() => handleSidebarToggle(false)} 
-              style={styles.collapsedIconBtn(currentTheme)}
-              className="collapsed-sidebar-icon hamburger-mobile"
+              style={{
+                ...styles.collapsedIconBtn(currentTheme),
+                color: currentTheme === 'dark' ? '#ffffff !important' : '#000000 !important'
+              }}
+              className="collapsed-sidebar-icon hamburger-mobile collapsed-sidebar-button"
               title="Open Menu"
+              type="text"
             />
             <div style={styles.collapsedIconContainer}>
               <Button 
                 icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}
                 onClick={() => router.push('/profile')}
-                style={styles.collapsedIconBtn(currentTheme)}
-                className="collapsed-sidebar-icon"
+                style={{
+                  ...styles.collapsedIconBtn(currentTheme),
+                  color: currentTheme === 'dark' ? '#ffffff !important' : '#000000 !important'
+                }}
+                className="collapsed-sidebar-icon collapsed-sidebar-button"
                 title="Profile"
+                type="text"
               />
               <Button 
                 icon={<SettingOutlined />}
                 onClick={() => router.push('/settings')}
-                style={styles.collapsedIconBtn(currentTheme)}
-                className="collapsed-sidebar-icon"
+                style={{
+                  ...styles.collapsedIconBtn(currentTheme),
+                  color: currentTheme === 'dark' ? '#ffffff !important' : '#000000 !important'
+                }}
+                className="collapsed-sidebar-icon collapsed-sidebar-button"
                 title="Settings"
+                type="text"
               />
               <Button 
                 icon={<CameraOutlined />}
                 onClick={() => setDashboardVisible(true)}
-                style={styles.collapsedIconBtn(currentTheme)}
-                className="collapsed-sidebar-icon"
+                style={{
+                  ...styles.collapsedIconBtn(currentTheme),
+                  color: currentTheme === 'dark' ? '#ffffff !important' : '#000000 !important'
+                }}
+                className="collapsed-sidebar-icon collapsed-sidebar-button"
                 title="Dashboard"
+                type="text"
               />
               <Button 
                 icon={<BulbOutlined />}
                 onClick={() => router.push('/feedback')}
-                style={styles.collapsedIconBtn(currentTheme)}
-                className="collapsed-sidebar-icon"
+                style={{
+                  ...styles.collapsedIconBtn(currentTheme),
+                  color: currentTheme === 'dark' ? '#ffffff !important' : '#000000 !important'
+                }}
+                className="collapsed-sidebar-icon collapsed-sidebar-button"
                 title="Feedback"
+                type="text"
               />
             </div>
           </div>
@@ -398,6 +417,7 @@ const Chatbot = () => {
                     icon={<MenuOutlined />}
                     onClick={() => handleSidebarToggle(true)}
                     style={styles.menuButton}
+                    className="hamburger-button"
                   />
                   <div onClick={() => router.push('/profile')} style={{ cursor: 'pointer' }}>
                     <Avatar size={64} src={userData?.profilePic || '/avatars/avatar1.png'} style={styles.avatar} />
@@ -416,8 +436,21 @@ const Chatbot = () => {
                       </>
                     )}
                     {isLoggedIn && (
-                      <Button
-                        style={styles.logoutBtn}
+                      <button
+                        className="logout-button"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+                          padding: 0,
+                          boxShadow: 'none',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          textDecoration: 'none',
+                          borderRadius: '3rem',
+                          outline: 'none'
+                        }}
                         onClick={async () => {
                           try {
                             const res = await fetch('http://localhost:8080/api/logout', {
@@ -449,13 +482,13 @@ const Chatbot = () => {
                         }}
                       >
                         Logout
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </div>
                 
                 <div style={styles.menuSection}>
-                  <Button onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
+                  <Button className="sidebar-button" onClick={handleNewChat} style={buttonStyle}>+ New Chat</Button>
                   <Text strong style={styles.chatHistoryText(currentTheme)}>Chat History</Text>
                 </div>
                 
@@ -481,7 +514,7 @@ const Chatbot = () => {
                     <div
                       key={chat.conversationId}
                       style={{
-                        ...styles.chatItem,
+                        ...styles.chatItem(currentTheme),
                         backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
                         display: 'flex',
                         justifyContent: 'space-between',
@@ -499,8 +532,10 @@ const Chatbot = () => {
                           style={{ 
                             flex: 1, 
                             marginRight: 8,
-                            backgroundColor: currentTheme === 'dark' ? '#3a3a3a' : '#ffffff',
-                            color: currentTheme === 'dark' ? '#ffffff' : '#000000'
+                            backgroundColor: currentTheme === 'dark' ? 'rgba(45, 47, 65, 0.8)' : '#ffffff',
+                            color: currentTheme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+                            borderColor: currentTheme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)',
+                            borderRadius: '6px'
                           }}
                           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                             if (e.key === 'Escape') {
@@ -557,16 +592,16 @@ const Chatbot = () => {
               {/* Bottom buttons - always visible */}
               <div style={styles.bottomButtons}>
                 <Link href="/profile">
-                  <Button style={buttonStyle} icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}>
+                  <Button className="sidebar-button" style={buttonStyle} icon={<Avatar size={20} src={userData?.profilePic || '/avatars/avatar1.png'} />}>
                   Profile
                   </Button>
                 </Link>
                 <Link href="/settings">
-                  <Button style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
+                  <Button className="sidebar-button" style={buttonStyle} icon={<SettingOutlined />}>Settings</Button>
                 </Link>
-                <Button onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
+                <Button className="sidebar-button" onClick={() => setDashboardVisible(true)} style={buttonStyle} icon={<CameraOutlined />}>Dashboard</Button>
                 <Link href="/feedback">
-                  <Button style={buttonStyle} icon={<BulbOutlined />}>
+                  <Button className="sidebar-button" style={buttonStyle} icon={<BulbOutlined />}>
                     Feedback
                   </Button>
                 </Link>
@@ -587,18 +622,20 @@ const Chatbot = () => {
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
-            <ChatGPT
-              fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
-              conversationId={selectedChatId}
-              walletAddress={userData?.email || 'default-user'}
-              isLoggedIn={isLoggedIn}
-              inputBarColor="#9AB7A9"
-              assistantBubbleColor="#9AB7A9"
-              userBubbleColor="#318182"
-              userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
-              userName={userData?.firstName || 'User'}
-              //chatMode={chatMode}
-            />
+            //<div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <ChatGPT
+                fetchPath="/api/chat-completion"  // Do we still need this? (from Violet)
+                conversationId={selectedChatId}
+                walletAddress={userData?.email || 'default-user'}
+                isLoggedIn={isLoggedIn}
+                inputBarColor="#9AB7A9"
+                assistantBubbleColor="#9AB7A9"
+                userBubbleColor="#318182"
+                userAvatar={userData?.profilePic || '/avatars/avatar1.png'}
+                userName={userData?.firstName || 'User'}
+              />
+            //</div>
+
           )}
           {/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
             <ChatModeToggle mode={chatMode} onChange={setChatMode} />
@@ -642,7 +679,7 @@ export default Chatbot
 const styles = {
   layout: (theme: 'default' | 'dark') => ({
     minHeight: '100vh',
-    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF'
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#FFFFFF'
   }),
   sider: (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#2b4240' : '#8AA698',
@@ -683,9 +720,9 @@ const styles = {
     animation: 'fadeInFromLeft 0.4s ease-out'
   },
   collapsedIconBtn: (theme: 'default' | 'dark') => ({
-    backgroundColor: 'transparent',
-    border: 'none',
-    color: theme === 'dark' ? '#ffffff' : '#000000',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
+    color: `${theme === 'dark' ? '#ffffff' : '#000000'} !important`,
     padding: '8px',
     borderRadius: '8px',
     display: 'flex',
@@ -696,9 +733,23 @@ const styles = {
     cursor: 'pointer',
     transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     transform: 'scale(1)',
+    boxShadow: 'none !important',
+    outline: 'none !important',
     '&:hover': {
       transform: 'scale(1.1)',
-      backgroundColor: 'rgba(255, 255, 255, 0.15)'
+      backgroundColor: 'rgba(255, 255, 255, 0.15) !important',
+      color: `${theme === 'dark' ? '#ffffff' : '#000000'} !important`
+    },
+    '&:focus': {
+      backgroundColor: 'transparent !important',
+      color: `${theme === 'dark' ? '#ffffff' : '#000000'} !important`,
+      boxShadow: 'none !important',
+      outline: 'none !important'
+    },
+    '&:active': {
+      backgroundColor: 'rgba(255, 255, 255, 0.25) !important',
+      color: `${theme === 'dark' ? '#ffffff' : '#000000'} !important`,
+      transform: 'scale(0.95)'
     }
   }),
   transparentBtn: {
@@ -758,13 +809,13 @@ const styles = {
     margin: '16px 0 8px',
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C'
   }),
-  chatItem: {
+  chatItem: (theme: 'default' | 'dark') => ({
     padding: '8px 12px',
     marginBottom: '8px',
     borderRadius: '8px',
     cursor: 'pointer',
-    color: '#203625'
-  },
+    color: theme === 'dark' ? '#E2E8F0' : '#203625' // Light color for dark mode, original for light mode
+  }),
   bottomButtons: {
     padding: '16px',
     display: 'flex',
@@ -774,10 +825,10 @@ const styles = {
     flexShrink: 0, // Prevent shrinking
     backgroundColor: 'inherit' // Inherit background to match sidebar
   },
-  logoutBtn: {
+  logoutBtn: (theme: 'default' | 'dark') => ({
     background: 'none',
     border: 'none',
-    color: '#1D1E2C',
+    color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
     padding: 0,
     boxShadow: 'none',
     textAlign: 'left' as const,
@@ -785,13 +836,13 @@ const styles = {
     fontSize: 16,
     textDecoration: 'none',
     borderRadius: '3rem',
-  },
+  }),
   contentArea: (collapsed: boolean, theme: 'default' | 'dark') => ({
     marginLeft: collapsed ? 48 : 250,
-    backgroundColor: theme === 'dark' ? '#0f0f17' : '#FFFFFF',
+    backgroundColor: theme === 'dark' ? '#1D1E2C' : '#FFFFFF',
     transition: 'margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition matching sidebar
     height: '100vh',
-    overflow: 'hidden', // Let the content handle its own scrolling
+    overflow: 'hidden', // Prevent content area from scrolling
     '@media (max-width: 768px)': {
       marginLeft: 48 // Always use collapsed margin on mobile
     }
@@ -801,14 +852,24 @@ const styles = {
     maxWidth: '960px',
     margin: '0 auto',
     width: '100%',
-    paddingBottom: '60px',
-    height: '100%',
-    overflow: 'auto', // Enable scrolling for the content area
+    paddingBottom: '70px', // Increase padding to account for footer
+    height: '100vh',
+    overflow: 'hidden', // Remove scrolling from content area to prevent double scrollbars
+    display: 'flex',
+    flexDirection: 'column' as const,
+    // Hide scrollbars completely for this container
+    scrollbarWidth: 'none' as const, // Firefox
+    msOverflowStyle: 'none' as const, // IE/Edge
+    '&::-webkit-scrollbar': {
+      display: 'none' // Chrome/Safari
+    },
     '@media (maxWidth: 768px)': {
-      padding: '16px'
+      padding: '16px',
+      paddingBottom: '70px'
     },
     '@media (maxWidth: 480px)': {
-      padding: '12px'
+      padding: '12px',
+      paddingBottom: '70px'
     }
   },
   mobileOverlay: {
