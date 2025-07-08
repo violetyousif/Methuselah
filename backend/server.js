@@ -35,6 +35,7 @@ import authCodes from './routes/authCodes.js';  // Importing auth codes for user
 import userChatHist from './routes/userChatHist.js';
 import adminServer from './routes/adminServer.js';
 import healthMetricsInsightsRoute from './routes/healthMetricsInsights.js';
+import userFileRouter from './routes/userFile.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -97,6 +98,7 @@ app.use('/api', healthMetricsInsightsRoute);
 app.use('/api', healthMetrics);
 app.use('/api/auth', authCodes);
 app.use('/api', userChatHist);
+app.use('/api', userFileRouter);
 
 // Admin Routes
 app.use('/api', adminServer); 

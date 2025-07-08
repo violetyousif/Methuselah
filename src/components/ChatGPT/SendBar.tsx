@@ -71,28 +71,48 @@ const SendBar = (props: SendBarProps) => {
     if (fileInputRef.current) fileInputRef.current.click()
   }
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
 
-    const acceptedTypes = [
-      'application/pdf',
-      'text/csv',
-      'application/json',
-      'text/plain',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-      'image/png',
-      'image/jpeg'
-    ]
+  const acceptedTypes = [
+    'application/pdf',
+    'text/csv',
+    'application/json',
+    'text/plain',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+    'image/png',
+    'image/jpeg'
+  ];
 
-    if (!acceptedTypes.includes(file.type)) {
-      alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON or XLSX file, OR Image (PNG, JPG, JPEG) file.')
-      return
-    }
-
-    console.log('Uploaded file:', file)
-    // TODO: Upload logic
+  if (!acceptedTypes.includes(file.type)) {
+    alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON, XLSX, PNG, or JPG file.');
+    return;
   }
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await fetch('http://localhost:8080/api/uploadFile', {
+      method: 'POST',
+      body: formData,
+      credentials: 'include', // needed for auth cookies!
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert(`File uploaded successfully: ${data.fileName}`);
+      // Optionally: save uploaded file info in state for later use!
+    } else {
+      alert('Upload failed: ' + (data.error || 'unknown error'));
+    }
+  } catch (err: any) {
+    alert('Upload failed: ' + err.message);
+  }
+};
+
+  
   
 
   return (
@@ -155,9 +175,9 @@ const SendBar = (props: SendBarProps) => {
           <SendOutlined className="chat-icon-black-outline" />
         </button>
 
-        <button className="button" title="Clear" disabled={disabled} onClick={handleClear}>
+        {/* <button className="button" title="Clear" disabled={disabled} onClick={handleClear}>
           <ClearOutlined className="chat-icon-black-outline" />
-        </button>
+        </button> */}
       </div>
     </Show>
   )

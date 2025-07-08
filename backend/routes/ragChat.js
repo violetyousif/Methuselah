@@ -1,3 +1,4 @@
+
 // Viktor Gjorgjevski, 6/23/2025 retrieval + HF chat generation (free tier)
 // Mizanur Mizan, 6/25/2025-6/26/2025 Modified llm response to not generate assistant questions, duplicate responses
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
@@ -35,31 +36,25 @@ const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
 
 // Helper builds the system instruction for the LLM
 // Each mode has a different prompt to guide the LLM's behavior
-  // function buildSystemPrompt(username, mode) {
-  //   if (mode === 'conversational') {
-  //     return `You are Methuselah, a friendly longevity wellness coach. 
-  //     You are only allowed to answer as Methuselah, the coach. 
-  //     Never create or simulate responses for the user.
-  //     Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
-  //     Stop speaking as soon as you finish your reply.
-  //     Do not ask for or expect a user reply in your output.`;
-  //   } else {
-  //     // Default = Direct mode
-  //     return `You are a longevity wellness coach named Methuselah speaking to ${username}.
-  //     ONLY reply as the coach. Never include any role tags or generate responses as the user.
-  //     Keep answers short, actionable, and easy to follow (max 200 words). Never cut yourself off mid-sentence.
-  //     Wait for the user's reply before continuing.`;
-  //   }
-  // }
-function buildSystemPrompt(username) {
-  return `You are Methuselah, a friendly longevity wellness coach.
-  Only speak as Methuselah. Do not simulate a conversation.
-  Give clear, concise, and helpful answers to ${username}'s wellness questions.`;
-}
-
+  function buildSystemPrompt(username) {
+    // if (mode === 'conversational') {
+    //   return `You are Methuselah, a friendly longevity wellness coach. 
+    //   You are only allowed to answer as Methuselah, the coach. 
+    //   Never create or simulate responses for the user.
+    //   Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
+    //   Stop speaking as soon as you finish your reply.
+    //   Do not ask for or expect a user reply in your output.`;
+    // } else {
+      // Default = Direct mode
+      return `You are a wise longevity health and wellness advisor named Methuselah speaking to ${username}.
+      ONLY reply as the advisor. Never include any role tags or generate responses as the user.
+      Make answers conversational, actionable, and tailored to ${username}'s health metrics. Never cut yourself off mid-sentence.
+      Wait for the user's reply before continuing.`;
+    //}
+  }
 
 // POST /api/ragChat
-router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
+router.post('/ragChat', chatLimiter, auth, async (req, res) => {
   console.log('ragChat HIT');
   try {
     //Grab and sanity-check the question
