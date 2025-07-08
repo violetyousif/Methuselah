@@ -11,7 +11,7 @@
 // Mizanur Mizan, 07/03/2025-07/04/2025, Added Health Metrics section with date selection for sleep hours, exercise hours, mood, calories, and meals
 
 import React, { useState, useEffect } from 'react'
-import { Form, InputNumber, Select, Button, Input, message} from 'antd'
+import { Form, InputNumber, Select, Button, Input, message, notification } from 'antd'
 import { UserData } from '../models'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -596,7 +596,7 @@ const Profile: React.FC = () => {
           <Form.Item label={<span style={styles.metricsLabel}>Breakfast</span>}>
             <Input.TextArea
               value={mealInputs.breakfast}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMealInputs({ ...mealInputs, breakfast: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, breakfast: e.target.value })}
               placeholder="E.g. 2 eggs, toast, orange juice"
               autoSize
             />
@@ -605,7 +605,7 @@ const Profile: React.FC = () => {
           <Form.Item label={<span style={styles.metricsLabel}>Lunch</span>}>
             <Input.TextArea
               value={mealInputs.lunch}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMealInputs({ ...mealInputs, lunch: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, lunch: e.target.value })}
               placeholder="E.g. chicken sandwich, salad"
               autoSize
             />
@@ -614,7 +614,7 @@ const Profile: React.FC = () => {
           <Form.Item label={<span style={styles.metricsLabel}>Dinner</span>}>
             <Input.TextArea
               value={mealInputs.dinner}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMealInputs({ ...mealInputs, dinner: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, dinner: e.target.value })}
               placeholder="E.g. salmon, rice, broccoli"
               autoSize
             />

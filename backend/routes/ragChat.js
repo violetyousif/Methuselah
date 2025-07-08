@@ -99,8 +99,8 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
     const context = docs.map(d => d.text).join('\n---\n');
 
 
-  const isVague = ['help', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks'].some(v =>
-    question.toLowerCase().includes(v)
+  const isVague = ['help', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks'].some(e =>
+    question.toLowerCase().includes(e)
   );
 
   let systemPrompt = buildSystemPrompt(firstName);
@@ -176,8 +176,8 @@ router.post('/ragChat', chatLimiter, auth, async (req, res) => {
     answer = answer.split('\n\n')[0].trim();
     res.json({ answer, contextDocs: docs }); //Send answer + the passages we used
   } catch (err) {
-    console.error('ragChat ERROR', err);
-    res.status(500).json({ error: err.message || 'ragChat failed' });
+    console.error('RAG chat ERROR', err);
+    res.status(500).json({ error: err.message || 'RAG chat failed' });
   }
 });
 

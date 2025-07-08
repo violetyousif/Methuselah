@@ -161,8 +161,7 @@ function AdminUpload() {
           Submit URL
         </Button>
           }
-
-          size="medium"
+          size="middle"
           value={urlInput}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrlInput(e.target.value)}
           onSearch={async (value: string) => {
