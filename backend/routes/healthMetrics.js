@@ -34,7 +34,7 @@ router.get('/health-metrics', auth(), async (req, res) => {
 // Save or update daily metrics
 router.patch('/health-metrics', auth(), async (req, res) => {
   try {
-    const { date, sleepHours, exerciseHours, mood, calories, meals } = req.body;
+    const { date, sleepHours, exerciseHours, mood, weight, calories, meals } = req.body;
     const userId = req.user.id;
 
     // const parsedDate = new Date(date);
@@ -44,7 +44,7 @@ router.patch('/health-metrics', auth(), async (req, res) => {
     }
 
     const update = {
-      [`dates.${date}`]: { sleepHours, exerciseHours, mood, calories, meals }
+      [`dates.${date}`]: { sleepHours, exerciseHours, mood, weight, calories, meals }
     };
 
     const metric = await HealthMetric.findOneAndUpdate(

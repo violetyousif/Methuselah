@@ -17,6 +17,7 @@ const HealthMetricSchema = new mongoose.Schema({
       sleepHours: { type: Number, required: true },
       exerciseHours: { type: Number, required: true },
       mood: { type: String, default: '' },
+      weight: { type: Number, default: 0 },
       calories: { type: Number, required: true },
       meals: {
         type: new mongoose.Schema({
