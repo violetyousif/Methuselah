@@ -99,11 +99,11 @@
       max-width: 70%;
       padding: 0.75rem 1rem;
       border-radius: @border-radius;
-      background-color: #f8f9fa; // Light mode assistant message background
+      background-color: #9AB7A9; // Original light mode assistant message background
       
-      // Dark mode styling - darker message backgrounds
+      // Dark mode styling - lighter background for better readability
       [data-theme="dark"] & {
-        background-color: #16171e; // Much darker for assistant messages
+        background-color: #2a3441; // Lighter background closer to sidebar color for better readability
       }
       
       @media (max-width: 768px) {
@@ -117,12 +117,12 @@
       }
       
       &.user {
-        background-color: #e3f2fd; // Light mode user message background
+        background-color: #F1F1EA; // Original light mode user message background
         flex-direction: row-reverse;
         
         // Dark mode styling - darker user message background
         [data-theme="dark"] & {
-          background-color: #1a1b26; // Darker for user messages
+          background-color: #2d2f3a; // Original dark mode user message background
         }
       }
     }
@@ -165,9 +165,9 @@
         border-radius: @border-radius;
         color: #2d3748; // Light mode code text
         
-        // Dark mode styling - darker code blocks
+        // Dark mode styling - darker code blocks with better contrast
         [data-theme="dark"] & {
-          background-color: #0d0e13; // Much darker for code blocks
+          background-color: #1e2028; // Darker but readable code block background
           color: #e0e0e0; // Light text for dark background
         }
       }
@@ -177,15 +177,15 @@
         
         // Dark mode styling - darker copy button
         [data-theme="dark"] & {
-          background-color: #1a1b26; // Darker copy button background
-          color: #8a8a8a; // Slightly dimmer text
+          background-color: #2d2f3a; // Darker copy button background that complements #1D1E2C
+          color: #9ca3af; // Light gray text
         }
         
         &:hover {
           background-color: #cbd5e0; // Light mode hover
           
           [data-theme="dark"] & {
-            background-color: #2d2f3a; // Darker hover state
+            background-color: #3a3d4a; // Darker hover state
           }
         }
       }
@@ -225,7 +225,7 @@
     
     // Dark mode styling
     [data-theme="dark"] & {
-      background-color: #2d3044; // One more shade lighter than previous (#252738)
+      background-color: #252738; // Slightly lighter than #1D1E2C for contrast
     }
     
     .input {
@@ -240,9 +240,9 @@
       max-height: 150px;
       overflow-y: hidden; // No scrollbar as previously requested
       
-      // Dark mode styling - darker input background
+      // Dark mode styling - input background with better readability
       [data-theme="dark"] & {
-        background-color: #16171e; // Much darker than default
+        background-color: #2a3441; // Lighter input background that matches AI messages
         color: #e0e0e0;
         border: 1px solid transparent; // Remove border in dark mode
       }
@@ -269,7 +269,7 @@
       
       // Dark mode styling - darker buttons
       [data-theme="dark"] & {
-        background-color: #2d2f3a; // Darker button background
+        background-color: #2d2f3a; // Button background that complements #1D1E2C
         color: #e5e7eb;
       }
       
@@ -300,5 +300,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Message header alignment */
+.message-header {
+  &.align-right {
+    text-align: right;
+  }
+  
+  &.align-left {
+    text-align: left;
   }
 }
