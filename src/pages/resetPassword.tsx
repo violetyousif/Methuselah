@@ -2,7 +2,7 @@
 // Mohammad Hoque, 07/06/2025, Added default mode enforcement and improved styling consistency
 
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Typography, message } from 'antd';
+import { Form, Input, Button, Typography, message, notification } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
@@ -30,10 +30,15 @@ export default function ResetPassword() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        message.success('Password updated successfully. You can now log in.');
-        router.push('/login');
-      } else {
+    if (res.ok) {
+      notification.success({
+        message: 'Password Successfully Reset!',
+        description: 'You can now log in with your new password.',
+        placement: 'topRight',
+        duration: 3,
+      });
+      router.push('/login');
+    } else {
         message.error(data.message || 'Failed to update password.');
       }
     } catch (err) {

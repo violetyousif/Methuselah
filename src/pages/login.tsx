@@ -11,10 +11,11 @@
 // Violet Yousif, 6/16/2025, Removed unused localStorage code for user data and changed layout to reflect public design.
 // Violet Yousif, 7/5/2025, Changed submit button for Login to smaller size.
 // Violet Yousif, 7/5/2025, Added role-based access control to the login page.
+// Syed Rabbey, 07/05/2025, 07/07/2025, Added Reset Password link and added Toast notifications for success and error message.
 
 
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, message, notification} from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
@@ -43,7 +44,13 @@ function Login() {
       });
       const data = await response.json();
       if (response.ok) {
-        message.success('Login successful!')
+        notification.success({
+          message: 'Successfully Logged In',
+          description: `Welcome, ${data.user.firstName || 'User'}!`,
+          placement: 'topRight',
+          duration: 3
+        });
+
         if (data.user.role === 'admin') {
           // Redirect to admin dashboard or perform admin-specific actions
           //router.push('/admin/dashboard');
@@ -61,7 +68,16 @@ function Login() {
         // after successful login
         //router.push('/');
       } else {
-        message.error(data.message || 'Login failed');
+          const errorMessage = data.message?.toLowerCase().includes('user') || data.message?.toLowerCase().includes('not found')
+            ? 'Invalid email and password combination. Please try again or reset your password.'
+            : data.message || 'Login failed';
+
+          notification.error({
+            message: 'Login Failed',
+            description: errorMessage,
+            placement: 'topRight',
+            duration: 4
+          });
       }
     } catch (err) {
       message.error('Server error');

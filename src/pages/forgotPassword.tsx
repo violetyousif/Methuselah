@@ -3,7 +3,7 @@
 // Mohammad Hoque, 07/06/2025, Refactored styling for consistency with other auth pages and improved mobile responsiveness
 
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, notification } from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
@@ -38,7 +38,14 @@ export default function ForgotPassword() {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem('resetToken', data.token);
+      localStorage.setItem('resetToken', data.token);
+
+      notification.success({
+        message: '2FA Code Sent',
+        description: 'A code has been sent to your email.',
+        placement: 'topRight',
+        duration: 3,
+      });
         router.push(`/verifyCode?email=${encodeURIComponent(values.email)}`);
       } else {
         setMessage(data.message || 'Failed to send code.');

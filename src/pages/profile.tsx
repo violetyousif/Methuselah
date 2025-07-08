@@ -11,7 +11,7 @@
 // Mizanur Mizan, 07/03/2025-07/04/2025, Added Health Metrics section with date selection for sleep hours, exercise hours, mood, calories, and meals
 
 import React, { useState, useEffect } from 'react'
-import { Form, InputNumber, Select, Button, Input, message} from 'antd'
+import { Form, InputNumber, Select, Button, Input, notification, message} from 'antd'
 import { UserData } from '../models'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -99,7 +99,12 @@ const Profile: React.FC = () => {
       });
 
       if (!res.ok) throw new Error('Submission failed');
-      message.success('Health metrics saved!');
+      notification.success({
+        message: 'Health Metrics Saved',
+        description: 'Your wellness updates were successfully recorded.',
+        placement: 'topRight',
+        duration: 4,
+      });
       setModalVisible(false);
       // Update local metrics state so it's available immediately
       setAllMetrics(prev => ({
@@ -115,7 +120,12 @@ const Profile: React.FC = () => {
       }));
     } catch (err) {
       console.error(err);
-      message.error('Error saving health metrics');
+      notification.error({
+        message: 'Save Failed',
+        description: 'We were unable to save your health metrics. Please try again.',
+        placement: 'topRight',
+        duration: 4,
+      });
     }
   };
 
@@ -248,16 +258,32 @@ const Profile: React.FC = () => {
         body: JSON.stringify(values)
       })
       if (res.ok) {
-        message.success('Profile updated successfully!')
+        notification.success({
+          message: 'Profile Updated',
+          description: 'Your personal information was successfully saved.',
+          placement: 'topRight',
+          duration: 3,
+        });
 
       } else {
         const errorData = await res.json()
-        message.error(errorData.message || 'Failed to save profile')
+        notification.error({
+          message: 'Profile Save Failed',
+          description: errorData.message || 'There was an issue saving your profile.',
+          placement: 'topRight',
+          duration: 4,
+        });
       }
       //if (!res.ok) throw new Error('Failed to save user data')
     } catch (error) {
       console.error('Error saving user data:', error)
-      message.error('There was an error saving your profile.')
+      notification.error({
+        message: 'Unexpected Error',
+        description: 'Something went wrong while saving your profile.',
+        placement: 'topRight',
+        duration: 4,
+      });
+
 
     } finally {
       setLoading(false)

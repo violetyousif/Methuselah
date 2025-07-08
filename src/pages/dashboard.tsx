@@ -314,7 +314,7 @@ const exerciseAvg = exerciseDays.length
         </div>
       </div>
 
-      <div style={styles.pieChartSection}>
+      {/* <div style={styles.pieChartSection}>
         <h3 style={styles.chartTitle}>Diet Breakdown</h3>
         <ResponsiveContainer width={400} height={300}>
           <PieChart>
@@ -328,10 +328,10 @@ const exerciseAvg = exerciseDays.length
               color: isDark ? '#5eead4' : '#203625'
             }} />
 
-          </PieChart>
+          </PieChart> */}
 
-        </ResponsiveContainer>
-      </div>
+        {/* </ResponsiveContainer>
+      </div> */}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
         <Tooltip title="Methuselah analyzes your sleep trends over time to determine your wellness aspirations and journey.">
