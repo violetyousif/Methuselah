@@ -1032,6 +1032,7 @@ html, body {
   .feedback-submit-button {
     min-height: 44px !important;
     font-size: 16px !important;
+    border-radius: 9999px !important;
   }
 }
 
@@ -1400,5 +1401,17 @@ html, body {
   color: #1D1E2C !important;
   background: none !important;
   border: none !important;
+}
+
+/* Round button overrides for settings and feedback pages */
+.settingsSaveButton.ant-btn,
+.settingsSaveButton.ant-btn-primary,
+.settingsUploadButton.ant-btn,
+.settingsUploadButton.ant-btn-primary,
+.settingsBackButton.ant-btn,
+.feedback-submit-button.ant-btn,
+.feedback-submit-button.ant-btn-primary,
+.feedbackBackButton.ant-btn {
+  border-radius: 9999px !important;
 }
 

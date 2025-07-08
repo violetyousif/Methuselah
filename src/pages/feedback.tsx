@@ -77,7 +77,7 @@ return (
     <div style={styles.page} className="feedback-page">
       <div style={styles.card} className="feedback-card mobile-card-shadow">
         <Link href="/chatBot">
-          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="back-button-mobile">
+          <Button icon={<ArrowLeftOutlined />} style={styles.backButton} className="feedbackBackButton back-button-mobile">
             Home
           </Button>
         </Link>
@@ -251,7 +251,7 @@ const getStyles = (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
-    borderRadius: '6px'
+    borderRadius: '9999px'
   },
   header: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
@@ -285,6 +285,6 @@ const getStyles = (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
-    borderRadius: '6px'
+    borderRadius: '9999px'
   }
 });

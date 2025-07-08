@@ -200,7 +200,7 @@ export default function Settings() {
                   }}
                   accept="image/*"
                 >
-                  <Button icon={<UploadOutlined />} style={styles.uploadButton}>Upload Custom Profile Pic</Button>
+                  <Button icon={<UploadOutlined />} style={styles.uploadButton} className="settingsUploadButton">Upload Custom Profile Pic</Button>
                 </Upload>
               </ImgCrop>
             </div>
@@ -389,20 +389,20 @@ const getStyles = (theme: 'default' | 'dark') => ({
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderRadius: '6px',
+    borderRadius: '9999px',
     marginTop: '16px'
   },
   uploadButton: {
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
-    borderRadius: '6px'
+    borderRadius: '9999px'
   },
   backButton: {
     marginBottom: '24px',
     backgroundColor: theme === 'dark' ? '#318182' : '#203625',
     color: '#ffffff',
     borderColor: theme === 'dark' ? '#318182' : '#203625',
-    borderRadius: '6px'
+    borderRadius: '9999px'
   }
 })
