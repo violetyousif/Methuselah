@@ -14,8 +14,15 @@ import { Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import { InferenceClient } from '@huggingface/inference';
 import auth from '../middleware/auth.js';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
+
+// Load environment variables from .env.local
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
 const chatLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, 
@@ -31,9 +38,31 @@ const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
 const hf = new InferenceClient(process.env.HF_API_KEY);
 // 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
-const HF_MODEL = 'HuggingFaceH4/zephyr-7b-beta-v1'; // Updated to the latest version
-//const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2'; // Updated to the latest version
+const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2'; // Primary model - more reliable
+const FALLBACK_MODEL = 'HuggingFaceH4/zephyr-7b-beta'; // Fallback model
 //const HF_MODEL = 'google/flan-t5-small';
+
+// Timeout wrapper for chat completion
+const chatCompletionWithTimeout = async (config, timeoutMs = 30000) => {
+  return Promise.race([
+    hf.chatCompletion(config),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Chat completion timeout')), timeoutMs)
+    )
+  ]);
+};
+
+// Chat completion with fallback model
+const chatCompletionWithFallback = async (config) => {
+  try {
+    console.log('Attempting chat completion with primary model:', config.model);
+    return await chatCompletionWithTimeout(config);
+  } catch (err) {
+    console.warn('Primary model failed, trying fallback model:', err.message);
+    const fallbackConfig = { ...config, model: FALLBACK_MODEL };
+    return await chatCompletionWithTimeout(fallbackConfig);
+  }
+};
 
 // Helper builds the system instruction for the LLM
 // Each mode has a different prompt to guide the LLM's behavior
@@ -140,27 +169,83 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       ],
       temperature: 0.2,
       top_p: 0.95,
-      min_tokens: 120,
-      max_tokens: 400,
+      min_tokens: 10,
+      max_tokens: 1200,  // Increased to allow for complete responses
     };
 
     let chatResp;
     try {
-      chatResp = await hf.chatCompletion({ 
+      console.log('Attempting chat completion with config:', JSON.stringify(baseChatConfig, null, 2));
+      chatResp = await chatCompletionWithFallback({ 
         ...baseChatConfig, options: { wait_for_model: false } });
+      console.log('Chat completion response:', JSON.stringify(chatResp, null, 2));
     } catch (err) {
       if (err.message?.includes('Model loading')) {
         console.warn('Model cold-start: retrying with wait_for_model: true');
-        chatResp = await hf.chatCompletion({ ...baseChatConfig, options: { wait_for_model: true } });
+        chatResp = await chatCompletionWithFallback({ ...baseChatConfig, options: { wait_for_model: true } });
+        console.log('Chat completion response (retry):', JSON.stringify(chatResp, null, 2));
+      } else if (err.message?.includes('timeout')) {
+        console.error('Chat completion timed out after 30 seconds');
+        throw new Error('Request timed out. Please try again.');
       } else throw err;
     }
 
     const t3 = Date.now();
 
+    // Better error handling for empty responses
+    if (!chatResp || !chatResp.choices || !chatResp.choices[0]) {
+      console.error('No response received from chat completion:', chatResp);
+      // Send a fallback response instead of throwing an error
+      res.json({ 
+        answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
+        contextDocs: docs 
+      });
+      return;
+    }
+
     let answer = chatResp.choices?.[0]?.message?.content ?? '';
-    const roleOrDialogue = answer.search(/\n\s*([\/\[]|USER|METHUSALEH|COACH|PATIENT|CLIENT)/i);
-    if (roleOrDialogue > 0) answer = answer.slice(0, roleOrDialogue).trim();
-    answer = answer.split('\n\n')[0].trim();
+    console.log('Raw AI response:', answer);
+    console.log('Response length:', answer.length);
+    console.log('Finish reason:', chatResp.choices?.[0]?.finish_reason);
+    
+    // Check if answer is empty
+    if (!answer || answer.trim() === '') {
+      console.error('Empty answer received from chat completion');
+      // Send a fallback response instead of throwing an error
+      res.json({ 
+        answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
+        contextDocs: docs 
+      });
+      return;
+    }
+    
+    // Clean up the response by removing unwanted role tags, but preserve the full content
+    answer = answer
+      .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\]|\[INST\]|\[\/INST\])\s*/i, '')
+      .replace(/\n\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/gi, '\n')
+      .trim();
+    
+    // Only truncate if there's clear dialogue or user simulation (more restrictive)
+    const strongDialoguePattern = /\n\s*(USER:|PATIENT:|CLIENT:|Human:|\[USER\])/i;
+    const dialogueMatch = answer.search(strongDialoguePattern);
+    if (dialogueMatch > 0) {
+      answer = answer.slice(0, dialogueMatch).trim();
+      console.log('Truncated response due to dialogue pattern');
+    }
+    
+    // Don't truncate on paragraph breaks - preserve the full response
+    console.log('Final processed response:', answer);
+    console.log('Final response length:', answer.length);
+    
+    // Check if response was truncated due to token limits
+    const finishReason = chatResp.choices?.[0]?.finish_reason;
+    if (finishReason === 'length') {
+      console.warn('⚠️ Response was truncated due to token limit. Consider increasing max_tokens.');
+      // Append a note if the response was cut off
+      if (!answer.match(/[.!?]$/)) {
+        answer += '...';
+      }
+    }
 
     // Send to client
     res.json({ answer, contextDocs: docs });

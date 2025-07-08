@@ -7,6 +7,7 @@
 // Violet Yousif, 7/7/2025, Fixed personalized health context to user questions based on health data.
 
 import { useEffect, useReducer, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 import { ChatGPTProps, ChatMessage, ChatRole } from './interface'
@@ -48,7 +49,16 @@ const requestMessage = async (
   });
 
   if (!response.ok) {
-    throw new Error(response.statusText);
+    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage += ` - ${errorData.error}`;
+      }
+    } catch {
+      // If response body is not JSON, use the original error message
+    }
+    throw new Error(errorMessage);
   }
 
   return response.json(); // Expects { answer, contextDocs }
@@ -128,6 +138,7 @@ export const useChatGPT = (
     isLoggedIn?: boolean 
   }) => {
   const { conversationId, isLoggedIn = false } = props;
+  const router = useRouter();
   // const { fetchPath, conversationId, walletAddress } = props  // Original Web3 version
   const fetchPath = 'http://localhost:8080/api/ragChat'
   const [, forceUpdate] = useReducer((x) => !x, false)
@@ -215,21 +226,24 @@ useEffect(() => {
       setLoading(true);
       setIsFallback(false);
 
-      console.log('Sending to /api/ragChat:', query);
+      console.log('Sending to RAG Chat:', query);
 
       const data = await requestMessage(fetchPath, query, controller.current);
-      console.log('RAG Response:', data);
+      console.log('RAG Response received:', data);
 
       const assistantReply = data.answer;
+      console.log('Assistant reply:', assistantReply);
+      
       const isFallbackResponse = !data.contextDocs || data.contextDocs.length === 0;
       setIsFallback(isFallbackResponse);
 
       if (!assistantReply || assistantReply.trim() === '') {
-        setStreamedMessage('No response received from the assistant.');
+        setStreamedMessage('I apologize, but I\'m having trouble generating a response right now. Please try asking your question again.');
         setLoading(false);
         return;
       }
-     // Simulated streaming effect
+
+      // Show the response with streaming effect
       let currentText = '';
       const words = assistantReply.split(' ');
       for (let i = 0; i < words.length; i++) {
@@ -238,14 +252,36 @@ useEffect(() => {
         await new Promise(resolve => setTimeout(resolve, 5));
       }
 
+      // Clear the streaming message and add to conversation
       setStreamedMessage('');
       await addMessage(conversationId, ChatRole.Assistant, assistantReply);
       const updatedConv = await getConversation(conversationId);
       setCurrentConversation(updatedConv || null);
+      setLoading(false);
       scrollDown();
     } catch (e) {
       console.error('Chat request failed:', e);
-      setStreamedMessage('Something went wrong. Please try again.');
+      
+      // Handle specific error types
+      if (e instanceof Error) {
+        if (e.message.includes('401')) {
+          setStreamedMessage('Authentication required. Redirecting to login...');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        } else if (e.message.includes('403')) {
+          setStreamedMessage('Access denied. Please check your permissions.');
+        } else if (e.message.includes('400')) {
+          setStreamedMessage('Invalid request. Please try again.');
+        } else if (e.message.includes('500')) {
+          setStreamedMessage('Server error. Please try again later.');
+        } else {
+          setStreamedMessage('Something went wrong. Please try again.');
+        }
+      } else {
+        setStreamedMessage('Something went wrong. Please try again.');
+      }
+      
       setLoading(false);
     }
   };
@@ -275,7 +311,6 @@ useEffect(() => {
   const onStop = async () => {
     if (controller.current) {
       controller.current.abort();
-      setStreamedMessage('Response stopped.');
       setLoading(false);
     }
   };
