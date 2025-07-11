@@ -21,6 +21,9 @@ const UserSchema = new mongoose.Schema({
   // weight: { type: Number }, // kg --> change to lbs
   height: { type: Number }, // cm --> change to ft or inches
   activityLevel: { type: String, enum: ['sedentary', 'moderate', 'active'], default: 'moderate' },
+  healthGoal: { type: String },
+  supplements: { type: String },
+  medicine: { type: String },
   sleepHours: { type: Number, default: 8 },
   preferences: {
     theme: { type: String, default: 'default' },

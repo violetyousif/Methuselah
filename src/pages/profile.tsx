@@ -51,11 +51,6 @@ const Profile: React.FC = () => {
   const [weight, setWeight] = useState<number>(0);
   const [calories, setCalories] = useState<number>(0);
   const [allMetrics, setAllMetrics] = useState<Record<string, any>>({});
-  const [mealInputs, setMealInputs] = useState({
-    breakfast: '',
-    lunch: '',
-    dinner: ''
-  });
   const [mood, setMood] = useState('');
   const [calendarVisible, setCalendarVisible] = useState(false);
 
@@ -94,8 +89,7 @@ const Profile: React.FC = () => {
           exerciseHours,
           mood,
           weight,
-          calories,
-          meals: mealInputs
+          calories
         })
       });
 
@@ -115,8 +109,7 @@ const Profile: React.FC = () => {
           exerciseHours,
           mood,
           calories,
-          weight,
-          meals: mealInputs
+          weight
         }
       }));
     } catch (err) {
@@ -172,22 +165,12 @@ const Profile: React.FC = () => {
       setSleepHours(existing.sleepHours ?? 0);
       setExerciseHours(existing.exerciseHours ?? 0);
       setCalories(existing.calories ?? 0);
-      setMealInputs({
-        breakfast: existing.meals?.breakfast || '',
-        lunch: existing.meals?.lunch || '',
-        dinner: existing.meals?.dinner || ''
-      });
       setMood(existing.mood || '');
       setWeight(existing.weight ?? 0);
     } else {
       setSleepHours(0);
       setExerciseHours(0);
       setCalories(0);
-      setMealInputs({
-        breakfast: '',
-        lunch: '',
-        dinner: ''
-      });
       setMood('');
       // Try to get previous day's weight
       const prevDate = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
@@ -338,24 +321,20 @@ const Profile: React.FC = () => {
         style={styles.form}
         className="profile-form"
       >
-        <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
-          <Input style={styles.input} />
-        </Form.Item>
-
-        <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
-          <Input style={styles.input} />
-        </Form.Item>
-
-        {/* //// Prev: <Form.Item label={<span style={styles.label}>Name</span>} name="name" rules={[{ required: true, message: 'Please enter your name' }]}>
+{/*         <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
           <Input style={styles.input} />
         </Form.Item> */}
 
-        <Form.Item label={<span style={styles.label}>Email</span>} name="email" rules={[
+{/*         <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
+          <Input style={styles.input} />
+        </Form.Item> */}
+
+{/*         <Form.Item label={<span style={styles.label}>Email</span>} name="email" rules={[
           { required: true, message: 'Please enter your email' },
           { type: 'email', message: 'Please enter a valid email' }
         ]}>
           <Input style={styles.input} />
-        </Form.Item>
+        </Form.Item> */}
 
         {/*<Form.Item label={<span style={styles.label}>Age (years)</span>} name="age" rules={[
           { required: true, message: 'Please enter your age' },
@@ -474,8 +453,40 @@ const Profile: React.FC = () => {
             </div>
           </Modal>
         </Form.Item>
+        <Form.Item
+          label={<span style={styles.label}>Health Goal</span>}
+          name="healthGoal"
+          rules={[{ required: false }]}
+        >
+          <Input
+            style={styles.input}
+            placeholder="E.g. Lose weight, gain muscle, improve sleep"
+          />
+        </Form.Item>
 
         <Form.Item
+          label={<span style={styles.label}>Supplements</span>}
+          name="supplements"
+          rules={[{ required: false }]}
+        >
+          <Input
+            style={styles.input}
+            placeholder="E.g. Vitamin D, Omega-3, Multivitamin"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={<span style={styles.label}>Medicine</span>}
+          name="medicine"
+          rules={[{ required: false }]}
+        >
+          <Input
+            style={styles.input}
+            placeholder="E.g. Metformin, Lisinopril"
+          />
+        </Form.Item>
+
+{/*         <Form.Item
           label={<span style={styles.label}>Sleep Hours (per night)</span>}
           name="sleepHours"
           rules={[
@@ -491,7 +502,7 @@ const Profile: React.FC = () => {
             addonAfter="hours"
             placeholder="Hours"
           />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item>
           <div className="profile-button-group">
@@ -620,36 +631,6 @@ const Profile: React.FC = () => {
               value={calories} 
               onChange={(v) => v !== null && setCalories(v)} 
               style={styles.inputNumber} 
-            />
-          </Form.Item>
-
-          <Form.Item label={<span style={styles.metricsLabel}>Breakfast</span>}>
-            <Input.TextArea
-              value={mealInputs.breakfast}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, breakfast: e.target.value })}
-              placeholder="E.g. 2 eggs, toast, orange juice"
-              style={styles.input}
-              autoSize
-            />
-          </Form.Item>
-
-          <Form.Item label={<span style={styles.metricsLabel}>Lunch</span>}>
-            <Input.TextArea
-              value={mealInputs.lunch}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, lunch: e.target.value })}
-              placeholder="E.g. chicken sandwich, salad"
-              style={styles.input}
-              autoSize
-            />
-          </Form.Item>
-
-          <Form.Item label={<span style={styles.metricsLabel}>Dinner</span>}>
-            <Input.TextArea
-              value={mealInputs.dinner}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMealInputs({ ...mealInputs, dinner: e.target.value })}
-              placeholder="E.g. salmon, rice, broccoli"
-              style={styles.input}
-              autoSize
             />
           </Form.Item>
 
@@ -943,6 +924,7 @@ const getStyles = (theme: 'default' | 'dark') => ({
   },
   metricsLabel: {
     color: theme === 'dark' ? '#F1F1EA' : '#1D1E2C',
+    fontWeight: 'bold',
     marginBottom: 4
   },
   navigationButton: {
