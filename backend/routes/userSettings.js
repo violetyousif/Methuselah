@@ -98,7 +98,7 @@ router.patch('/updateSettings', settingsRateLimiter, auth(), async (req, res) =>
     // if (email !== undefined) user.email = email;
     // Check if email is being changed and is already used by another user
     if (email !== undefined && email !== user.email) {
-      const existingUser = await getUser.findOne({ email });
+      const existingUser = await getUser.findOne({ email: { $eq: email } });
       if (existingUser && existingUser._id.toString() !== user._id.toString()) {
         return res.status(400).json({ message: 'Email already in use by another account.' });
       }
