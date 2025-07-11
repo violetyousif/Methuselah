@@ -13,18 +13,7 @@ import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ModalTerms from '../components/TermsModal'
 import { useRouter } from 'next/router'
-//import { profilePicPresets } from '../components/profilePicker'; //imports users choice on profile image
 
-
-// Format US-style phone number
-// function formatPhoneNumber(value: string) {  
-//   const digits = value.replace(/\D/g, '')   // Remove all non-digit characters
-//   // Format: 000-000-0000
-//   if (digits.length === 10) {
-//     return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
-//   }
-//   return value; // Return as is if not 10 digits
-// }
 
 
   // Edited function to fetch backend data with error handling 

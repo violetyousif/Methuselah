@@ -291,26 +291,6 @@ const Profile: React.FC = () => {
     }
   }
 
-  //// Prev code:
-  // const onFinish = async (values: UserData) => {
-  //   if (!walletAddress) return
-  //   setLoading(true)
-  //   try {
-  //     const response = await fetch('/api/profile', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       credentials: 'include',
-  //       body: JSON.stringify({ walletAddress, ...values })
-  //     })
-  //     if (!response.ok) throw new Error('Failed to save user data')
-  //     onClose()
-  //   } catch (error) {
-  //     console.error('Error saving user data:', error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
   const styles = getStyles(currentTheme)
 
   return (

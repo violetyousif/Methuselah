@@ -69,7 +69,7 @@ function Login() {
         //router.push('/');
       } else {
           const errorMessage = data.message?.toLowerCase().includes('user') || data.message?.toLowerCase().includes('not found')
-            ? 'Invalid email and password combination. Please try again or reset your password.'
+            ? 'Invalid email and/or password. Please try again or reset your password.'
             : data.message || 'Login failed';
 
           notification.error({

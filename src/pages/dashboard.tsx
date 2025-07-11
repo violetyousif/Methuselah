@@ -60,7 +60,7 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
 })
 
 const [userId, setUserId] = React.useState<string | null>(null);
-const [tips, setTips] = React.useState({ tip1: '', tip2: '', tip3: '' });
+const [tips, setTips] = React.useState({ tip1: '', tip2: '' });//tip3: ''
 const [firstName, setFirstName] = React.useState<string>('');
 
 
@@ -103,8 +103,8 @@ React.useEffect(() => {
 
       setTips({
         tip1: data.tip1 || '',
-        tip2: data.tip2 || '',
-        tip3: data.tip3 || ''
+        tip2: data.tip2 || ''
+        //tip3: data.tip3 || ''
       });
     } catch (error) {
       console.error('Error fetching insights:', error);
@@ -354,9 +354,9 @@ const exerciseAvg = exerciseDays.length
           </div>
         </Tooltip>
 
-        <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+        {/* <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
           <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
-        </div>
+        </div> */}
       </div>
     </Modal>
   )
