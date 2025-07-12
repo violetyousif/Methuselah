@@ -1,10 +1,14 @@
 // Violet Yousif, 07/06/25, Created Admin upload page for uploading pretraining content
+// Violet Yousif, 07/07/25, Edited to include URL upload functionality
+// Violet Yousif, 07/10/25, Edited to connect with sidebar navigation and authentication checks
 
-import { useState, useEffect } from 'react';
-import { Upload, Input, Button, message, notification, Typography, Spin } from 'antd';
+
+import React, { useState, useEffect } from 'react';
+import { Upload, Input, Button, message, notification, Typography, Spin, Layout } from 'antd';
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import type { UploadRequestOption } from 'rc-upload/lib/interface';
+import AdminSidebar from '../../components/adminSidebar';
 
 const { Dragger } = Upload;
 const { Title, Paragraph } = Typography;
