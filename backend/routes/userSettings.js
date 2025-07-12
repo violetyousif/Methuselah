@@ -32,6 +32,7 @@ router.get('/settings', settingsRateLimiter, auth(), async (req, res) => {
       firstName: user.firstName,  // For display purposes in settings
       lastName: user.lastName,    // For display purposes in settings
       profilePic: user.profilePic, // Settings may allow changing profile pic
+      email: user.email,           // Display email in settings
       preferences: {
         theme: user.preferences?.theme || 'default',
         aiMode: user.preferences?.aiMode || 'short',
@@ -72,6 +73,7 @@ router.patch('/updateSettings', settingsRateLimiter, auth(), async (req, res) =>
     const {
       firstName,
       lastName,
+      email,
       profilePic,
       preferences   // Main settings data
     } = req.body;
@@ -93,6 +95,15 @@ router.patch('/updateSettings', settingsRateLimiter, auth(), async (req, res) =>
     // Update basic user fields if provided (settings-relevant only)
     if (firstName !== undefined) user.firstName = firstName;
     if (lastName !== undefined) user.lastName = lastName;
+    // if (email !== undefined) user.email = email;
+    // Check if email is being changed and is already used by another user
+    if (email !== undefined && email !== user.email) {
+      const existingUser = await getUser.findOne({ email: { $eq: email } });
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        return res.status(400).json({ message: 'Email already in use by another account.' });
+      }
+      user.email = email;
+    }
     if (profilePic !== undefined) user.profilePic = profilePic;
 
     //// Prev code:
