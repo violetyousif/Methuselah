@@ -7,8 +7,8 @@
 // Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
 // Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
 
-import * as React from 'react'
-import { Modal, Tooltip } from 'antd'
+import React from 'react'
+import { Modal, Tooltip, notification } from 'antd'
 import {
   BarChart,
   Bar,
@@ -20,7 +20,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  Label
+  Label,
 } from 'recharts'
 import dayjs from 'dayjs';
 import { Tooltip as RechartsTooltip } from 'recharts';
@@ -95,7 +95,14 @@ React.useEffect(() => {
         credentials: 'include',
       });
 
-      if (!res.ok) throw new Error('Failed to fetch insights');
+      if (!res.ok) {
+        notification.error({
+          message: 'Failed to fetch insights',
+          description: 'Please try again later.',
+          placement: 'topRight',
+        });
+        return;
+      }
 
       const data = await res.json();
 
@@ -115,7 +122,6 @@ React.useEffect(() => {
     fetchInsights();
   }
 }, [visible]);
-
 
 
 const isDark = currentTheme === 'dark';

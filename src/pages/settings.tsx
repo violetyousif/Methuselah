@@ -9,7 +9,7 @@
 // Mizanur Mizan, 6/24/2025, Added upload handler for custom avatar image
 // Syed Rabbey, 7/7/2025, Added toast message for succesful profile picture update and setting save.
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message, notification } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -27,7 +27,6 @@ export default function Settings() {
   const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  //// Prev: const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
   const [profilePic, setProfilePic] = useState('')
 
   // Load current settings from backend
@@ -124,7 +123,6 @@ export default function Settings() {
   const settings = {
     firstName,
     lastName,
-    //// Prev: dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
     profilePic,
     preferences: {
       theme,
@@ -195,16 +193,6 @@ export default function Settings() {
             <Input value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} className="settingsInput" />
           </div>
 
-          {/* Date of Birth Field - Moved to Profile page */}
-          {/* //// Prev:
-          <div>
-            <div className="settingsLabel">Date of Birth:</div>
-            <DatePicker
-              value={dateOfBirth}
-              onChange={(date) => setDateOfBirth(date)}
-              className="settingsInput"
-            />
-          </div> */}
 
           {/* Profile Pic selection */}
           <div>
@@ -214,7 +202,7 @@ export default function Settings() {
               <Avatar
                 size={100}
                 src={profilePic || '/avatars/avatar1.png'}
-                style={{ borderRadius: 12, marginTop: '10px', marginRight: '10px' }}
+                style={{ borderRadius: '50%', marginTop: '10px', marginRight: '10px' }}
               />
               <ImgCrop>
                 <Upload

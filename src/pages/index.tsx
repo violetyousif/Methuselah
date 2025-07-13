@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import styles from '@/styles/Landing.module.css'
+import Link from 'next/link'
 
 export default function Home() {
   const router = useRouter()
@@ -91,13 +92,13 @@ export default function Home() {
         /> */}
         {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
         <div className={styles.navButtons}>
-          <a href="/login" className={styles.navButton}>
+          <Link href="/login" className={styles.navButton}>
             LOGIN
-          </a>
+          </Link>
           
-          <a href="/register" className={styles.navButton}>
+          <Link href="/register" className={styles.navButton}>
             REGISTER
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -34,7 +34,7 @@ const ModalTerms: React.FC<ModalTermsProps> = ({ visible, onClose }) => {
     )}
     >
       <Typography>
-        <Title level={4}>Today's Date: {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Title>
+        <Title level={4}>Today&apos;s Date: {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Title>
         <Paragraph>Last Updated: June 1, 2025</Paragraph>
 
         <Paragraph>
@@ -73,7 +73,7 @@ const ModalTerms: React.FC<ModalTermsProps> = ({ visible, onClose }) => {
 
         <Title level={5}>7. Governing Law</Title>
         <Paragraph>
-          These Terms are governed by the laws of our company’s jurisdiction.
+          These Terms are governed by the laws of our company&apos;s jurisdiction.
         </Paragraph>
 
         <Title level={5}>8. Updates</Title>

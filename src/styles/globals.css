@@ -336,7 +336,7 @@ footer {
 }
 
 body[data-theme='dark'] .methuselah-icon-wrapper {
-  background-color: white;
+  background-color: '#F1F1EB';
 }
 
 /* Chat time stamp */

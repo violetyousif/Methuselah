@@ -154,7 +154,7 @@ const styles = {
   backButton: {
     marginBottom: '24px',
     backgroundColor: '#203625',
-    color: 'white',
+    color: '#F1F1EB',
     border: 'none',
     borderRadius: '9999px'
   },

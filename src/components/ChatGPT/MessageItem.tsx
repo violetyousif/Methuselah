@@ -4,7 +4,7 @@
 // Syed Rabbey, 6/27/2025, Adjusted the display speed of the assistant's message to be more natural and readable.
 // Mohammad Hoque, 7/3/2025, Added user name display functionality - shows "Methuselah" under AI messages and user's first name under user messages, with improved name and timestamp positioning above message bubbles.
 // Mohammad Hoque, 7/6/2025, Enhanced timestamp display to show both date and time for better message history clarity
-
+// Violet Yousif, 7/10/2025, Added missing dependency declaration (getThemeColors) to useEffect hook to prevent ESLint warning and ensure correct theme color updates.
 
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -82,7 +82,7 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
     }
     
     return () => observer.disconnect()
-  }, [assistantColor, userColor]) // Add dependencies to re-run when prop colors change
+  }, [assistantColor, userColor, getThemeColors]) // Add dependencies to re-run when prop colors change
 
   const timestamp = new Date(message.timestamp || Date.now()).toLocaleString('en-US', {
     timeZone: 'America/New_York',

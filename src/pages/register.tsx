@@ -6,8 +6,9 @@
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from RegisterProps interface and component function parameters. Removed phone number and gender from design.
 // Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.
 // Syed Rabbey, 7/5/2025, 7/7/2025, Added 2FA to account creation with verification logic. Added toast notifications for success and error messages.
+// Violet Yousif, 7/12/2025, Added user error handlers for verification code, duplicate email use, and registration, and added more specific error messages.
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Checkbox, Select, notification, message } from 'antd'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
@@ -18,7 +19,7 @@ import { useRouter } from 'next/router'
 
   // Edited function to fetch backend data with error handling 
   // (make names lowercase, edited pw check, errorMsg, etc.) and to validate user doesn't already exist.
-function register() {
+function Register() {
   const [form] = Form.useForm();
   const [termsVisible, setTermsVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -45,8 +46,11 @@ function register() {
 
     const data = await res.json();
     if (!res.ok) {
-      console.error('Server said:', data);
-      throw new Error(data.message || 'Failed to send verification code');
+      notification.error({
+        message: 'Error: ' + data.message,
+      });
+      console.error('Error registering email:', data.message);
+      return;
     }
 
       //  Lock form, show code input
@@ -79,7 +83,14 @@ function register() {
         body: JSON.stringify({ email: formData.email, code: verificationCode })
       });
 
-      if (!verifyRes.ok) throw new Error('Invalid or expired code');
+      if (!verifyRes.ok) {
+        notification.error({
+          message: 'Verification Failed',
+          description: 'Invalid or expired code. Please check and try again.',
+          placement: 'topRight',
+        });
+        return;
+      }
 
       // Register the user
       const registerRes = await fetch('http://localhost:8080/api/register', {
@@ -89,7 +100,14 @@ function register() {
         body: JSON.stringify(formData)
       });
 
-      if (!registerRes.ok) throw new Error('Registration failed');
+      if (!registerRes.ok) {
+        notification.error({
+          message: 'Registration Failed',
+          description: 'Could not create account. Please try again later.',
+          placement: 'topRight',
+        });
+        return;
+      }
 
       notification.success({
         message: 'Registration Complete',
@@ -292,7 +310,7 @@ function register() {
   );
 }
 
-export default register;
+export default Register;
 
 const styles = {
   page: {
@@ -325,7 +343,7 @@ const styles = {
   backButton: {
     marginBottom: '24px',
     backgroundColor: '#203625',
-    color: 'white',
+    color: '#F1F1EB',
     border: 'none',
     borderRadius: '9999px'
   },
@@ -368,7 +386,7 @@ const styles = {
     marginTop: '8px',
     width: '40%',
     backgroundColor: '#203625',
-    color: '#e0e0e0',
+    color: '#F1F1EB',
     borderRadius: '1rem'
   },
   verifyButton: {

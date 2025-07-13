@@ -148,10 +148,10 @@ function Login() {
           </div>
 
           <p className="text-sm text-center mt-2">
-            <span className="text-gray-600">Forgot your password? </span>
-            <a href="/forgotPassword" className="text-blue-600 font-semibold hover:underline">
+            <span className="text-gray-600">Forgot password? </span>
+            <Link href="/forgotPassword" className="text-blue-600 font-semibold hover:underline">
               Reset 
-            </a>
+            </Link>
           </p>
 
         
@@ -169,18 +169,8 @@ function Login() {
           </div>
         </Form>
         <div>
-          Don't have an account? <span data-theme='extPages'><Link href='/register'>Sign Up Here</Link></span>
+          Don&apos;t have an account? <span data-theme='extPages'><Link href='/register'>Sign Up</Link></span>
         </div>
-        {/* <div style={{ textAlign: 'center', marginTop: '16px' }}>
-          <span style={{ color: '#333333' }}>Don't have an account? </span>
-          <Button 
-            type="link" 
-            onClick={() => router.push('/register')}
-            style={{}}
-          >
-            Sign up here
-          </Button> 
-        </div>*/}
       </div>
     </div>
   )
@@ -230,7 +220,7 @@ const styles = {
   backButton: {
     marginBottom: '24px',
     backgroundColor: '#203625',
-    color: 'white',
+    color: '#F1F1EB',
     border: 'none',
     borderRadius: '9999px'
   },
@@ -273,7 +263,7 @@ const styles = {
     marginTop: '8px',
     width: '30%',
     backgroundColor: '#203625',
-    color: '#e0e0e0',
+    color: '#F1F1EB',
     borderRadius: '1rem'
   },
 } as const;
