@@ -5,10 +5,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Upload, Input, Button, message, notification, Typography, Spin, Layout } from 'antd';
+const { Content } = Layout;
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import type { UploadRequestOption } from 'rc-upload/lib/interface';
-import AdminSidebar from '../../components/adminSidebar';
+import AdminLayout from '../../components/AdminLayout'; 
 
 const { Dragger } = Upload;
 const { Title, Paragraph } = Typography;
@@ -234,7 +235,7 @@ function AdminUpload() {
 
         {uploading && <Spin style={{ marginTop: '1rem' }} />}
       </div>
-    </div>
+      </div>
   );
 }
 
