@@ -27,6 +27,8 @@ export default function Settings() {
   const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  //// Prev: const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
   const [profilePic, setProfilePic] = useState('')
 
   // Load current settings from backend
@@ -42,6 +44,7 @@ export default function Settings() {
           const settings = await res.json();
           setFirstName(settings.firstName || '');
           setLastName(settings.lastName || '');
+          setEmail(settings.email || '');
           setProfilePic(settings.profilePic || '');
           // setFontSize(settings.preferences?.fontSize || 'regular');
           setTheme((settings.preferences?.theme as 'default' | 'dark') || 'default');
@@ -123,6 +126,8 @@ export default function Settings() {
   const settings = {
     firstName,
     lastName,
+    email,
+    //// Prev: dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
     profilePic,
     preferences: {
       theme,
@@ -192,6 +197,29 @@ export default function Settings() {
             <div style={styles.label} className="settingsLabel">Last Name:</div>
             <Input value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} className="settingsInput" />
           </div>
+
+          <div>
+            <div style={styles.label} className="settingsLabel">Email:</div>
+            <Input
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              style={styles.input}
+              className="settingsInput"
+              type="email"
+              autoComplete="email"
+              // placeholder="your@email.com"
+            />
+          </div>
+          {/* Date of Birth Field - Moved to Profile page */}
+          {/* //// Prev:
+          <div>
+            <div className="settingsLabel">Date of Birth:</div>
+            <DatePicker
+              value={dateOfBirth}
+              onChange={(date) => setDateOfBirth(date)}
+              className="settingsInput"
+            />
+          </div> */}
 
 
           {/* Profile Pic selection */}
