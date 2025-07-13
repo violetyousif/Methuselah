@@ -63,3 +63,4 @@ __pycache__/
 
 .history/
 src/pages/ChatModeToggle.tsx
+.env.local

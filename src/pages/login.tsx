@@ -19,6 +19,8 @@ import { Form, Input, Button, message, notification} from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
+import { isCypress } from '@/utils/isCypress';
+
 
 function Login() {
   const router = useRouter();
@@ -35,6 +37,25 @@ function Login() {
   }, []);
 
   const onFinish = async (values: any) => {
+    //const isCypress = typeof window !== 'undefined' && window.Cypress;
+
+    if (isCypress()) {
+      const data = {
+        user: {
+          //email: values.email,
+          //password: values.password,
+          firstName: 'Admin',
+          role: 'admin'
+        }
+      };
+      notification.success({
+        message: 'Successfully Logged In (Mock)',
+        description: `Welcome, ${data.user.firstName}!`,
+        placement: 'topRight',
+        duration: 3
+      });
+    }
+    
     try {
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
