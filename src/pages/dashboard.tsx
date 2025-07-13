@@ -7,8 +7,8 @@
 // Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
 // Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
 
-import * as React from 'react'
-import { Modal, Tooltip } from 'antd'
+import React from 'react'
+import { Modal, Tooltip, notification } from 'antd'
 import {
   BarChart,
   Bar,
@@ -20,7 +20,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  Label
+  Label,
 } from 'recharts'
 import dayjs from 'dayjs';
 import { Tooltip as RechartsTooltip } from 'recharts';
@@ -60,7 +60,7 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
 })
 
 const [userId, setUserId] = React.useState<string | null>(null);
-const [tips, setTips] = React.useState({ tip1: '', tip2: '', tip3: '' });
+const [tips, setTips] = React.useState({ tip1: '', tip2: '' });//tip3: ''
 const [firstName, setFirstName] = React.useState<string>('');
 
 
@@ -95,7 +95,14 @@ React.useEffect(() => {
         credentials: 'include',
       });
 
-      if (!res.ok) throw new Error('Failed to fetch insights');
+      if (!res.ok) {
+        notification.error({
+          message: 'Failed to fetch insights',
+          description: 'Please try again later.',
+          placement: 'topRight',
+        });
+        return;
+      }
 
       const data = await res.json();
 
@@ -103,8 +110,8 @@ React.useEffect(() => {
 
       setTips({
         tip1: data.tip1 || '',
-        tip2: data.tip2 || '',
-        tip3: data.tip3 || ''
+        tip2: data.tip2 || ''
+        //tip3: data.tip3 || ''
       });
     } catch (error) {
       console.error('Error fetching insights:', error);
@@ -115,7 +122,6 @@ React.useEffect(() => {
     fetchInsights();
   }
 }, [visible]);
-
 
 
 const isDark = currentTheme === 'dark';
@@ -354,9 +360,9 @@ const exerciseAvg = exerciseDays.length
           </div>
         </Tooltip>
 
-        <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+        {/* <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
           <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
-        </div>
+        </div> */}
       </div>
     </Modal>
   )

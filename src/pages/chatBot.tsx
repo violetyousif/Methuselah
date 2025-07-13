@@ -516,7 +516,8 @@ const Chatbot = () => {
                       key={chat.conversationId}
                       style={{
                         ...styles.chatItem(currentTheme),
-                        backgroundColor: selectedChatId === chat.conversationId ? '#6F9484' : 'transparent',
+                        backgroundColor: selectedChatId === chat.conversationId ? 'rgba(67, 111, 118, 0.3)' : 'transparent',
+                        //opacity: selectedChatId === chat.conversationId ? 0.7 : 1,
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center'
@@ -638,21 +639,6 @@ const Chatbot = () => {
             //</div>
 
           )}
-          {/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
-            <ChatModeToggle mode={chatMode} onChange={setChatMode} />
-          </div> */}
-          {/*//// Prev code:
-              {selectedChatId && (
-                <ChatGPT
-                  fetchPath="/api/chat-completion"
-                  conversationId={selectedChatId}
-                  walletAddress={walletAddress || 'default-wallet'}
-                  inputBarColor="#9AB7A9"
-                  assistantBubbleColor="#9AB7A9"
-                  userBubbleColor="#318182"
-                />
-              )}
-         }*/}
          </Content>
       </Layout>
       <div style={styles.footer as React.CSSProperties}>LongevityAI © 2025</div>

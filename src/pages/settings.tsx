@@ -9,7 +9,7 @@
 // Mizanur Mizan, 6/24/2025, Added upload handler for custom avatar image
 // Syed Rabbey, 7/7/2025, Added toast message for succesful profile picture update and setting save.
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message, notification } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -197,6 +197,7 @@ export default function Settings() {
             <div style={styles.label} className="settingsLabel">Last Name:</div>
             <Input value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} className="settingsInput" />
           </div>
+
           <div>
             <div style={styles.label} className="settingsLabel">Email:</div>
             <Input
@@ -220,6 +221,7 @@ export default function Settings() {
             />
           </div> */}
 
+
           {/* Profile Pic selection */}
           <div>
             <div style={styles.label} className="settingsLabel">Profile Picture:</div>
@@ -228,7 +230,7 @@ export default function Settings() {
               <Avatar
                 size={100}
                 src={profilePic || '/avatars/avatar1.png'}
-                style={{ borderRadius: 12, marginTop: '10px', marginRight: '10px' }}
+                style={{ borderRadius: '50%', marginTop: '10px', marginRight: '10px' }}
               />
               <ImgCrop>
                 <Upload
