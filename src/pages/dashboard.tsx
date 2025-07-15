@@ -6,6 +6,8 @@
 // Violet Yousif, 6/14/2025, Removed unused walletAddress prop from DashboardProps interface and component function parameters.
 // Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
 // Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
+// Mohammad Hoque, 7/15/2025, Fixed media query issues
+// Mohammad Hoque, 7/15/2025, Fixed media query issues
 
 import React from 'react'
 import { Modal, Tooltip, notification } from 'antd'

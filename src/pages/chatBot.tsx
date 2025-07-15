@@ -13,7 +13,7 @@
 // Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
 // Mohammad Hoque, 7/3/2025, Enhanced mobile sidebar functionality with manual toggle override, overlay, and improved responsive behavior
 // Mohammad Hoque, 7/3/2025, Added smooth sidebar collapse/expand animations with eased transitions, hover effects, and mobile pulse indicators
-
+// Mohammad Hoque, 7/15/2025, Fixed media query issues
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin, notification } from 'antd'

@@ -5,6 +5,7 @@
 // Syed Rabbey, 6/27/2025, Integrated user's first name into chat greeting and question prompts.
 // Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
 // Violet Yousif, 7/7/2025, Fixed personalized health context to user questions based on health data.
+// Mohammad Hoque, 7/15/2025, Added smooth scrolling to bottom when new messages arrive or conversation changes
 
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { useRouter } from 'next/router'

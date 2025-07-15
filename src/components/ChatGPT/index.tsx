@@ -3,6 +3,8 @@
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed ChatGPTProps missing properties in interface.ts.
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
 // Syed Rabbey, 6/26/2025, Added streamed message functionality to display the assistant's response as it is being generated.
+// Mohammad Hoque, 7/15/2025, Added isStreaming prop to ChatGPT component to fix streaming issue
+// Mohammdad Hoque, 7/15/2025, Added smooth scrolling to bottom when new messages arrive or conversation changes
 
 import * as React from 'react'
 import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
