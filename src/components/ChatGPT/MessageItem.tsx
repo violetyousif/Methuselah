@@ -21,10 +21,11 @@ interface MessageItemProps extends ChatMessageItemProps {
   userColor?: string
   userAvatar?: string
   userName?: string
+  isStreaming?: boolean // Add prop to indicate if this message is currently being streamed
 }
 
 const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
-  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
+  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User', isStreaming = false } = props
   
   const isUser = message.role === 'user'
   
@@ -96,7 +97,8 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
   const [displayedText, setDisplayedText] = useState<string>(message.content)
 
   useEffect(() => {
-    if (message.role !== 'assistant') {
+    // Only animate if this is an assistant message AND it's currently being streamed
+    if (message.role !== 'assistant' || !isStreaming) {
       setDisplayedText(message.content)
       return
     }
@@ -109,7 +111,7 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
     }, 3)  // Speed of typing (adjust this if needed)
 
     return () => clearInterval(interval)
-  }, [message.content, message.role])
+  }, [message.content, message.role, isStreaming])
 
 
   return (

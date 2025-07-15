@@ -65,6 +65,7 @@ const ChatGPT = ({
             userColor={userBubbleColor}
             userAvatar={userAvatar}
             userName={userName}
+            isStreaming={false} // Existing messages should not be animated
           />
         ))}
 
@@ -79,6 +80,7 @@ const ChatGPT = ({
             userColor={userBubbleColor}
             userAvatar={userAvatar}
             userName={userName}
+            isStreaming={true} // This message is currently being streamed, so it should animate
           />
         )}
       </div>

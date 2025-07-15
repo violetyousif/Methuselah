@@ -373,6 +373,12 @@ body[data-theme='dark'] .methuselah-icon-wrapper {
   border-radius: 8px;
 }
 
+/* Dark theme styles for send bar */
+[data-theme='dark'] .send-bar .input {
+  background-color: #2a2a2a !important;
+  color: #F1F1EA !important;
+}
+
 /* Scrollbar styling - Custom theme (Syed Rabbey) */
 ::-webkit-scrollbar {
   width: 6px;
