@@ -28,7 +28,11 @@ import app from 'next/app'
 
 const scrollDown = throttle(
   () => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+    // Find the message list container and scroll it to bottom
+    const messageList = document.querySelector('.message-list');
+    if (messageList) {
+      messageList.scrollTop = messageList.scrollHeight;
+    }
   },
   300,
   { leading: true, trailing: false }

@@ -37,10 +37,31 @@ const ChatGPT = ({
     //walletAddress: props.walletAddress
   })
 
+  const messageListRef = React.useRef<HTMLDivElement>(null)
+
+  // Scroll to bottom when messages change or conversation changes
+  React.useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+    }
+  }, [messages, props.conversationId, streamedMessage])
+
+  // Scroll to bottom when component mounts
+  React.useEffect(() => {
+    if (messageListRef.current) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        if (messageListRef.current) {
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+        }
+      }, 100)
+    }
+  }, [])
+
   return (
     <div className="chat-wrapper">
-      <div className="message-list">
-        {messages.length === 0 && !currentMessage.current && (
+      <div className="message-list" ref={messageListRef}>
+        {messages.length === 0 && !currentMessage.current && !streamedMessage && (
           <div className="welcome-message">
             <Text strong style={styles.welcomeTitle}>
               Methuselah, Your Personal AI-driven Health Advisor.

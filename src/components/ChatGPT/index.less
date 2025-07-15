@@ -3,6 +3,36 @@
 
 @border-radius: 1rem;
 
+// Modern keyframe animations
+@keyframes messageSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
 .chat-wrapper {
   width: 100%;
   max-width: 800px;
@@ -23,7 +53,7 @@
   
   .message-list {
     flex: 1;
-    overflow-y: scroll; // Always show scrollbar to prevent layout shifts
+    overflow-y: auto; // Change from scroll to auto to prevent always-visible scrollbar
     overflow-x: hidden; // Prevent horizontal scrolling
     padding-bottom: 16px;
     padding-right: 12px; // Add right padding to push content away from scrollbar
@@ -82,16 +112,28 @@
   }
   .welcome-message {
     text-align: center;
-    margin: 2rem 0;
+    margin: 3rem 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(154, 183, 169, 0.1), rgba(241, 241, 234, 0.1));
+    border-radius: @border-radius;
+    animation: fadeIn 0.6s ease;
+    
+    [data-theme="dark"] & {
+      background: linear-gradient(135deg, rgba(42, 52, 65, 0.3), rgba(45, 47, 58, 0.3));
+    }
   }
   .message-item {
     margin: 0.5rem 0;
     display: flex;
     justify-content: flex-start;
-    animation: fadeIn 0.5s ease-in;
+    animation: messageSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0;
+    animation-fill-mode: forwards;
+    
     &.user {
       justify-content: flex-end;
     }
+    
     .meta {
       display: flex;
       grid-gap: 0.75rem;
@@ -100,10 +142,22 @@
       padding: 0.75rem 1rem;
       border-radius: @border-radius;
       background-color: #9AB7A9; // Original light mode assistant message background
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); // Subtle shadow for depth
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
       
       // Dark mode styling - lighter background for better readability
       [data-theme="dark"] & {
         background-color: #2a3441; // Lighter background closer to sidebar color for better readability
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        
+        &:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
       }
       
       @media (max-width: 768px) {
@@ -197,20 +251,37 @@
     align-items: center;
     justify-content: center;
     margin: 1rem 0;
-    padding: 0.75rem;
+    padding: 1rem;
     font-size: 16px;
     background-color: #374151;
     color: #d1d5db;
     border-radius: @border-radius;
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    [data-theme="dark"] & {
+      background-color: #2a3441;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
     .stop {
-      padding: 0 0.75rem;
+      padding: 0.5rem 1rem;
       font-size: 14px;
       border: 1px solid #9ca3af;
-      border-radius: @border-radius;
+      border-radius: calc(@border-radius / 2);
       cursor: pointer;
       color: #e5e7eb;
+      background-color: transparent;
+      transition: all 0.2s ease;
+      
       &:hover {
         background-color: #4b5563;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      &:active {
+        transform: translateY(0);
       }
     }
   }
@@ -218,44 +289,63 @@
     display: flex;
     grid-gap: 0.5rem;
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
     background-color: #9AB7A9; // Original light mode green background
     border-radius: @border-radius;
     flex-shrink: 0; // Prevent the send bar from shrinking
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
     
     // Dark mode styling
     [data-theme="dark"] & {
       background-color: #252738; // Slightly lighter than #1D1E2C for contrast
+      box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.2);
     }
     
     .input {
       flex: 1;
-      padding: 0.75rem;
+      padding: 0.875rem 1rem;
       font-size: 16px;
       background-color: #F1F1EA; // Original light mode input background
       color: #1E1E1E; // Original light mode text color
-      border: none; // Original had no border
-      border-radius: @border-radius;
+      border: 2px solid transparent; // Add border for focus state
+      border-radius: calc(@border-radius - 2px);
       resize: none;
       max-height: 150px;
       overflow-y: hidden; // No scrollbar as previously requested
+      transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      font-family: inherit;
       
       // Dark mode styling - input background with better readability
       [data-theme="dark"] & {
         background-color: #2a3441; // Lighter input background that matches AI messages
         color: #e0e0e0;
-        border: 1px solid transparent; // Remove border in dark mode
+        border: 2px solid transparent;
       }
       
       &:focus {
         outline: none;
-        border: 1px solid #6F9484; // Light mode focus border to match theme
+        border-color: #318182;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(49, 129, 130, 0.2);
         
         [data-theme="dark"] & {
-          border: 1px solid #318182; // Match the app's accent color
+          border-color: #4a9799;
+          box-shadow: 0 4px 12px rgba(74, 151, 153, 0.3);
         }
       }
+      
+      &::placeholder {
+        color: #9ca3af;
+        transition: color 0.2s ease;
+      }
+      
+      &:focus::placeholder {
+        color: #6b7280;
+      }
     }
+    
     .button {
       min-width: 3rem;
       height: 3rem;
@@ -287,19 +377,7 @@
           background-color: #1f2028; // Darker active state
         }
       }
-    } /* End button styles */
-  } /* End send-bar styles */
-} /* End chat-wrapper styles */
-
-/* Fade in animation for messages */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    }
   }
 }
 
