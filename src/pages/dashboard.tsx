@@ -354,9 +354,9 @@ const exerciseAvg = exerciseDays.length
           </div>
         </Tooltip>
 
-        <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
+        {/* <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
           <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
-        </div>
+        </div> */}
       </div>
     </Modal>
   )
