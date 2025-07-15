@@ -28,7 +28,7 @@ router.get('/checkAuth', authRateLimiter, auth(), async (req, res) => {
     // Verify the token using jwt.verify that sends to "Users.js"
     // Then mongoose in Users.js will find the user by the userId in the token
     //const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await getUser.findById(req.user.id).select('-password'); // Using minus to exclude password from the response
+    const user = await getUser.findById(req.user.id).select('-password firstName lastName email profilePic lastLogin lastProfileUpdate disableReminders'); // Using minus to exclude password from the response
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Send the user data back to the client
