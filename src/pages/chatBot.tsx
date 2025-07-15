@@ -852,11 +852,11 @@ const styles = {
     '&::-webkit-scrollbar': {
       display: 'none' // Chrome/Safari
     },
-    '@media (maxWidth: 768px)': {
+    '@media (max-width: 768px)': {
       padding: '16px',
       paddingBottom: '70px'
     },
-    '@media (maxWidth: 480px)': {
+    '@media (max-width: 480px)': {
       padding: '12px',
       paddingBottom: '70px'
     }
