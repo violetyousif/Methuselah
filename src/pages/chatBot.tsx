@@ -26,7 +26,7 @@ import { ethers } from 'ethers'
 import { getConversations, addConversation, updateConversationTitle, deleteConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
-import ChatModeToggle from './ChatModeToggle';
+//import ChatModeToggle from './ChatModeToggle';
 import DeleteModal from '@/components/DeleteModal';
 
 
@@ -46,7 +46,7 @@ const Chatbot = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [currentTheme, setCurrentTheme] = useState<'default' | 'dark'>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [chatMode, setChatMode] = useState<'direct' | 'conversational'>('direct');
+  const chatMode = 'conversational';
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
   const [editingChatTitle, setEditingChatTitle] = useState('')  
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
@@ -600,9 +600,9 @@ const Chatbot = () => {
               chatMode={chatMode}
             />
           )}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
+          {/*<div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
             <ChatModeToggle mode={chatMode} onChange={setChatMode} />
-          </div>
+          </div>*/}
           {/*//// Prev code:
               {selectedChatId && (
                 <ChatGPT
