@@ -1,127 +1,129 @@
-import { Message } from '@/models'
-import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
+// THIS IS LEGAXY CODE. DO NOT EDIT. DO NOT WRITE ON.
 
-export const config = {
-  runtime: 'edge'
-}
+// import { Message } from '@/models'
+// import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 
-const handler = async (req: Request): Promise<Response> => {
-  try {
-    const { messages } = (await req.json()) as {
-      messages: Message[]
-    }
+// export const config = {
+//   runtime: 'edge'
+// }
 
-    const charLimit = 12000
-    let charCount = 0
-    let messagesToSend = []
+// const handler = async (req: Request): Promise<Response> => {
+//   try {
+//     const { messages } = (await req.json()) as {
+//       messages: Message[]
+//     }
 
-    for (let i = 0; i < messages.length; i++) {
-      const message = messages[i]
-      if (charCount + message.content.length > charLimit) {
-        break
-      }
-      charCount += message.content.length
-      messagesToSend.push(message)
-    }
+//     const charLimit = 12000
+//     let charCount = 0
+//     let messagesToSend = []
 
-    const useAzureOpenAI =
-      process.env.AZURE_OPENAI_API_BASE_URL && process.env.AZURE_OPENAI_API_BASE_URL.length > 0
+//     for (let i = 0; i < messages.length; i++) {
+//       const message = messages[i]
+//       if (charCount + message.content.length > charLimit) {
+//         break
+//       }
+//       charCount += message.content.length
+//       messagesToSend.push(message)
+//     }
 
-    let apiUrl: string
-    let apiKey: string
-    let model: string
-    if (useAzureOpenAI) {
-      let apiBaseUrl = process.env.AZURE_OPENAI_API_BASE_URL
-      const version = '2024-02-01'
-      const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || ''
-      if (apiBaseUrl && apiBaseUrl.endsWith('/')) {
-        apiBaseUrl = apiBaseUrl.slice(0, -1)
-      }
-      apiUrl = `${apiBaseUrl}/openai/deployments/${deployment}/chat/completions?api-version=${version}`
-      apiKey = process.env.AZURE_OPENAI_API_KEY || ''
-      model = '' // Azure Open AI always ignores the model and decides based on the deployment name passed through.
-    } else {
-      let apiBaseUrl = process.env.OPENAI_API_BASE_URL || 'https://api.openai.com'
-      if (apiBaseUrl && apiBaseUrl.endsWith('/')) {
-        apiBaseUrl = apiBaseUrl.slice(0, -1)
-      }
-      apiUrl = `${apiBaseUrl}/v1/chat/completions`
-      apiKey = process.env.OPENAI_API_KEY || ''
-      model = 'gpt-3.5-turbo' // todo: allow this to be passed through from client and support gpt-4
-    }
-    const stream = await OpenAIStream(apiUrl, apiKey, model, messagesToSend)
+//     const useAzureOpenAI =
+//       process.env.AZURE_OPENAI_API_BASE_URL && process.env.AZURE_OPENAI_API_BASE_URL.length > 0
 
-    return new Response(stream)
-  } catch (error) {
-    console.error(error)
-    return new Response('Error', { status: 500 })
-  }
-}
+//     let apiUrl: string
+//     let apiKey: string
+//     let model: string
+//     if (useAzureOpenAI) {
+//       let apiBaseUrl = process.env.AZURE_OPENAI_API_BASE_URL
+//       const version = '2024-02-01'
+//       const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || ''
+//       if (apiBaseUrl && apiBaseUrl.endsWith('/')) {
+//         apiBaseUrl = apiBaseUrl.slice(0, -1)
+//       }
+//       apiUrl = `${apiBaseUrl}/openai/deployments/${deployment}/chat/completions?api-version=${version}`
+//       apiKey = process.env.AZURE_OPENAI_API_KEY || ''
+//       model = '' // Azure Open AI always ignores the model and decides based on the deployment name passed through.
+//     } else {
+//       let apiBaseUrl = process.env.OPENAI_API_BASE_URL || 'https://api.openai.com'
+//       if (apiBaseUrl && apiBaseUrl.endsWith('/')) {
+//         apiBaseUrl = apiBaseUrl.slice(0, -1)
+//       }
+//       apiUrl = `${apiBaseUrl}/v1/chat/completions`
+//       apiKey = process.env.OPENAI_API_KEY || ''
+//       model = 'gpt-3.5-turbo' // todo: allow this to be passed through from client and support gpt-4
+//     }
+//     const stream = await OpenAIStream(apiUrl, apiKey, model, messagesToSend)
 
-const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messages: Message[]) => {
-  const encoder = new TextEncoder()
-  const decoder = new TextDecoder()
-  const res = await fetch(apiUrl, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-      'api-key': `${apiKey}`
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      model: model,
-      frequency_penalty: 0,
-      max_tokens: 4000,
-      messages: [
-        {
-          role: 'system',
-          content: `You are Methuselah, a wise old man who has lived for centuries. You offering knowledge and advice about longevity and well-being. Your responses should be reflective, but you talk like a modern person.`
-        },
-        ...messages
-      ],
-      presence_penalty: 0,
-      stream: true,
-      temperature: 0.7,
-      top_p: 0.95
-    })
-  })
+//     return new Response(stream)
+//   } catch (error) {
+//     console.error(error)
+//     return new Response('Error', { status: 500 })
+//   }
+// }
 
-  if (res.status !== 200) {
-    const statusText = res.statusText
-    throw new Error(
-      `The OpenAI API has encountered an error with a status code of ${res.status} and message ${statusText}`
-    )
-  }
+// const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messages: Message[]) => {
+//   const encoder = new TextEncoder()
+//   const decoder = new TextDecoder()
+//   const res = await fetch(apiUrl, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `Bearer ${apiKey}`,
+//       'api-key': `${apiKey}`
+//     },
+//     method: 'POST',
+//     body: JSON.stringify({
+//       model: model,
+//       frequency_penalty: 0,
+//       max_tokens: 4000,
+//       messages: [
+//         {
+//           role: 'system',
+//           content: `You are Methuselah, a wise old man who has lived for centuries. You offering knowledge and advice about longevity and well-being. Your responses should be reflective, but you talk like a modern person.`
+//         },
+//         ...messages
+//       ],
+//       presence_penalty: 0,
+//       stream: true,
+//       temperature: 0.7,
+//       top_p: 0.95
+//     })
+//   })
 
-  return new ReadableStream({
-    async start(controller) {
-      const onParse = (event: ParsedEvent | ReconnectInterval) => {
-        if (event.type === 'event') {
-          const data = event.data
+//   if (res.status !== 200) {
+//     const statusText = res.statusText
+//     throw new Error(
+//       `The OpenAI API has encountered an error with a status code of ${res.status} and message ${statusText}`
+//     )
+//   }
 
-          if (data === '[DONE]') {
-            controller.close()
-            return
-          }
+//   return new ReadableStream({
+//     async start(controller) {
+//       const onParse = (event: ParsedEvent | ReconnectInterval) => {
+//         if (event.type === 'event') {
+//           const data = event.data
 
-          try {
-            const json = JSON.parse(data)
-            const text = json.choices[0]?.delta.content
-            const queue = encoder.encode(text)
-            controller.enqueue(queue)
-          } catch (e) {
-            controller.error(e)
-          }
-        }
-      }
+//           if (data === '[DONE]') {
+//             controller.close()
+//             return
+//           }
 
-      const parser = createParser(onParse)
+//           try {
+//             const json = JSON.parse(data)
+//             const text = json.choices[0]?.delta.content
+//             const queue = encoder.encode(text)
+//             controller.enqueue(queue)
+//           } catch (e) {
+//             controller.error(e)
+//           }
+//         }
+//       }
 
-      for await (const chunk of res.body as any) {
-        const str = decoder.decode(chunk).replace('[DONE]\n', '[DONE]\n\n')
-        parser.feed(str)
-      }
-    }
-  })
-}
-export default handler
+//       const parser = createParser(onParse)
+
+//       for await (const chunk of res.body as any) {
+//         const str = decoder.decode(chunk).replace('[DONE]\n', '[DONE]\n\n')
+//         parser.feed(str)
+//       }
+//     }
+//   })
+// }
+// export default handler

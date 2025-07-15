@@ -62,3 +62,4 @@ __pycache__/
 
 
 .history/
+src/pages/ChatModeToggle.tsx

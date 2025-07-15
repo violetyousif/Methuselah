@@ -4,7 +4,7 @@
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
 // Syed Rabbey, 6/26/2025, Added streamed message functionality to display the assistant's response as it is being generated.
 
-import React from 'react'
+import * as React from 'react'
 import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
 import MessageItem from './MessageItem'
 import SendBar from './SendBar'
@@ -33,8 +33,8 @@ const ChatGPT = ({
     userBubbleColor,
     userAvatar,
     userName,
-    chatMode: props.chatMode,
-    walletAddress: props.walletAddress
+    //chatMode: props.chatMode,
+    //walletAddress: props.walletAddress
   })
 
   return (
@@ -43,7 +43,7 @@ const ChatGPT = ({
         {messages.length === 0 && !currentMessage.current && (
           <div className="welcome-message">
             <Text strong style={styles.welcomeTitle}>
-              Methuselah, Your first AI-driven health advisor
+              Methuselah, Your Personal AI-driven Health Advisor.
             </Text>
             <Text style={styles.welcomeSubtitle}>
               If you have questions, ask away!

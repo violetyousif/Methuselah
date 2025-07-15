@@ -1,7 +1,7 @@
 // Mohammad Hoque, 7/3/2025, Added responsive placeholder text that dynamically adjusts based on screen size for better mobile UX
 // Mohammad Hoque, 7/6/2025, Added timestamp functionality to user messages for better chat history tracking
 
-import React, { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
+import { KeyboardEventHandler, useRef, useState, useEffect } from 'react'
 import { ClearOutlined, SendOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import { ChatRole, SendBarProps } from './interface'
 import Show from './Show'
@@ -41,13 +41,13 @@ const SendBar = (props: SendBarProps) => {
     }
   }
 
-  const handleClear = () => {
-    if (inputRef.current) {
-      inputRef.current.value = ''
-      inputRef.current.style.height = 'auto'
-      onClear()
-    }
-  }
+  // const handleClear = () => {
+  //   if (inputRef.current) {
+  //     inputRef.current.value = ''
+  //     inputRef.current.style.height = 'auto'
+  //     onClear()
+  //   }
+  // }
 
   const handleSend = () => {
     const content = inputRef.current?.value
@@ -125,7 +125,11 @@ const SendBar = (props: SendBarProps) => {
       }
       loading={loading}
     >
-      <div
+
+      <div className="send-bar">
+        {/* File upload Button */}
+
+      {/* <div
         className="send-bar"
         style={{
           background: '#9AB7A9',
@@ -135,11 +139,11 @@ const SendBar = (props: SendBarProps) => {
           alignItems: 'center',
           gap: '8px'
         }}
-      >
-        {/* File upload Button
-        <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
+      > */}
+        {/* <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
           <FolderOpenOutlined className="chat-icon-black-outline" />
         </button> */}
+        
 
         {/* Hidden File Input */}
         <input
@@ -158,15 +162,6 @@ const SendBar = (props: SendBarProps) => {
           placeholder={placeholder}
           autoComplete="off"
           rows={1}
-          style={{
-            flex: 1,
-            border: 'none',
-            borderRadius: 8,
-            padding: '8px',
-            backgroundColor: '#F1F1EA',
-            color: '#1E1E1E',
-            fontSize: 'inherit' // Let CSS handle responsive font sizing
-          }}
           onKeyDown={onKeydown}
           onInput={onInputAutoSize}
         />
@@ -177,7 +172,7 @@ const SendBar = (props: SendBarProps) => {
 
         {/* <button className="button" title="Clear" disabled={disabled} onClick={handleClear}>
           <ClearOutlined className="chat-icon-black-outline" />
-        </button>} */}
+        </button>*/}
       </div>
     </Show>
   )

@@ -7,19 +7,78 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  background-color: transparent;
+  background-color: #FFFFFF; // Default light mode background
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 180px); // Minimum height to account for header and footer
+  height: 100%; // Use full available height from parent
+  
+  // Dark mode styling
+  [data-theme="dark"] & {
+    background-color: #1D1E2C;
+  }
   
   @media (max-width: 768px) {
     max-width: 100%;
-    min-height: calc(100vh - 120px);
   }
   
   .message-list {
     flex: 1;
-    padding-bottom: 16px; // Add some padding at the bottom for spacing
+    overflow-y: scroll; // Always show scrollbar to prevent layout shifts
+    overflow-x: hidden; // Prevent horizontal scrolling
+    padding-bottom: 16px;
+    padding-right: 12px; // Add right padding to push content away from scrollbar
+    margin-right: 4px; // Add margin to position scrollbar slightly to the right
+    min-height: 0; // Allow flex child to shrink below content size
+    scroll-behavior: smooth; // Smooth scrolling
+    overscroll-behavior: contain; // Prevent scroll chaining to parent elements
+    
+    // Custom scrollbar styling
+    scrollbar-width: thin; // Firefox - make scrollbar thinner
+    scrollbar-color: rgba(255, 255, 255, 0.4) transparent; // Firefox - light scrollbar for dark themes
+    
+    // Webkit browsers (Chrome, Safari, Edge)
+    &::-webkit-scrollbar {
+      width: 8px; // Make scrollbar narrower
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent; // Invisible track
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.4); // Light color for dark mode visibility
+      border-radius: 4px;
+      border: 1px solid transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.6); // Brighter on hover
+    }
+    
+    // Theme-specific scrollbar colors
+    [data-theme="default"] & {
+      scrollbar-color: rgba(0, 0, 0, 0.4) transparent; // Dark scrollbar for light theme
+      
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.4); // Dark color for light mode
+      }
+      
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, 0.6); // Darker on hover
+      }
+    }
+    
+    [data-theme="dark"] & {
+      scrollbar-color: rgba(255, 255, 255, 0.5) transparent; // Light scrollbar for dark theme
+      
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.5); // Light color for dark mode
+      }
+      
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(255, 255, 255, 0.7); // Brighter on hover
+      }
+    }
   }
   .welcome-message {
     text-align: center;
@@ -40,7 +99,12 @@
       max-width: 70%;
       padding: 0.75rem 1rem;
       border-radius: @border-radius;
-      background-color: #2a2a2a;
+      background-color: #9AB7A9; // Original light mode assistant message background
+      
+      // Dark mode styling - lighter background for better readability
+      [data-theme="dark"] & {
+        background-color: #2a3441; // Lighter background closer to sidebar color for better readability
+      }
       
       @media (max-width: 768px) {
         max-width: 85%;
@@ -53,8 +117,13 @@
       }
       
       &.user {
-        background-color: #4b5563;
+        background-color: #F1F1EA; // Original light mode user message background
         flex-direction: row-reverse;
+        
+        // Dark mode styling - darker user message background
+        [data-theme="dark"] & {
+          background-color: #2d2f3a; // Original dark mode user message background
+        }
       }
     }
     .avatar {
@@ -77,8 +146,14 @@
     .message {
       flex: 1;
       font-size: 14px;
-      color: #e0e0e0;
+      color: #2d3748; // Light mode text color
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+      
+      // Dark mode text color
+      [data-theme="dark"] & {
+        color: #e0e0e0;
+      }
+      
       p {
         margin: 0;
         line-height: 1.5;
@@ -86,14 +161,32 @@
       pre {
         padding: 0.4rem 1rem;
         font-size: 0.8rem;
-        background-color: #1a1a1a;
+        background-color: #f7f7f7; // Light mode code block background
         border-radius: @border-radius;
+        color: #2d3748; // Light mode code text
+        
+        // Dark mode styling - darker code blocks with better contrast
+        [data-theme="dark"] & {
+          background-color: #1e2028; // Darker but readable code block background
+          color: #e0e0e0; // Light text for dark background
+        }
       }
       .copy-btn {
-        background-color: #3a3a3a;
-        color: #a3a3a3;
+        background-color: #e2e8f0; // Light mode copy button background
+        color: #4a5568; // Light mode copy button text
+        
+        // Dark mode styling - darker copy button
+        [data-theme="dark"] & {
+          background-color: #2d2f3a; // Darker copy button background that complements #1D1E2C
+          color: #9ca3af; // Light gray text
+        }
+        
         &:hover {
-          background-color: #4a4a4a;
+          background-color: #cbd5e0; // Light mode hover
+          
+          [data-theme="dark"] & {
+            background-color: #3a3d4a; // Darker hover state
+          }
         }
       }
     }
@@ -125,24 +218,42 @@
     display: flex;
     grid-gap: 0.5rem;
     gap: 0.5rem;
-    margin-top: auto; // Keep the send bar at the bottom
     padding: 0.5rem;
-    background-color: #2a2a2a;
+    background-color: #9AB7A9; // Original light mode green background
     border-radius: @border-radius;
+    flex-shrink: 0; // Prevent the send bar from shrinking
+    
+    // Dark mode styling
+    [data-theme="dark"] & {
+      background-color: #252738; // Slightly lighter than #1D1E2C for contrast
+    }
+    
     .input {
       flex: 1;
       padding: 0.75rem;
       font-size: 16px;
-      background-color: #3a3a3a;
-      color: #e0e0e0;
-      border: none;
+      background-color: #F1F1EA; // Original light mode input background
+      color: #1E1E1E; // Original light mode text color
+      border: none; // Original had no border
       border-radius: @border-radius;
       resize: none;
       max-height: 150px;
       overflow-y: hidden; // No scrollbar as previously requested
+      
+      // Dark mode styling - input background with better readability
+      [data-theme="dark"] & {
+        background-color: #2a3441; // Lighter input background that matches AI messages
+        color: #e0e0e0;
+        border: 1px solid transparent; // Remove border in dark mode
+      }
+      
       &:focus {
         outline: none;
-        border: 1px solid #6b7280;
+        border: 1px solid #6F9484; // Light mode focus border to match theme
+        
+        [data-theme="dark"] & {
+          border: 1px solid #318182; // Match the app's accent color
+        }
       }
     }
     .button {
@@ -150,21 +261,37 @@
       height: 3rem;
       padding: 0 0.75rem;
       font-size: 16px;
-      background-color: #4b5563;
-      color: #e5e7eb;
+      background-color: #6F9484; // Light mode button background to match theme
+      color: #ffffff; // Light mode button text
       border: none;
       border-radius: @border-radius;
       cursor: pointer;
+      
+      // Dark mode styling - darker buttons
+      [data-theme="dark"] & {
+        background-color: #2d2f3a; // Button background that complements #1D1E2C
+        color: #e5e7eb;
+      }
+      
       &:hover {
-        background-color: #6b7280;
+        background-color: #5a7a6e; // Light mode hover - darker green
+        
+        [data-theme="dark"] & {
+          background-color: #3a3d4a; // Darker hover state
+        }
       }
       &:active {
-        background-color: #374151;
+        background-color: #4a6459; // Light mode active - even darker green
+        
+        [data-theme="dark"] & {
+          background-color: #1f2028; // Darker active state
+        }
       }
-    }
-  }
-}
+    } /* End button styles */
+  } /* End send-bar styles */
+} /* End chat-wrapper styles */
 
+/* Fade in animation for messages */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -173,5 +300,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Message header alignment */
+.message-header {
+  &.align-right {
+    text-align: right;
+  }
+  
+  &.align-left {
+    text-align: left;
   }
 }

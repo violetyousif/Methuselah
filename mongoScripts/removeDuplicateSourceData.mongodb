@@ -1,3 +1,5 @@
+// Violet Yousif, 7/7/2025 - Added script to remove undesired source data from KnowledgeBase (if chunking appears excessive)
+
 // mongoScripts/removeDuplicateData.mongodb
 // MongoDB Playground
 // To use, hit the play button or press Ctrl/Cmd+Enter
@@ -5,9 +7,9 @@
 // Replace with your database name
 use('Longevity');
 
-// Replace 'Biograph.pdf' with the source you want to delete
-const sourceToDelete = "Biograph.pdf";
+// Replace 'Biograph.pdf' with the source you want to delete in KnowledgeBase
+const sourceToDelete = "https://www.lifespan.io/news/fixing-sugar-metabolism-shows-promise-against-dementia/";
 
 db.KnowledgeBase.deleteMany({
-  source: 'Biograph.pdf'
+  source: sourceToDelete
 });

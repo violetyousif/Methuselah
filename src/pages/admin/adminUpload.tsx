@@ -1,10 +1,15 @@
 // Violet Yousif, 07/06/25, Created Admin upload page for uploading pretraining content
+// Violet Yousif, 07/07/25, Edited to include URL upload functionality
+// Violet Yousif, 07/10/25, Edited to connect with sidebar navigation and authentication checks
 
-import { useState, useEffect } from 'react';
-import { Upload, Input, Button, message, notification, Typography, Spin } from 'antd';
+
+import React, { useState, useEffect } from 'react';
+import { Upload, Input, Button, message, notification, Typography, Spin, Layout } from 'antd';
+const { Content } = Layout;
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import type { UploadRequestOption } from 'rc-upload/lib/interface';
+import AdminLayout from '../../components/AdminLayout'; 
 
 const { Dragger } = Upload;
 const { Title, Paragraph } = Typography;
@@ -161,8 +166,7 @@ function AdminUpload() {
           Submit URL
         </Button>
           }
-
-          size="medium"
+          size="middle"
           value={urlInput}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrlInput(e.target.value)}
           onSearch={async (value: string) => {
@@ -231,7 +235,7 @@ function AdminUpload() {
 
         {uploading && <Spin style={{ marginTop: '1rem' }} />}
       </div>
-    </div>
+      </div>
   );
 }
 

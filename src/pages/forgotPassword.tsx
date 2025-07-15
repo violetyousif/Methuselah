@@ -68,7 +68,7 @@ export default function ForgotPassword() {
         </Link>
 
         <h2 className="forgot-password-header">Forgot Password?</h2>
-        <p  className="forgot-password-subtext">Enter your email and we'll send a reset code.</p>
+        <p  className="forgot-password-subtext">Enter your email and we&apos;ll send a reset code.</p>
 
         <Form layout="vertical" onSubmitCapture={handleSubmit}>
           <Form.Item 
@@ -128,7 +128,7 @@ const styles = {
   backButton: {
     marginBottom: '24px',
     backgroundColor: '#203625',
-    color: 'white',
+    color: '#F1F1EB',
     border: 'none',
     borderRadius: '9999px'
   },
@@ -153,7 +153,7 @@ const styles = {
     marginTop: '8px',
     width: '100%',
     backgroundColor: '#203625',
-    color: '#e0e0e0',
+    color: '#F1F1EB',
     borderRadius: '1rem'
   },
   rowSpacing: {

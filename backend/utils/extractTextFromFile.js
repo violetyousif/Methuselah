@@ -1,13 +1,13 @@
-import pdfParse from 'pdf-parse';
+//import pdfParse from 'pdf-parse';
 import { parse as csvParse } from 'csv-parse/sync';
 
 export async function extractTextFromFile(buffer, mimetype, originalName) {
   try {
-    if (mimetype === 'application/pdf' || originalName.endsWith('.pdf')) {
-      // PDF
-      const data = await pdfParse(buffer);
-      return data.text || '';
-    }
+    // if (mimetype === 'application/pdf' || originalName.endsWith('.pdf')) {
+    //   // PDF
+    //   const data = await pdfParse(buffer);
+    //   return data.text || '';
+    // }
     if (
       mimetype === 'text/plain' ||
       originalName.endsWith('.txt')

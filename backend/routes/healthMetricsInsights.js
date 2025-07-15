@@ -58,7 +58,7 @@ router.get('/healthmetrics/insights', insightsLimiter, auth, async (req, res) =>
     const streakDocs = await HealthMetricHistory.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(userId),
+          userId: mongoose.Types.ObjectId.createFromHexString(userId),
           metric: { $in: ['weight', 'sleepHours'] },
         }
       },

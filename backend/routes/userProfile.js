@@ -22,21 +22,23 @@ const profileRateLimiter = rateLimit({
 router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
   console.log('User making profile update:', req.user.id);
   try {
-    const { firstName, lastName, email, dateOfBirth, gender, /* weight, */ height, activityLevel, sleepHours } = req.body;
-    
+    const { dateOfBirth, gender, height, activityLevel, healthGoal, supplements, medicine } = req.body;
     const user = await getUser.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Update user profile data
-    if (firstName !== undefined) user.firstName = firstName;
-    if (lastName !== undefined) user.lastName = lastName;
-    if (email !== undefined) user.email = email;
+    // if (firstName !== undefined) user.firstName = firstName;
+    // if (lastName !== undefined) user.lastName = lastName;
+    // if (email !== undefined) user.email = email;
     if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
     if (gender !== undefined) user.gender = gender;
     // if (weight !== undefined) user.weight = weight;
     if (height !== undefined) user.height = height;
     if (activityLevel !== undefined) user.activityLevel = activityLevel;
-    if (sleepHours !== undefined) user.sleepHours = sleepHours;
+    // if (sleepHours !== undefined) user.sleepHours = sleepHours;
+    if (healthGoal !== undefined) user.healthGoal = healthGoal;
+    if (supplements !== undefined) user.supplements = supplements;
+    if (medicine !== undefined) user.medicine = medicine;
 
     user.updatedAt = new Date();
     await user.save();
@@ -44,7 +46,7 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
     const healthMetricsUpdate = {};
 
     // if (weight !== undefined) healthMetricsUpdate.weight = weight;
-    if (sleepHours !== undefined) healthMetricsUpdate.sleepHours = sleepHours;
+    // if (sleepHours !== undefined) healthMetricsUpdate.sleepHours = sleepHours;
     if (activityLevel !== undefined) healthMetricsUpdate.activityLevel = activityLevel;
 
     healthMetricsUpdate.lastUpdated = new Date();
@@ -72,7 +74,7 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
       });
     } */
 
-    if (sleepHours !== undefined) {
+/*     if (sleepHours !== undefined) {
       historyEntries.push({
         userId: user._id,
         metric: 'sleepHours',
@@ -81,7 +83,7 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
         recordedAt: new Date(),
         source: 'profile'
       });
-    }
+    } */
 
     if (activityLevel !== undefined) {
       historyEntries.push({
