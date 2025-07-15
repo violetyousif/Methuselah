@@ -42,7 +42,12 @@ const ChatGPT = ({
   // Scroll to bottom when messages change or conversation changes
   React.useEffect(() => {
     if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+      // Use setTimeout to ensure DOM is fully updated before scrolling
+      setTimeout(() => {
+        if (messageListRef.current) {
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+        }
+      }, 50)
     }
   }, [messages, props.conversationId, streamedMessage])
 

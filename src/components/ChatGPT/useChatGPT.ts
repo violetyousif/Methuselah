@@ -28,10 +28,16 @@ import app from 'next/app'
 
 const scrollDown = throttle(
   () => {
-    // Find the message list container and scroll it to bottom
+    // Find the message list container and scroll it to bottom with smooth behavior
     const messageList = document.querySelector('.message-list');
     if (messageList) {
+      // Use both scrollTop assignment and scrollIntoView for better reliability
       messageList.scrollTop = messageList.scrollHeight;
+      // Also ensure the last message is visible
+      const lastMessage = messageList.lastElementChild;
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
     }
   },
   300,
@@ -198,6 +204,9 @@ useEffect(() => {
     const loadConversationAndInitGreeting = async () => {
       const conv = await getConversation(conversationId);
       setCurrentConversation(conv || null);
+      
+      // Scroll to bottom when conversation is loaded
+      setTimeout(() => scrollDown(), 100);
 
       if (healthData && (!conv?.messages || conv.messages.length === 0)) {
         if (!greetingAttempted.current.has(conversationId)) {
@@ -212,6 +221,8 @@ useEffect(() => {
             const updatedConv = await getConversation(conversationId);
             setCurrentConversation(updatedConv || null);
             forceUpdate();
+            // Scroll to bottom after adding greeting message
+            setTimeout(() => scrollDown(), 150);
           } catch (err) {
             console.error('Greeting error:', err);
             greetingAttempted.current.delete(conversationId);

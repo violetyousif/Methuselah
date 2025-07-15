@@ -548,7 +548,16 @@ const Chatbot = () => {
                       ) : (
                         <div
                           style={{ flex: 1, cursor: 'pointer' }}
-                          onClick={() => setSelectedChatId(chat.conversationId)}
+                          onClick={() => {
+                            setSelectedChatId(chat.conversationId);
+                            // Scroll to bottom after switching conversations
+                            setTimeout(() => {
+                              const messageList = document.querySelector('.message-list');
+                              if (messageList) {
+                                messageList.scrollTop = messageList.scrollHeight;
+                              }
+                            }, 100);
+                          }}
                         >
                           {chat.summary || chat.title}
                         </div>
