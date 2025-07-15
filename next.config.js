@@ -21,6 +21,9 @@ const nextConfig = {
   'rc-table',
   'rc-picker',
 ],
+  experimental: {
+    forceSwcTransforms: true, // Enable SWC transforms
+  },
   webpack(config, options) {
     // disable css-module in Next.js
     config.module.rules.forEach((rule) => {

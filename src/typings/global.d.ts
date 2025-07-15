@@ -16,8 +16,10 @@ declare module '*.module.less' {
 // Add the global Window.ethereum definition
 declare global {
   interface Window {
-    ethereum?: any
+    ethereum?: any,
+    Cypress?: boolean;
   }
 }
 
 export {}  // Ensure this file is a module, so the `declare global` doesn't pollute the global scope accidentally.
+
