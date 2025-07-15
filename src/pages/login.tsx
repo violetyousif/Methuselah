@@ -231,12 +231,12 @@ const styles = {
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: '6rem 1rem', // Reduced side padding for mobile
-    // '@media (maxWidth: 768px)': {
-    //   padding: '2rem 1rem',
-    // },
-    // '@media (maxWidth: 480px)': {
-    //   padding: '1rem 0.5rem',
-    // }
+    '@media (max-width: 768px)': {
+      padding: '2rem 1rem',
+    },
+    '@media (max-width: 480px)': {
+      padding: '1rem 0.5rem',
+    }
   },
   card: {
     maxWidth: 400,
@@ -247,11 +247,11 @@ const styles = {
     borderRadius: '2rem',
     boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
-    // '@media (maxWidth: 480px)': {
-    //   margin: '0.5rem auto',
-    //   padding: '1.5rem',
-    //   borderRadius: '16px',
-    // }
+    '@media (max-width: 480px)': {
+      margin: '0.5rem auto',
+      padding: '1.5rem',
+      borderRadius: '16px',
+    }
   },
   rowSpacing: {
     marginBottom: '0.6px'

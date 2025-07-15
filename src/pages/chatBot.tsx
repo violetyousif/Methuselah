@@ -13,7 +13,7 @@
 // Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
 // Mohammad Hoque, 7/3/2025, Enhanced mobile sidebar functionality with manual toggle override, overlay, and improved responsive behavior
 // Mohammad Hoque, 7/3/2025, Added smooth sidebar collapse/expand animations with eased transitions, hover effects, and mobile pulse indicators
-
+// Mohammad Hoque, 7/15/2025, Fixed media query issues
 
 import ChatGPT from '@/components/ChatGPT'
 import { Layout, Button, Avatar, Typography, message, Input, Modal, Dropdown, Spin, notification } from 'antd'
@@ -548,7 +548,16 @@ const Chatbot = () => {
                       ) : (
                         <div
                           style={{ flex: 1, cursor: 'pointer' }}
-                          onClick={() => setSelectedChatId(chat.conversationId)}
+                          onClick={() => {
+                            setSelectedChatId(chat.conversationId);
+                            // Scroll to bottom after switching conversations
+                            setTimeout(() => {
+                              const messageList = document.querySelector('.message-list');
+                              if (messageList) {
+                                messageList.scrollTop = messageList.scrollHeight;
+                              }
+                            }, 100);
+                          }}
                         >
                           {chat.summary || chat.title}
                         </div>
@@ -852,11 +861,11 @@ const styles = {
     '&::-webkit-scrollbar': {
       display: 'none' // Chrome/Safari
     },
-    '@media (maxWidth: 768px)': {
+    '@media (max-width: 768px)': {
       padding: '16px',
       paddingBottom: '70px'
     },
-    '@media (maxWidth: 480px)': {
+    '@media (max-width: 480px)': {
       padding: '12px',
       paddingBottom: '70px'
     }
