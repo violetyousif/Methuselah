@@ -14,7 +14,7 @@
 // Syed Rabbey, 07/05/2025, 07/07/2025, Added Reset Password link and added Toast notifications for success and error message.
 
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form, Input, Button, message, notification} from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';

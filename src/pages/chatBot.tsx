@@ -13,6 +13,7 @@
 // Mohammad Hoque, 7/3/2025, Connected frontend conversation management to backend MongoDB storage.
 // Mohammad Hoque, 7/3/2025, Enhanced mobile sidebar functionality with manual toggle override, overlay, and improved responsive behavior
 // Mohammad Hoque, 7/3/2025, Added smooth sidebar collapse/expand animations with eased transitions, hover effects, and mobile pulse indicators
+// Syed Rabbey, 7/14/2025, Added session history reminder modal and recommended Methuselah prompts above send bar.we
 // Mohammad Hoque, 7/15/2025, Fixed media query issues
 
 import ChatGPT from '@/components/ChatGPT'
@@ -51,6 +52,8 @@ const Chatbot = () => {
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const [conversationsLoading, setConversationsLoading] = useState(false)
+  const [showUpdateReminder, setShowUpdateReminder] = useState(false);
+
   
   // Custom modal state
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
@@ -73,6 +76,36 @@ const Chatbot = () => {
         const result = await res.json();
         setIsLoggedIn(true);
         setUserData(result.user);   // will set user data if available/logged in
+ 
+        const HOURS = 12;
+
+        // Helper to check if a date is stale
+        const isStale = (timestamp: string | undefined) => {
+          if (!timestamp) return true;
+          const timeDiff = Date.now() - new Date(timestamp).getTime();
+          return timeDiff > HOURS * 60 * 60 * 1000;
+        };
+
+        // Check if modal already shown
+        const reminderShownRecently = () => {
+          const lastShown = localStorage.getItem('lastReminderShown');
+          if (!lastShown) return false;
+          const diff = Date.now() - new Date(lastShown).getTime();
+          return diff < HOURS * 60 * 60 * 1000;
+        };
+
+        // Show modal logic
+        if (
+          result.user &&
+          !result.user.disableReminders &&
+          (isStale(result.user.lastLogin) || isStale(result.user.lastProfileUpdate)) &&
+          !reminderShownRecently()
+        ) {
+          setTimeout(() => {
+            setShowUpdateReminder(true);
+            localStorage.setItem('lastReminderShown', new Date().toISOString());
+          }, 600);
+        }
       } else {
         setIsLoggedIn(false);
       }
@@ -663,6 +696,74 @@ const Chatbot = () => {
         loading={deleteLoading}
       />
       
+      {showUpdateReminder && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            zIndex: 1001,
+            animation: 'fadeIn 0.5s ease-in-out',
+            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
+            borderRadius: '16px',
+            backgroundColor: currentTheme === 'dark' ? '#5A5C73' : '#8AA698',
+            padding: '20px 24px',
+            color: currentTheme === 'dark' ? '#ffffff' : '#1D1E2C',
+            fontSize: '15px',
+            fontWeight: 500,
+            width: '320px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}
+        >
+          {/* X Button */}
+          <div
+            onClick={() => setShowUpdateReminder(false)}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '10px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              color: 'white',
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              lineHeight: 0
+            }}
+            title="Close"
+          >
+            ×
+          </div>
+
+          {/* Message */}
+          <div>Hey {userData?.firstName || 'there'}, you haven’t updated your progress today!</div>
+
+          {/* CTA Button */}
+          <Button
+            type="primary"
+            onClick={() => {
+              setShowUpdateReminder(false)
+              router.push('/profile')
+            }}
+            style={{
+              backgroundColor: currentTheme === 'dark' ? '#9AB7A9' : '#F1F1EA',
+              color: currentTheme === 'dark' ? '#1D1E2C' : '#203625',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 500
+            }}
+          >
+            Take me to update my progress
+          </Button>
+        </div>
+      )}
       {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
           //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
     </Layout>

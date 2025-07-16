@@ -40,6 +40,8 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
     if (supplements !== undefined) user.supplements = supplements;
     if (medicine !== undefined) user.medicine = medicine;
 
+    user.lastProfileUpdate = new Date();
+    await user.save();
     user.updatedAt = new Date();
     await user.save();
     // Save health metrics as time-series data to act as audit trail for dashboard.
