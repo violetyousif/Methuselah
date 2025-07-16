@@ -607,7 +607,7 @@ export default function Settings() {
         }
 
         .settingsPage .verificationCodeInput::placeholder {
-          color: #F1F1EA !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
           opacity: 1 !important;
         }
         

@@ -10,7 +10,7 @@ import getUser from '../models/User.js';
 import auth from '../middleware/auth.js';
 import cookie from 'cookie';  // for setting cookies in the response
 import rateLimit from 'express-rate-limit';
-const emailVerificationStore = {}; // { email: { code, expires, userId } }
+const emailVerificationStore = new Map();
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcrypt';
@@ -81,7 +81,7 @@ router.post('/sendEmailVerification', settingsRateLimiter, auth(), async (req, r
   const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   // Store code with userId for security
-  emailVerificationStore[email] = { code, expires, userId: req.user.id };
+  emailVerificationStore.set(email, { code, expires, userId: req.user.id });
 
   // Send email (configure transporter for your SMTP)
   const transporter = nodemailer.createTransport({
@@ -108,7 +108,7 @@ router.post('/sendEmailVerification', settingsRateLimiter, auth(), async (req, r
 
 router.post('/verifyEmailCode', settingsRateLimiter, auth(), async (req, res) => {
   const { email, code } = req.body;
-  const record = emailVerificationStore[email];
+  const record = emailVerificationStore.get(email);
   if (
     !record ||
     record.code !== code ||
@@ -118,7 +118,8 @@ router.post('/verifyEmailCode', settingsRateLimiter, auth(), async (req, res) =>
     return res.status(400).json({ message: 'Invalid or expired code.' });
   }
   // Mark as verified (could set a flag in DB or session, here just delete)
-  emailVerificationStore[email].verified = true;
+  const updatedRecord = { ...record, verified: true };
+  emailVerificationStore.set(email, updatedRecord);
   res.json({ message: 'Email verified.' });
 });
 
@@ -195,13 +196,13 @@ router.patch('/updateSettings', settingsRateLimiter, auth(), async (req, res) =>
         return res.status(400).json({ message: 'Email already in use by another account.' });
       }
       // Check verification
-      const record = emailVerificationStore[email];
+      const record = emailVerificationStore.get(email);
       if (!record || !record.verified || record.userId !== req.user.id) {
         return res.status(400).json({ message: 'Email not verified.' });
       }
       user.email = email;
       // Clean up
-      delete emailVerificationStore[email];
+      emailVerificationStore.delete(email);
     }
     if (profilePic !== undefined) user.profilePic = profilePic;
 
