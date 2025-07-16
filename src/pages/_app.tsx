@@ -8,20 +8,51 @@ import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import '../styles/globals.css'
 import { useEffect, useState } from 'react'
-import { Layout } from 'antd'
+import dynamic from 'next/dynamic'
 // import Dashboard from './dashboard'
 // import Profile from './profile'
 
+// Dynamically import Layout with no SSR to prevent useLayoutEffect warnings
+const Layout = dynamic(() => import('antd').then(mod => ({ default: mod.Layout })), {
+  ssr: false,
+  loading: () => (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1 }}>Loading...</div>
+      <footer>LongevityAI © 2025</footer>
+    </div>
+  )
+})
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [mounted, setMounted] = useState(false)
+
   // Set default theme on initial load - individual pages will override with database preferences
   useEffect(() => {
+    setMounted(true)
+    // Set defaults that will be overridden by database preferences
     if (typeof window !== 'undefined') {
-      // Set defaults that will be overridden by database preferences
       document.body.dataset.fontsize = 'regular'
       document.body.dataset.theme = 'default'
     }
   }, [])
+
+  // Show a loading state during initial hydration
+  if (!mounted) {
+    return (
+      <>
+        <Head>
+          <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+          />
+        </Head>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1 }}>Loading...</div>
+          <footer>LongevityAI © 2025</footer>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>

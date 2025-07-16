@@ -263,6 +263,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     res.status(500).json({ error: err.message || 'RAG chat failed' });
   }
 });
+export default router;
 
   
 // POST /api/ragChat
@@ -342,7 +343,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
   //     top_p: 0.95,
   //     options: { wait_for_model: false }   // waits if model is cold
   //   });
-
   //   let answer = chatResp.choices?.[0]?.message?.content ?? '';
   //   answer = answer
   //     .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/i, '')
@@ -363,7 +363,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
   //   res.status(500).json({ error: err.message || 'RAG chat failed' });
   // };
 
-export default router;
+
 
 
 

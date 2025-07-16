@@ -19,6 +19,8 @@ import { Form, Input, Button, message, notification} from 'antd';
 import Link from 'next/link';
 import { ArrowLeftOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
+import { isCypress } from '@/utils/isCypress';
+
 
 function Login() {
   const router = useRouter();
@@ -29,12 +31,47 @@ function Login() {
 
 
   // Force light mode for login page since user hasn't logged in yet
+  // useEffect(() => {
+  //   document.body.dataset.theme = 'default';
+  //   setTheme('default');
+  // }, []);
   useEffect(() => {
+  if (typeof window !== 'undefined' && document?.body && !window.Cypress) {
     document.body.dataset.theme = 'default';
     setTheme('default');
+  }
   }, []);
 
+
   const onFinish = async (values: any) => {
+    setLoading(true); 
+    //const isCypress = typeof window !== 'undefined' && window.Cypress;
+
+  // Mock login for Cypress tests
+  // if (isCypress()) {
+  //   const data = {
+  //     user: {
+  //       email: values.email,
+  //       password: values.password,
+  //       firstName: 'Admin',
+  //       role: 'admin',
+  //     },
+  //   };
+  //   notification.success({
+  //     message: 'Successfully Logged In (Test)',
+  //     description: `Welcome, ${data.user.firstName}!`,
+  //     placement: 'topRight',
+  //     duration: 3,
+  //   });
+  //   if (data.user.role === 'admin') {
+  //     router.push('/admin/adminUpload');
+  //   } else {
+  //     router.push('/chatBot');
+  //   }
+  //   setLoading(false);
+  //   return; // Exit early to avoid making the real API call
+  // }
+    
     try {
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
@@ -120,7 +157,8 @@ function Login() {
                 { type: 'email', message: 'Please enter a valid email' }
               ]}
             >
-              <Input 
+              <Input
+                name="email"
                 placeholder="Enter your email"
                 style={styles.placeholderStyle}
                 autoComplete="email"
@@ -140,6 +178,7 @@ function Login() {
               ]}
             >
               <Input.Password 
+                name="password"
                 placeholder="Enter your password"
                 style={styles.placeholderStyle}
                 autoComplete="current-password"
@@ -192,10 +231,10 @@ const styles = {
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: '6rem 1rem', // Reduced side padding for mobile
-    '@media (maxWidth: 768px)': {
+    '@media (max-width: 768px)': {
       padding: '2rem 1rem',
     },
-    '@media (maxWidth: 480px)': {
+    '@media (max-width: 480px)': {
       padding: '1rem 0.5rem',
     }
   },
@@ -208,7 +247,7 @@ const styles = {
     borderRadius: '2rem',
     boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
     paddingBottom: '24px',
-    '@media (maxWidth: 480px)': {
+    '@media (max-width: 480px)': {
       margin: '0.5rem auto',
       padding: '1.5rem',
       borderRadius: '16px',

@@ -30,6 +30,14 @@ import jwt from 'jsonwebtoken';
 // prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
 //import rateLimit from 'express-rate-limit';
 
+// NEW FIX
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
 const resetCodeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -78,6 +86,7 @@ router.post('/send-reset-code', resetCodeLimiter, async (req, res) => {
     res.status(500).json({ message: 'Failed to send verification email' });
   }
 });
+
 
 
 // 2. Verify code
@@ -131,13 +140,13 @@ const loginLimiter = rateLimit({
 console.log("MAIL_USER:", process.env.MAIL_USER);
 console.log("MAIL_PASS exists?", !!process.env.MAIL_PASS);
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: process.env.MAIL_USER,
+//     pass: process.env.MAIL_PASS,
+//   },
+// });
 
 
 // Description: handles user login by checking the provided email and password against the db.
@@ -178,7 +187,7 @@ router.post('/login', loginLimiter, async (req, res) => {
         );
     }
     catch (error) {
-      console.log(err);
+      console.log(error);
       console.error('Error signing token:', error);
       return res.status(500).json({ message: 'Error signing token' }
       );
