@@ -8,6 +8,7 @@
 // Violet Yousuf, 6/16/2025, Removed dateOfBirth field since it's handled by profile endpoint
 // Mizanur Mizan, 6/24/2025, Added upload handler for custom avatar image
 // Syed Rabbey, 7/7/2025, Added toast message for succesful profile picture update and setting save.
+// Mizanur Mizan, 7/14/2025-7/16/2025, Added verification for email change and a change password button/modal
 
 import React, { useState, useEffect } from 'react'
 import { Button, Select, Input, DatePicker, message, notification } from 'antd'
@@ -16,8 +17,10 @@ import Link from 'next/link'
 import moment from 'moment'
 import { profilePicPresets } from '../components/profilePicker'
 import { Upload, Avatar } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { UploadOutlined, LockOutlined } from '@ant-design/icons'
 import ImgCrop from 'antd-img-crop'
+import { Modal } from 'antd'
+import { Form } from 'antd';
 
 
 const { Option } = Select
@@ -30,6 +33,19 @@ export default function Settings() {
   const [email, setEmail] = useState('')
   //// Prev: const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
   const [profilePic, setProfilePic] = useState('')
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [emailVerified, setEmailVerified] = useState(true);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const [passwordForm] = Form.useForm();
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Load current settings from backend
   useEffect(() => {
@@ -45,6 +61,7 @@ export default function Settings() {
           setFirstName(settings.firstName || '');
           setLastName(settings.lastName || '');
           setEmail(settings.email || '');
+          setPendingEmail(settings.email || '');
           setProfilePic(settings.profilePic || '');
           // setFontSize(settings.preferences?.fontSize || 'regular');
           setTheme((settings.preferences?.theme as 'default' | 'dark') || 'default');
@@ -117,6 +134,109 @@ export default function Settings() {
     document.body.dataset.theme = theme // Only saved once user clicks save
   }, [theme])
 
+  // Send verification code to new email
+  const handleSendVerification = async () => {
+    setVerifying(true);
+    try {
+      const res = await fetch('http://localhost:8080/api/sendEmailVerification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: pendingEmail }),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        setVerificationSent(true);
+        notification.success({
+          message: 'Verification Sent',
+          description: 'A verification code was sent to your new email.',
+        });
+      } else {
+        notification.error({
+          message: 'Failed to Send',
+          description: 'Could not send verification code.',
+        });
+      }
+    } catch (err) {
+      notification.error({
+        message: 'Failed to Send',
+        description: 'Could not send verification code.',
+      });
+    }
+    setVerifying(false);
+  };
+
+  // Verify code
+  const handleVerifyCode = async () => {
+    setVerifying(true);
+    try {
+      const res = await fetch('http://localhost:8080/api/verifyEmailCode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: pendingEmail, code: verificationCode }),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        setEmail(pendingEmail);
+        setPendingEmail(pendingEmail);
+        setEmailVerified(true);
+        setVerificationSent(false);
+        notification.success({
+          message: 'Email Verified',
+          description: 'Your new email has been verified.',
+        });
+      } else {
+        notification.error({
+          message: 'Verification Failed',
+          description: 'Invalid code. Please try again.',
+        });
+      }
+    } catch (err) {
+      notification.error({
+        message: 'Verification Failed',
+        description: 'Could not verify code.',
+      });
+    }
+    setVerifying(false);
+  };
+
+  const handleChangePassword = async (values: any) => {
+    const { currentPassword, newPassword, confirmPassword } = values;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      notification.error({ message: 'All fields are required.' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      notification.error({ message: 'New passwords do not match.' });
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      const res = await fetch('http://localhost:8080/api/changeSettingsPassword', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+      if (res.ok) {
+        notification.success({ message: 'Password changed successfully.' });
+        passwordForm.resetFields();
+        setPasswordModalVisible(false);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        const data = await res.json();
+        notification.error({ message: data.message || 'Failed to change password.' });
+      }
+    } catch (err) {
+      notification.error({ message: 'Failed to change password.' });
+    }
+    setChangingPassword(false);
+  };
 
   // useEffect(() => {
   //   document.body.dataset.fontsize = fontSize
@@ -201,15 +321,84 @@ export default function Settings() {
           <div>
             <div style={styles.label} className="settingsLabel">Email:</div>
             <Input
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              value={pendingEmail}
+              onChange={e => {
+                setPendingEmail(e.target.value);
+                setEmailVerified(false);
+                setVerificationSent(false);
+              }}
               style={styles.input}
               className="settingsInput"
               type="email"
               autoComplete="email"
               // placeholder="your@email.com"
             />
+            {!emailVerified && isValidEmail(pendingEmail) && pendingEmail !== email && (
+              <div style={{ marginTop: 8 }}>
+                {!verificationSent ? (
+                  <Button
+                    type="primary"
+                    onClick={handleSendVerification}
+                    disabled={!pendingEmail || pendingEmail === email}
+                    loading={verifying}
+                  >
+                    Send Verification Code
+                  </Button>
+                ) : (
+                  <div style={{ marginTop: 8 }}>
+                    <Input
+                      placeholder="Enter verification code"
+                      value={verificationCode}
+                      onChange={e => setVerificationCode(e.target.value)}
+                      style={{
+                        width: 200,
+                        marginRight: 8,
+                        color: theme === 'dark' ? '#F1F1EA' : undefined,
+                        backgroundColor: theme === 'dark' ? 'rgba(45, 47, 65, 0.6)' : undefined,
+                      }}
+                      className="verificationCodeInput"
+                    />
+                    {verificationCode.length === 6 && (
+                      <Button
+                        type="primary"
+                        onClick={handleVerifyCode}
+                        loading={verifying}
+                        // disabled={!verificationCode}
+                        disabled={!/^\d{6}$/.test(verificationCode)}
+                      >
+                        Verify
+                      </Button>
+                    )}
+                  </div>
+                )}
           </div>
+        )}
+          {/* Change Password Button goes here */}
+{/*           <Button
+            style={{ marginTop: 12, marginBottom: 8 }}
+            onClick={() => setPasswordModalVisible(true)}
+          >
+            Change Password
+          </Button> */}
+          <Button
+            type="primary"
+            danger
+            icon={<LockOutlined />}
+            block
+            className={`changePasswordBtn${theme === 'dark' ? ' dark' : ''}`}
+            style={{
+              marginTop: 12,
+              marginBottom: 8,
+            }}
+            onClick={() => {
+              passwordForm.resetFields();
+              setPasswordModalVisible(true);
+            }}
+          >
+            Change Password
+          </Button>
+        </div>
+
           {/* Date of Birth Field - Moved to Profile page */}
           {/* //// Prev:
           <div>
@@ -288,10 +477,123 @@ export default function Settings() {
             </Select>
           </div> */}
 
-          <Button type="primary" onClick={handleSave} style={styles.primaryButton} className="settingsSaveButton">
+          <Button
+            type="primary"
+            onClick={handleSave}
+            style={styles.primaryButton}
+            className="settingsSaveButton"
+            disabled={pendingEmail !== email && !emailVerified}
+          >
             Save Changes
           </Button>
         </div>
+            <Modal
+              /* title="Change Password"
+              open={passwordModalVisible}
+              onCancel={() => setPasswordModalVisible(false)}
+              footer={null}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <Input.Password
+                  placeholder="Current Password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                />
+                <Input.Password
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                />
+                <Input.Password
+                  placeholder="Confirm New Password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                />
+                <Button
+                  type="primary"
+                  loading={changingPassword}
+                  onClick={handleChangePassword}
+                  disabled={
+                    !currentPassword ||
+                    !newPassword ||
+                    !confirmPassword ||
+                    newPassword !== confirmPassword
+                  }
+                  style={{ marginTop: 8 }}
+                  block
+                >
+                  Change Password
+                </Button>
+              </div> */
+              title="Change Password"
+              open={passwordModalVisible}
+              // onCancel={() => setPasswordModalVisible(false)}
+                onCancel={() => {
+                  passwordForm.resetFields(); // Reset fields on close
+                  setPasswordModalVisible(false);
+                }}
+              footer={null}
+            >
+              <Form
+                form={passwordForm}
+                layout="vertical"
+                onFinish={async (values) => {
+                  await handleChangePassword(values);
+                }}
+              >
+                <Form.Item
+                  label="Current Password"
+                  name="currentPassword"
+                  rules={[{ required: true, message: 'Please enter your current password' }]}
+                >
+                  <Input.Password className="settingsInput passwordModalInput" />
+                </Form.Item>
+                <Form.Item
+                  label="New Password"
+                  name="newPassword"
+                  rules={[
+                    { required: true, message: 'Please enter a secure password' },
+                    { min: 10, message: 'Password must be at least 10 characters long' },
+                    { pattern: /.*\d.*/, message: 'Password must contain at least one number' },
+                    { pattern: /.*[A-Z].*/, message: 'Password must contain at least one uppercase letter' },
+                    { pattern: /.*[a-z].*/, message: 'Password must contain at least one lowercase letter' },
+                    { pattern: /.*[!@#$%*].*/, message: 'Password must contain at least one special character (!,@,#,$,%,*)' },
+                    { pattern: /^[^\\'"<>`]*$/, message: 'Password cannot contain \\, \', ", <, >, or ` characters' }
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password className="settingsInput passwordModalInput" />
+                </Form.Item>
+                <Form.Item
+                  label="Confirm New Password"
+                  name="confirmPassword"
+                  dependencies={['newPassword']}
+                  hasFeedback
+                  rules={[
+                    { required: true, message: 'Please confirm your new password' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('newPassword') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Passwords do not match'));
+                      }
+                    })
+                  ]}
+                >
+                  <Input.Password className="settingsInput passwordModalInput" />
+                </Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={changingPassword}
+                  block
+                  style={{ marginTop: 8 }}
+                >
+                  Change Password
+                </Button>
+              </Form>
+            </Modal>
       </div>
       <style jsx global>{`
         /* Modern input and select styling for settings page */
@@ -301,6 +603,30 @@ export default function Settings() {
           border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
           border-radius: 6px !important;
           color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          transition: all 0.2s ease-in-out !important;
+        }
+
+        .settingsPage .verificationCodeInput::placeholder {
+          color: #F1F1EA !important;
+          opacity: 1 !important;
+        }
+        
+        .settingsPage .changePasswordBtn {
+          background-color: #ff4d4f !important;
+          border-color: #ff4d4f !important;
+          color: #fff !important;
+        }
+
+        .settingsPage .changePasswordBtn.dark {
+          background-color: #b71c1c !important;
+          border-color: #b71c1c !important;
+        }
+        .settingsPage .passwordModalInput,
+        .settingsPage .passwordModalInput input {
+          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 0.9)' : 'rgba(230, 230, 220, 0.9)'} !important;
+          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
+          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
+          border-radius: 6px !important;
           transition: all 0.2s ease-in-out !important;
         }
 
