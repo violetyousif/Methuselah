@@ -5,6 +5,7 @@
 /* Mohammad Hoque, 7/3/2025, Added comprehensive responsive design improvements including viewport meta tag, mobile-friendly forms, sidebar enhancements, and SendBar responsive styling */
 /* Mohammad Hoque, 7/3/2025, Enhanced sidebar animations with smooth eased transitions, pulse effects, and improved mobile interactions */
 /* Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.*/
+/* Mohammad Hoque, 7/15/2025, Enhanced dark theme style for send bar */
 
 .timestamp {
   font-size: 12px;
@@ -371,6 +372,12 @@ body[data-theme='dark'] .methuselah-icon-wrapper {
   color: #1e1e1e;
   padding: 8px 12px;
   border-radius: 8px;
+}
+
+/* Dark theme styles for send bar */
+[data-theme='dark'] .send-bar .input {
+  background-color: #2a2a2a !important;
+  color: #F1F1EA !important;
 }
 
 /* Scrollbar styling - Custom theme (Syed Rabbey) */

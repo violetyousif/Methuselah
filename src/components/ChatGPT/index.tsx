@@ -3,6 +3,8 @@
 // Violet Yousif, 06/01/2025, Reformatted the code to simplify project's coding style and fixed ChatGPTProps missing properties in interface.ts.
 // Violet Yousif, 6/16/2025, Checks if the user is logged in before allowing chat functionality.
 // Syed Rabbey, 6/26/2025, Added streamed message functionality to display the assistant's response as it is being generated.
+// Mohammad Hoque, 7/15/2025, Added isStreaming prop to ChatGPT component to fix streaming issue
+// Mohammdad Hoque, 7/15/2025, Added smooth scrolling to bottom when new messages arrive or conversation changes
 
 import * as React from 'react'
 import { ChatGPTProps, ChatRole, ChatMessage } from './interface'
@@ -37,10 +39,36 @@ const ChatGPT = ({
     //walletAddress: props.walletAddress
   })
 
+  const messageListRef = React.useRef<HTMLDivElement>(null)
+
+  // Scroll to bottom when messages change or conversation changes
+  React.useEffect(() => {
+    if (messageListRef.current) {
+      // Use setTimeout to ensure DOM is fully updated before scrolling
+      setTimeout(() => {
+        if (messageListRef.current) {
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+        }
+      }, 50)
+    }
+  }, [messages, props.conversationId, streamedMessage])
+
+  // Scroll to bottom when component mounts
+  React.useEffect(() => {
+    if (messageListRef.current) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        if (messageListRef.current) {
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+        }
+      }, 100)
+    }
+  }, [])
+
   return (
     <div className="chat-wrapper">
-      <div className="message-list">
-        {messages.length === 0 && !currentMessage.current && (
+      <div className="message-list" ref={messageListRef}>
+        {messages.length === 0 && !currentMessage.current && !streamedMessage && (
           <div className="welcome-message">
             <Text strong style={styles.welcomeTitle}>
               Methuselah, Your Personal AI-driven Health Advisor.
@@ -65,6 +93,7 @@ const ChatGPT = ({
             userColor={userBubbleColor}
             userAvatar={userAvatar}
             userName={userName}
+            isStreaming={false} // Existing messages should not be animated
           />
         ))}
 
@@ -79,6 +108,7 @@ const ChatGPT = ({
             userColor={userBubbleColor}
             userAvatar={userAvatar}
             userName={userName}
+            isStreaming={true} // This message is currently being streamed, so it should animate
           />
         )}
       </div>

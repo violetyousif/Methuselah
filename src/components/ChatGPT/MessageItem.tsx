@@ -5,6 +5,7 @@
 // Mohammad Hoque, 7/3/2025, Added user name display functionality - shows "Methuselah" under AI messages and user's first name under user messages, with improved name and timestamp positioning above message bubbles.
 // Mohammad Hoque, 7/6/2025, Enhanced timestamp display to show both date and time for better message history clarity
 // Violet Yousif, 7/10/2025, Added missing dependency declaration (getThemeColors) to useEffect hook to prevent ESLint warning and ensure correct theme color updates.
+// Mohammad Hoque, 7/15/2025, Added isStreaming prop to fix streaming issue
 
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -21,10 +22,11 @@ interface MessageItemProps extends ChatMessageItemProps {
   userColor?: string
   userAvatar?: string
   userName?: string
+  isStreaming?: boolean // Add prop to indicate if this message is currently being streamed
 }
 
 const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemProps & { assistantColor?: string, userColor?: string } */
-  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User' } = props
+  const { message, assistantColor = '#9AB7A9', userColor = '#F1F1EA', userAvatar = '/avatars/avatar1.png', userName = 'User', isStreaming = false } = props
   
   const isUser = message.role === 'user'
   
@@ -96,7 +98,8 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
   const [displayedText, setDisplayedText] = useState<string>(message.content)
 
   useEffect(() => {
-    if (message.role !== 'assistant') {
+    // Only animate if this is an assistant message AND it's currently being streamed
+    if (message.role !== 'assistant' || !isStreaming) {
       setDisplayedText(message.content)
       return
     }
@@ -109,7 +112,7 @@ const MessageItem = (props: MessageItemProps) => {  /* props: ChatMessageItemPro
     }, 3)  // Speed of typing (adjust this if needed)
 
     return () => clearInterval(interval)
-  }, [message.content, message.role])
+  }, [message.content, message.role, isStreaming])
 
 
   return (
