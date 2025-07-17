@@ -1,10 +1,12 @@
 // Mohammad Hoque, 7/3/2025, Created conversation management routes on conversation collection
+// Viktor Gjorgjevski, 7/14/2025 Added flow to be able to reuse past chat info in future chats
 
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import auth from '../middleware/auth.js';
 import Conversation from '../models/Conversation.js';
 import User from '../models/User.js';
+import { summariseAndEmbed } from '../utils/summariseAndEmbed.js';
 
 const router = express.Router();
 
@@ -194,7 +196,31 @@ router.post('/conversations/:id/messages', conversationLimiter, auth(), async (r
     };
 
     conversation.messages.push(newMessage);
+
+    if (
+      conversation.messages.length >= 2 &&             // start once there are 2
+      conversation.messages.length % 2 === 0           // then every multiple of 2
+    ) {
+    try {
+      const { summary, embedding, tokens } =
+        await summariseAndEmbed(conversation);
+
+        conversation.summary = {
+        lastSummarizedAt: new Date(),
+        content: summary,
+        tokenCount: tokens,
+        embedding                                   // vector for search
+      };
+    } catch (err) {
+      console.warn('summary/embedding failed:', err.message);
+    }
+  }
+
     await conversation.save();
+    
+    console.log('****  saved summary?',
+            !!conversation.summary?.content,
+            'tokens:', conversation.summary?.tokenCount);
 
     const addedMessage = conversation.messages[conversation.messages.length - 1];
 
