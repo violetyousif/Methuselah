@@ -12,7 +12,8 @@ const ConversationSchema = new mongoose.Schema({
   summary: {
     lastSummarizedAt: { type: Date },
     content: { type: String },
-    tokenCount: { type: Number }
+    tokenCount: { type: Number },
+    embedding: { type: [Number], index: 'flat' }
   },
   messages: [{
     sender: { type: String, enum: ['user', 'AI'], required: true },
@@ -25,3 +26,4 @@ const ConversationSchema = new mongoose.Schema({
 
 const Conversation = mongoose.models.Conversation || mongoose.model('Conversation', ConversationSchema, 'Conversations');
 export default Conversation;
+ 
