@@ -12,11 +12,26 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true); // Default to collapsed
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const [initialLoad, setInitialLoad] = useState(true);
   const SIDEBAR_BREAKPOINT = 768;
+
+  // Load saved state from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedCollapsed = localStorage.getItem('adminSidebarCollapsed');
+      const savedManuallyCollapsed = localStorage.getItem('adminSidebarManuallyCollapsed');
+      
+      if (savedCollapsed !== null) {
+        setCollapsed(JSON.parse(savedCollapsed));
+      }
+      if (savedManuallyCollapsed !== null) {
+        setIsManuallyCollapsed(JSON.parse(savedManuallyCollapsed));
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,6 +44,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       if (newWidth < SIDEBAR_BREAKPOINT && !collapsed && !isManuallyCollapsed) {
         console.log('AdminLayout: Auto-collapsing for mobile');
         setCollapsed(true);
+        localStorage.setItem('adminSidebarCollapsed', 'true');
       }
       // Don't auto-expand on large screens - let user control it manually
     };
@@ -50,11 +66,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     setCollapsed(isCollapsed);
     setIsManuallyCollapsed(true); // Mark as manually controlled
     
-    // Reset the manual override after some time to allow automatic behavior later
+    // Save state to localStorage
+    localStorage.setItem('adminSidebarCollapsed', JSON.stringify(isCollapsed));
+    localStorage.setItem('adminSidebarManuallyCollapsed', 'true');
+    
+    // Reset the manual override after a longer time to allow automatic behavior later
     setTimeout(() => {
       console.log('AdminLayout: Resetting manual control to FALSE');
       setIsManuallyCollapsed(false);
-    }, 30000); // Reset after 30 seconds (extended for testing)
+      localStorage.setItem('adminSidebarManuallyCollapsed', 'false');
+    }, 300000); // Reset after 5 minutes instead of 30 seconds
   };
 
   const getLayoutStyle = () => {
