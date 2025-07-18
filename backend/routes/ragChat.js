@@ -4,12 +4,13 @@
 // Syed Rabbey, 6/26/2025, Created toggle component for chat modes (direct and conversational).
 // Violet Yousif, 6/27/2025 - Fixed the deprecated inference client import
 // Viktor Gjorgjevski, 7/1/2025 Fixed issue where LLM response was including user response and replying to itself
+// Viktor Gjorgjevski, 7/13/2025 Added ability to re-use chat history in responses
 
 // What happens inside:
 // 1. Embed the user’s question.
-// 2. Pull the 4 most relevant passages from KnowledgeBase.
-// 3. Feed those passages + the question to the free Zephyr-7B chat model.
-// 4. Return the model’s answer and the passages we used.
+// 2. Pull the 3 most relevant KB passages + 3 personal-memory summaries.
+// 3. Feed those passages + the question to the Mistral-7B model.
+// 4. Return the answer and the passages used.
 import { Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import { InferenceClient } from '@huggingface/inference';
@@ -36,14 +37,17 @@ const vectorClient = new MongoClient(process.env.MONGODB_URI);
 await vectorClient.connect();
 const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
+const EMBEDDING_MODEL = 'BAAI/bge-small-en-v1.5'; 
+
 const hf = new InferenceClient(process.env.HF_API_KEY);
 // 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
 const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2'; // Primary model - more reliable
 const FALLBACK_MODEL = 'HuggingFaceH4/zephyr-7b-beta'; // Fallback model
 //const HF_MODEL = 'google/flan-t5-small';
 
-// Timeout wrapper for chat completion
-const chatCompletionWithTimeout = async (config, timeoutMs = 30000) => {
+// Timeout wrapper for chat completion 30000
+const chatCompletionWithTimeout = async (config, timeoutMs = Number(process.env.HF_TIMEOUT_MS) || 60000 ) => 
+  {
   return Promise.race([
     hf.chatCompletion(config),
     new Promise((_, reject) => 
@@ -97,7 +101,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     const [userProfile, qEmb] = await Promise.all([
       vectorClient.db('Longevity').collection('Users').findOne({ _id: ObjectId.createFromHexString(userId) }),
       hf.featureExtraction({
-        model: 'BAAI/bge-small-en-v1.5',
+        model: EMBEDDING_MODEL,
         inputs: question,
       })
     ]);
@@ -124,12 +128,55 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
         },
       },
     ]).toArray();
-    const t2 = Date.now();
 
-    // Build context with ~1500 token limit
+    const memDocs = await vectorClient
+      .db('Longevity')
+      .collection('Conversations')
+      .aggregate([
+       {
+        $vectorSearch: {
+          index: 'vector_index',
+          path: 'summary.embedding',
+          queryVector: qEmb,
+          numCandidates: 100,
+          limit: 10
+        }
+      },
+      {
+        $match: { userId: ObjectId.createFromHexString(userId), 'summary.embedding': { $exists: true } }
+      },
+      {
+       $project: {
+         _id: 0,
+         text: '$summary.content',
+          source: 'personal'
+       }
+      }
+    ])
+    .toArray();
+
+
+  console.log('Full memDocs:', JSON.stringify(memDocs, null, 2));
+
+  console.log(
+  '*** memDocs returned ***',
+  memDocs.map(d => ({
+    preview: d.text.slice(0, 60) + '…',
+    _score: d._additional?.score   
+    }))
+  );
+
+
+  const t2 = Date.now();
+
+
+    const combined = [...memDocs, ...docs];
+    
+    // Build context (~1000-token budget) from personal memories + KB passages
+
     let context = '';
     let tokenBudget = 1000;
-    for (const doc of docs) {
+    for (const doc of combined) {
       const clean = doc.text.slice(0, 512);
       const tokens = clean.split(' ').length;
       if (tokenBudget - tokens > 0) {
@@ -171,6 +218,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       top_p: 0.95,
       min_tokens: 10,
       max_tokens: 1200,  // Increased to allow for complete responses
+      options: { wait_for_model: true }
     };
 
     let chatResp;
@@ -198,7 +246,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       // Send a fallback response instead of throwing an error
       res.json({ 
         answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
-        contextDocs: docs 
+        contextDocs: combined
       });
       return;
     }
@@ -214,7 +262,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       // Send a fallback response instead of throwing an error
       res.json({ 
         answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
-        contextDocs: docs 
+        contextDocs: combined
       });
       return;
     }
@@ -248,7 +296,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     }
 
     // Send to client
-    res.json({ answer, contextDocs: docs });
+    res.json({ answer, contextDocs: combined });
 
     // Performance logs
     console.log('--- RAG Chat Performance ---');
