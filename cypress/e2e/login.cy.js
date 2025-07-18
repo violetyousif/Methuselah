@@ -68,8 +68,8 @@ describe('Login Page', () => {
       .type(Cypress.env('ADMIN_PASSWORD'));
     cy.get('button[type="submit"]').click();
 
-    // redirect to admin upload page
-    cy.url({ timeout: 20000 }).should('include', '/admin/adminUpload');
+    // redirect to admin dashboard page
+    cy.url({ timeout: 20000 }).should('include', '/admin');
   });
 });
 

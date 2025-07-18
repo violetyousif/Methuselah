@@ -7,7 +7,7 @@ const router = express.Router();
 import rateLimit from 'express-rate-limit';
 
 
-import Feedback from '../models/feedback.js';
+import Feedback from '../models/Feedback.js';
 import User from '../models/User.js';
 import auth from '../middleware/auth.js';
 

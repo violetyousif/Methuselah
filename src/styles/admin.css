@@ -1,0 +1,88 @@
+/* Admin component animations and styles - Updated to match user interface */
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Custom scrollbar for admin sidebar */
+.admin-sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-track {
+  background: rgba(29, 30, 44, 0.1); /* Using user interface dark color */
+  border-radius: 3px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(29, 30, 44, 0.3);
+  border-radius: 3px;
+}
+
+.admin-sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(29, 30, 44, 0.5);
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    z-index: 1001 !important;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+/* Menu item hover effects - Updated for light theme */
+.ant-menu-light .ant-menu-item:hover {
+  background-color: rgba(29, 30, 44, 0.1) !important; /* Light dark overlay */
+  transform: translateX(4px);
+  transition: all 0.3s ease;
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  background-color: rgba(29, 30, 44, 0.15) !important;
+  border-right: 3px solid #F1F1EA; /* Using user interface button color */
+}
+
+.ant-menu-light .ant-menu-item {
+  color: #1D1E2C !important; /* Dark text for contrast on green background */
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  color: #1D1E2C !important;
+  font-weight: 600;
+}
+
+.ant-menu-light .ant-menu-item-icon {
+  color: #1D1E2C !important;
+}
+
+/* Remove old dark theme styles */
+
+/* Button hover effects - Updated colors */
+.admin-collapsed-btn:hover {
+  background-color: rgba(29, 30, 44, 0.15) !important;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+.admin-collapsed-btn:active {
+  transform: scale(0.95);
+}
