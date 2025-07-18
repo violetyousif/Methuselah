@@ -1,8 +1,6 @@
 // Mizanur Mizan, 6/2/25, Created the landing page to introduce users to Methuselah
 // Violet Yousif, 6/2/25, Reformatted code to change landing page design functionality (leads to login and register pages)
 // Violet Yousif, 6/16/25, Changed landing page connect to login and register pages instead of chatBot
-
-
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import styles from '@/styles/Landing.module.css'
