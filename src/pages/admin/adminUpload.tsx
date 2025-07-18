@@ -239,6 +239,8 @@ function AdminUpload() {
   );
 }
 
+AdminUpload.getLayout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
+
 export default AdminUpload;
 
 const styles = {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Input, Modal, message, Popconfirm, Typography } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import AdminLayout from '../../components/AdminLayout';
 
 const { Title } = Typography;
 
@@ -11,7 +12,7 @@ interface Chunk {
   topic?: string;
 }
 
-const ManageChunks: React.FC = () => {
+function ManageChunks() {
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [editingChunk, setEditingChunk] = useState<Chunk | null>(null);
@@ -132,7 +133,7 @@ const ManageChunks: React.FC = () => {
 
       <Modal
         title="Edit Chunk"
-        visible={!!editingChunk}
+        open={!!editingChunk}
         onCancel={() => setEditingChunk(null)}
         onOk={handleEditSave}
         okText="Save"
@@ -157,6 +158,9 @@ const ManageChunks: React.FC = () => {
       </Modal>
     </div>
   );
-};
+}
+
+// Add getLayout property to the component
+(ManageChunks as any).getLayout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
 
 export default ManageChunks;
