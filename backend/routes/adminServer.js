@@ -10,6 +10,7 @@ import uploadData from './admin/uploadData.js';
 import uploadURL from './admin/uploadURL.js';
 import viewFeedback from './admin/viewFeedback.js';
 import userStats from './admin/userStats.js';
+import manageChunks from './admin/manageChunks.js';
 
 const router = express.Router();
 
@@ -23,5 +24,6 @@ router.use('/admin', uploadData);
 router.use('/admin', uploadURL);
 router.use('/admin', viewFeedback);
 router.use('/admin', userStats);
+router.use('/admin', manageChunks);
 
 export default router;
