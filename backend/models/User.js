@@ -18,7 +18,6 @@ const UserSchema = new mongoose.Schema({
   profilePic: { type: String, default: '/avatars/avatar1.png' },
   agreedToTerms: { type: Boolean, default: false, required: true },
   longestStreak: { type: Number, default: 0 },
-  lastLogin: { type: Date, default: Date.now },
   lastProfileUpdate: { type: Date, default: null },
   // Health-related fields for profile data (add to table):
   // weight: { type: Number }, // kg --> change to lbs

@@ -98,7 +98,7 @@ const Chatbot = () => {
         if (
           result.user &&
           !result.user.disableReminders &&
-          (isStale(result.user.lastLogin) || isStale(result.user.lastProfileUpdate)) &&
+          (isStale(result.user.lastProfileUpdate)) &&
           !reminderShownRecently()
         ) {
           setTimeout(() => {
