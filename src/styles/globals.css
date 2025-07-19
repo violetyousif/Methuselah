@@ -7,6 +7,11 @@
 /* Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.*/
 /* Mohammad Hoque, 7/15/2025, Enhanced dark theme style for send bar */
 
+/* Using the asteriks selector to target all elements unless specified otherwise */
+* {
+  font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
 .timestamp {
   font-size: 12px;
   margin-bottom: 4px;

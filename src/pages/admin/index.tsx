@@ -160,7 +160,7 @@ const AdminDashboard: React.FC = () => {
                       borderColor: card.color,
                     }}
                     onClick={card.onClick}
-                    bodyStyle={styles.actionCardBody}
+                    styles={{ body: styles.actionCardBody }}
                   >
                     <Space direction="vertical" size="large" align="center">
                       <div style={{ 

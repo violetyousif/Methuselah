@@ -18,6 +18,7 @@ function ManageChunks() {
   const [editingChunk, setEditingChunk] = useState<Chunk | null>(null);
   const [editValues, setEditValues] = useState({ content: '', source: '', topic: '' });
   const [loading, setLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
   const fetchChunks = async () => {
     try {
@@ -71,6 +72,15 @@ function ManageChunks() {
 
   const columns = [
     {
+      title: 'Idx',
+      // create a counter column
+      render: (_: any, __: any, index: number) => index + 1,
+    },
+    {
+      title: 'Topic',
+      dataIndex: 'topic',
+    },
+    {
       title: 'Content',
       dataIndex: 'content',
       render: (text: string) => <span style={{ whiteSpace: 'pre-wrap' }}>{text.slice(0, 100)}...</span>,
@@ -78,10 +88,12 @@ function ManageChunks() {
     {
       title: 'Source',
       dataIndex: 'source',
+      render: (text: string) => <span style={{ wordBreak: 'break-all' }}>{text}</span>,
     },
     {
-      title: 'Topic',
-      dataIndex: 'topic',
+      title: 'Timestamp',
+      dataIndex: 'timestamp',
+      render: (text: string) => <span>{new Date(text).toLocaleString()}</span>,
     },
     {
       title: 'Actions',
@@ -91,9 +103,9 @@ function ManageChunks() {
           onClick={() => {
             setEditingChunk(record);
             setEditValues({
+              topic: record.topic || '',
               content: record.content,
               source: record.source,
-              topic: record.topic || '',
             });
           }}
         />
@@ -111,11 +123,16 @@ function ManageChunks() {
 
           <Table
             rowKey="_id"
-            dataSource={chunks}
+            //dataSource={chunks}
+            dataSource={Array.isArray(chunks) ? chunks : []}
             columns={columns}
             rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
-            pagination={{ pageSize: 10 }}
-            bordered
+            pagination={{
+                onShowSizeChange: (current: number, size: number) => setPageSize(size),
+                showSizeChanger: true,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                pageSize: pageSize,
+              }}            bordered
             style={{ marginTop: '1.5rem' }}
           />
 

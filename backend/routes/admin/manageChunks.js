@@ -4,6 +4,7 @@ import express from 'express';
 import RateLimit from 'express-rate-limit';
 import auth from '../../middleware/auth.js';
 import { MongoClient, ObjectId } from 'mongodb';
+import mappedChunks from '../../models/DataChunks.js';
 
 const router = express.Router();
 
@@ -21,13 +22,14 @@ const manageChunksLimiter = RateLimit({
 router.get('/chunks', manageChunksLimiter, auth('admin'), async (req, res) => {
   try {
     const chunks = await vectorClient.db('Longevity').collection('KnowledgeBase').find({}).toArray();
-    
+    //const chunks = await getDataChunks.find({});
+
     // Map the database fields to frontend expected fields
     const mappedChunks = chunks.map(chunk => ({
       _id: chunk._id,
       content: chunk.text || chunk.content || '',
       source: chunk.source || '',
-      topic: chunk.topic || chunk.metadata?.topic || 'General',
+      topic: chunk.topic || chunk.id || chunk.type ||chunk.metadata?.topic || 'General',
       hash: chunk.hash,
       timestamp: chunk.timestamp,
       embedding: chunk.embedding
@@ -54,31 +56,40 @@ router.patch('/chunks/:id', manageChunksLimiter, auth('admin'), async (req, res)
     }
     
     // Map frontend fields to database fields
-    // const updateData = {
-    //   ...otherData,
-    //   text: content || undefined, // Map content -> text
-    //   source: source || undefined,
-    //   topic: topic || undefined,
-    //   updatedAt: new Date()
-    // };
-
-    const { content, source, topic } = req.body;
+    // SECURE way to create update object based on provided fields
+    const {content, source, topic } = req.body;
     const updateData = {};
+    if (topic !== undefined) updateData.topic = topic;
     if (content !== undefined) updateData.text = content;
     if (source !== undefined) updateData.source = source;
-    if (topic !== undefined) updateData.topic = topic;
     updateData.updatedAt = new Date();
-    
-    
-    // Remove undefined values
-    // Object.keys(updateData).forEach(key => 
-    //   updateData[key] === undefined && delete updateData[key]
+
+    // const updatedChunk = await getDataChunks.findByIdAndUpdate(
+    //   id,
+    //   { $set: updateData },
+    //   { new: true }
     // );
-    
-    const result = await vectorClient.db('Longevity').collection('KnowledgeBase').updateOne(
+    // if (!updatedChunk) {
+    //   return res.status(404).json({ success: false, error: 'Chunk not found' });
+    // }
+    // Update the chunk in the database
+    //const collection = vectorClient.db('Longevity').collection('KnowledgeBase');
+    const result = await collection.updateOne(
       { _id: new ObjectId(id) },
       { $set: updateData }
     );
+
+        // Fetch and return the updated document
+    //const updatedChunk = await collection.findOne({ _id: new ObjectId(id) });
+    const mappedChunk = {
+      _id: updatedChunk._id,
+      content: updatedChunk.text || updatedChunk.content || '',
+      source: updatedChunk.source || '',
+      topic: updatedChunk.topic || updatedChunk.id || updatedChunk.type || updatedChunk.metadata?.topic || 'General',
+      hash: updatedChunk.hash,
+      timestamp: updatedChunk.timestamp,
+      embedding: updatedChunk.embedding,
+    };
     
     if (result.matchedCount === 0) {
       return res.status(404).json({ 
@@ -87,10 +98,7 @@ router.patch('/chunks/:id', manageChunksLimiter, auth('admin'), async (req, res)
       });
     }
     
-    res.status(200).json({
-      success: true,
-      message: 'Chunk updated successfully'
-    });
+    res.status(200).json(mappedChunk);
   } catch (err) {
     console.error('Error updating chunk:', err);
     res.status(500).json({ 
@@ -109,12 +117,12 @@ router.delete('/chunks', manageChunksLimiter, auth('admin'), async (req, res) =>
       return res.status(400).json({ success: false, error: 'Invalid ids provided' });
     }
 
-    const objectIds = ids.map(id => new ObjectId(id));
-    
+    const objectIds = ids.map(id => new ObjectId(String(id)));
     const result = await vectorClient.db('Longevity').collection('KnowledgeBase').deleteMany({
       _id: { $in: objectIds }
     });
 
+    
     res.status(200).json({ 
       success: true,
       deletedCount: result.deletedCount,
