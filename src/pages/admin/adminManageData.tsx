@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Input, Modal, message, Popconfirm, Typography } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import AdminLayout from '../../components/AdminLayout';
 
 const { Title } = Typography;
 
@@ -24,7 +25,7 @@ const ManageChunks: React.FC = () => {
       const data = await res.json();
       setChunks(data);
     } catch (err) {
-      message.error('Failed to load chunks.');
+      console.error('Failed to load chunks:', err);
     }
   };
 
@@ -101,62 +102,98 @@ const ManageChunks: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <Title level={3}>Manage Pretraining Chunks</Title>
+    <AdminLayout>
+      <div style={styles.page}>
+        <div style={styles.card}>
+          <Title level={3} style={styles.header}>
+            Manage Pretraining Chunks
+          </Title>
 
-      <Table
-        rowKey="_id"
-        dataSource={chunks}
-        columns={columns}
-        rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
-        pagination={{ pageSize: 10 }}
-        bordered
-      />
+          <Table
+            rowKey="_id"
+            dataSource={chunks}
+            columns={columns}
+            rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+            pagination={{ pageSize: 10 }}
+            bordered
+            style={{ marginTop: '1.5rem' }}
+          />
 
-      <Popconfirm
-        title="Are you sure you want to delete these?"
-        onConfirm={handleDelete}
-        okText="Yes"
-        cancelText="No"
-        disabled={!selectedRowKeys.length}
-      >
-        <Button
-          icon={<DeleteOutlined />}
-          danger
-          disabled={!selectedRowKeys.length}
-          style={{ marginTop: '1rem' }}
-        >
-          Delete Selected
-        </Button>
-      </Popconfirm>
+          <Popconfirm
+            title="Are you sure you want to delete these?"
+            onConfirm={handleDelete}
+            okText="Yes"
+            cancelText="No"
+            disabled={!selectedRowKeys.length}
+          >
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              disabled={!selectedRowKeys.length}
+              style={styles.deleteButton}
+            >
+              Delete Selected
+            </Button>
+          </Popconfirm>
 
-      <Modal
-        title="Edit Chunk"
-        visible={!!editingChunk}
-        onCancel={() => setEditingChunk(null)}
-        onOk={handleEditSave}
-        okText="Save"
-      >
-        <Input.TextArea
-          rows={4}
-          value={editValues.content}
-          onChange={(e) => setEditValues((v) => ({ ...v, content: e.target.value }))}
-        />
-        <Input
-          style={{ marginTop: '1rem' }}
-          placeholder="Source"
-          value={editValues.source}
-          onChange={(e) => setEditValues((v) => ({ ...v, source: e.target.value }))}
-        />
-        <Input
-          style={{ marginTop: '1rem' }}
-          placeholder="Topic"
-          value={editValues.topic}
-          onChange={(e) => setEditValues((v) => ({ ...v, topic: e.target.value }))}
-        />
-      </Modal>
-    </div>
+          <Modal
+            title="Edit Chunk"
+            visible={!!editingChunk}
+            onCancel={() => setEditingChunk(null)}
+            onOk={handleEditSave}
+            okText="Save"
+          >
+            <Input.TextArea
+              rows={4}
+              value={editValues.content}
+              onChange={(e) => setEditValues((v) => ({ ...v, content: e.target.value }))}
+            />
+            <Input
+              style={{ marginTop: '1rem' }}
+              placeholder="Source"
+              value={editValues.source}
+              onChange={(e) => setEditValues((v) => ({ ...v, source: e.target.value }))}
+            />
+            <Input
+              style={{ marginTop: '1rem' }}
+              placeholder="Topic"
+              value={editValues.topic}
+              onChange={(e) => setEditValues((v) => ({ ...v, topic: e.target.value }))}
+            />
+          </Modal>
+        </div>
+      </div>
+    </AdminLayout>
   );
 };
 
 export default ManageChunks;
+
+const styles = {
+  page: {
+    backgroundColor: '#F1F1EB',
+    minHeight: '100vh',
+    padding: '2rem',
+  },
+  card: {
+    maxWidth: 1200,
+    margin: '1rem auto',
+    padding: '2rem',
+    backgroundColor: '#A0B6AA',
+    borderRadius: '2rem',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
+    paddingBottom: '24px',
+  },
+  header: {
+    color: '#1D1E2C',
+    textAlign: 'center' as const,
+    fontWeight: 'bold',
+    marginBottom: '1rem',
+  },
+  deleteButton: {
+    marginTop: '1rem',
+    backgroundColor: '#d32f2f',
+    borderColor: '#d32f2f',
+    borderRadius: '1rem',
+  },
+} as const;

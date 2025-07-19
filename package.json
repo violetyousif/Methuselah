@@ -38,6 +38,7 @@
     "next-with-less": "^3.0.1",
     "openai": "^5.8.2",
     "pdfjs-dist": "^5.3.93",
+    "rc-select": "^14.16.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",

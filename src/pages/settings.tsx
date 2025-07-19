@@ -385,7 +385,7 @@ export default function Settings() {
             danger
             icon={<LockOutlined />}
             block
-            className={`changePasswordBtn${theme === 'dark' ? ' dark' : ''}`}
+            className="changePasswordBtn"
             style={{
               marginTop: 12,
               marginBottom: 8,
@@ -488,51 +488,38 @@ export default function Settings() {
           </Button>
         </div>
             <Modal
-              /* title="Change Password"
-              open={passwordModalVisible}
-              onCancel={() => setPasswordModalVisible(false)}
-              footer={null}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <Input.Password
-                  placeholder="Current Password"
-                  value={currentPassword}
-                  onChange={e => setCurrentPassword(e.target.value)}
-                />
-                <Input.Password
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                />
-                <Input.Password
-                  placeholder="Confirm New Password"
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                />
-                <Button
-                  type="primary"
-                  loading={changingPassword}
-                  onClick={handleChangePassword}
-                  disabled={
-                    !currentPassword ||
-                    !newPassword ||
-                    !confirmPassword ||
-                    newPassword !== confirmPassword
-                  }
-                  style={{ marginTop: 8 }}
-                  block
-                >
-                  Change Password
-                </Button>
-              </div> */
               title="Change Password"
               open={passwordModalVisible}
-              // onCancel={() => setPasswordModalVisible(false)}
-                onCancel={() => {
-                  passwordForm.resetFields(); // Reset fields on close
+              onCancel={() => {
+                passwordForm.resetFields();
+                setPasswordModalVisible(false);
+              }}
+              footer={[
+                <Button key="cancel" onClick={() => {
+                  passwordForm.resetFields();
                   setPasswordModalVisible(false);
-                }}
-              footer={null}
+                }} disabled={changingPassword}>
+                  Cancel
+                </Button>,
+                <Button 
+                  key="submit" 
+                  type="primary" 
+                  onClick={() => passwordForm.submit()}
+                  loading={changingPassword}
+                >
+                  Change Password
+                </Button>,
+              ]}
+              closable={!changingPassword}
+              maskClosable={!changingPassword}
+              styles={{
+                content: {
+                  ...(theme === 'dark' && {
+                    backgroundColor: 'rgba(39, 41, 61, 0.95)',
+                    color: '#F1F1EA'
+                  })
+                }
+              }}
             >
               <Form
                 form={passwordForm}
@@ -546,7 +533,7 @@ export default function Settings() {
                   name="currentPassword"
                   rules={[{ required: true, message: 'Please enter your current password' }]}
                 >
-                  <Input.Password className="settingsInput passwordModalInput" />
+                  <Input.Password />
                 </Form.Item>
                 <Form.Item
                   label="New Password"
@@ -562,7 +549,7 @@ export default function Settings() {
                   ]}
                   hasFeedback
                 >
-                  <Input.Password className="settingsInput passwordModalInput" />
+                  <Input.Password />
                 </Form.Item>
                 <Form.Item
                   label="Confirm New Password"
@@ -581,17 +568,8 @@ export default function Settings() {
                     })
                   ]}
                 >
-                  <Input.Password className="settingsInput passwordModalInput" />
+                  <Input.Password />
                 </Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={changingPassword}
-                  block
-                  style={{ marginTop: 8 }}
-                >
-                  Change Password
-                </Button>
               </Form>
             </Modal>
       </div>
@@ -612,22 +590,84 @@ export default function Settings() {
         }
         
         .settingsPage .changePasswordBtn {
-          background-color: #ff4d4f !important;
-          border-color: #ff4d4f !important;
+          background-color: ${theme === 'dark' ? '#ff7875' : '#ff4d4f'} !important;
+          border-color: ${theme === 'dark' ? '#ff7875' : '#ff4d4f'} !important;
           color: #fff !important;
+          transition: all 0.2s ease-in-out !important;
         }
 
-        .settingsPage .changePasswordBtn.dark {
-          background-color: #b71c1c !important;
-          border-color: #b71c1c !important;
+        .settingsPage .changePasswordBtn:hover {
+          background-color: ${theme === 'dark' ? '#ff9c99' : '#ff7875'} !important;
+          border-color: ${theme === 'dark' ? '#ff9c99' : '#ff7875'} !important;
         }
-        .settingsPage .passwordModalInput,
-        .settingsPage .passwordModalInput input {
-          background-color: ${theme === 'dark' ? 'rgba(25, 27, 38, 0.9)' : 'rgba(230, 230, 220, 0.9)'} !important;
-          border: 1px solid ${theme === 'dark' ? 'rgba(49, 129, 130, 0.3)' : 'rgba(32, 54, 37, 0.3)'} !important;
-          color: ${theme === 'dark' ? '#F1F1EA' : '#1D1E2C'} !important;
-          border-radius: 6px !important;
-          transition: all 0.2s ease-in-out !important;
+
+        /* Global modal styling exactly like DeleteModal */
+        body[data-theme='dark'] .ant-modal-content {
+          background-color: rgba(39, 41, 61, 0.95) !important;
+          color: #F1F1EA !important;
+          border-radius: 12px !important;
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(49, 129, 130, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-modal-header {
+          background-color: transparent !important;
+          border-color: rgba(49, 129, 130, 0.2) !important;
+          border-radius: 12px 12px 0 0 !important;
+        }
+        body[data-theme='dark'] .ant-modal-title {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-modal-close {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-modal-close:hover {
+          background-color: rgba(49, 129, 130, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-modal-footer {
+          background-color: transparent !important;
+          border-color: rgba(49, 129, 130, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-btn:not(.ant-btn-primary) {
+          background-color: transparent !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-btn:not(.ant-btn-primary):hover {
+          background-color: rgba(49, 129, 130, 0.2) !important;
+          border-color: rgba(49, 129, 130, 0.5) !important;
+        }
+        body[data-theme='dark'] .ant-form-item-label > label {
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-input,
+        body[data-theme='dark'] .ant-input-password,
+        body[data-theme='dark'] .ant-input-password input {
+          background-color: rgba(25, 27, 38, 0.8) !important;
+          border-color: rgba(49, 129, 130, 0.3) !important;
+          color: #F1F1EA !important;
+        }
+        body[data-theme='dark'] .ant-input:hover,
+        body[data-theme='dark'] .ant-input-password:hover,
+        body[data-theme='dark'] .ant-input-password input:hover {
+          border-color: rgba(49, 129, 130, 0.5) !important;
+        }
+        body[data-theme='dark'] .ant-input:focus,
+        body[data-theme='dark'] .ant-input-password:focus,
+        body[data-theme='dark'] .ant-input-password input:focus {
+          border-color: #318182 !important;
+          box-shadow: 0 0 0 2px rgba(49, 129, 130, 0.2) !important;
+        }
+        body[data-theme='dark'] .ant-input-password .ant-input-suffix {
+          color: #F1F1EA !important;
+          background-color: transparent !important;
+        }
+        body[data-theme='dark'] .ant-input-password .ant-input-password-icon {
+          color: #F1F1EA !important;
+          background-color: transparent !important;
+        }
+        body[data-theme='dark'] .ant-input-password .ant-input-password-icon:hover {
+          color: #318182 !important;
+          background-color: rgba(49, 129, 130, 0.1) !important;
         }
 
         .settingsPage .ant-input:hover,
