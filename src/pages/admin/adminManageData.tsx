@@ -1,3 +1,9 @@
+// Violet Yousif, 7/13/2025, Created admin data management page -- not sure if runs yet
+// Mohammad Hoque, 7/18/2025, Updated to use new AdminLayout pattern and added manage chunks page
+// Violet Yousif, 7/18/2025, Fixed UI issues (e.g., added pagination, index column, timestamp, & connected missing topics).
+// Violet Yousif, 7/18,2025, Connected to backend API for chunk management.
+
+// src/pages/admin/adminManageData.tsx
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Input, Modal, message, Popconfirm, Typography } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
@@ -22,8 +28,11 @@ function ManageChunks() {
 
   const fetchChunks = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/admin/chunks', { credentials: 'include' });
+      const res = await fetch('http://localhost:8080/api/admin/chunks', { 
+        credentials: 'include' 
+      });
       const data = await res.json();
+      console.log('Fetched chunks:', data);
       setChunks(data);
     } catch (err) {
       console.error('Failed to load chunks:', err);
@@ -121,20 +130,20 @@ function ManageChunks() {
             Manage Pretraining Chunks
           </Title>
 
-          <Table
+            <Table
             rowKey="_id"
-            //dataSource={chunks}
             dataSource={Array.isArray(chunks) ? chunks : []}
             columns={columns}
             rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
             pagination={{
-                onShowSizeChange: (current: number, size: number) => setPageSize(size),
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '50', '100'],
-                pageSize: pageSize,
-              }}            bordered
+              onShowSizeChange: (current: number, size: number) => setPageSize(size),
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              pageSize: pageSize,
+            }}
+            bordered
             style={{ marginTop: '1.5rem' }}
-          />
+            />
 
           <Popconfirm
             title="Are you sure you want to delete these?"
@@ -213,5 +222,6 @@ const styles = {
     backgroundColor: '#d32f2f',
     borderColor: '#d32f2f',
     borderRadius: '1rem',
+    color: '#ffffffff',
   },
 } as const;

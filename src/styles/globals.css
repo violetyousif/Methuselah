@@ -1427,3 +1427,21 @@ html, body {
   border-radius: 9999px !important;
 }
 
+
+/* Changed color for pagination on admin side */
+.ant-pagination-item-active {
+  background: #688073 !important;
+  border-color: #181f1b !important;
+}
+
+.ant-pagination-item-active a {
+  color: #F1F1EB !important;
+  opacity: 0.7;
+
+}
+
+/* Non-active page numbers */
+.ant-pagination-item a {
+  color: #203625 !important;
+  opacity: 0.7;
+}
