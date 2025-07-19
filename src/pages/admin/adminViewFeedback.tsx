@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, Typography, message, Spin, Button } from 'antd';
-import { CommentOutlined, StarOutlined, UserOutlined, CalendarOutlined, ReloadOutlined } from '@ant-design/icons';
+import { CommentOutlined, UserOutlined, CalendarOutlined, ReloadOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import AdminLayout from '../../components/AdminLayout';
 import dayjs from 'dayjs';
 
@@ -65,30 +65,40 @@ const AdminViewFeedback: React.FC = () => {
   }, []);
 
   const getRatingColor = (rating: number) => {
-    if (rating >= 4) return '#52c41a'; // green
-    if (rating >= 3) return '#faad14'; // yellow
-    return '#f5222d'; // red
+    if (rating >= 4) return '#499f1eff'; // green
+    if (rating >= 3) return '#e5a44ff1'; // yellow
+    return '#c21e26ff'; // red
   };
 
   const renderStars = (rating: number) => {
     return (
       <div style={{ display: 'flex', gap: '2px' }}>
-        {[1, 2, 3, 4, 5].map((star) => (
-          <StarOutlined
-            key={star}
-            style={{
-              color: star <= rating ? '#faad14' : '#d9d9d9',
-              fontSize: '16px'
-            }}
-          />
-        ))}
+        {[1, 2, 3, 4, 5].map((star) =>
+          star <= rating ? (
+            <StarFilled
+              key={star}
+              style={{
+                color: '#e5a44ff1',
+                fontSize: '16px'
+              }}
+            />
+          ) : (
+            <StarOutlined
+              key={star}
+              style={{
+                color: '#d9d9d9',
+                fontSize: '16px'
+              }}
+            />
+          )
+        )}
       </div>
     );
   };
 
-  const averageRating = feedback.length > 0 
-    ? (feedback.reduce((sum, item) => sum + item.rating, 0) / feedback.length).toFixed(1)
-    : '0';
+  const averageRating = feedback.length > 0
+  ? (feedback.reduce((sum, item) => sum + item.rating, 0) / feedback.length).toFixed(1)
+  : '0';
 
   const ratingDistribution = {
     5: feedback.filter(f => f.rating === 5).length,
@@ -122,9 +132,13 @@ const AdminViewFeedback: React.FC = () => {
             <Card style={{ flex: 1, minWidth: 200, backgroundColor: '#8AA698', borderRadius: '1rem' }}>
               <div style={{ textAlign: 'center' }}>
                 <StarOutlined style={{ fontSize: '24px', color: '#1D1E2C', marginBottom: '8px' }} />
-                <Title level={3} style={{ margin: 0, color: getRatingColor(parseFloat(averageRating)) }}>
-                  {averageRating}
-                </Title>
+                  <Title level={3} style={{ margin: 0, color: getRatingColor(parseFloat(averageRating)) }}>
+                    <span style={{
+                      fontWeight: 700, 
+                      fontSize: '2rem',
+                      textShadow: '1px 1px 5px rgba(0, 0, 0, 0.2)',
+                      }}>{averageRating}</span>
+                  </Title>
                 <Text style={{ color: '#1D1E2C' }}>Average Rating</Text>
               </div>
             </Card>

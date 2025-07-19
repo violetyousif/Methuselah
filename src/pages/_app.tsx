@@ -23,20 +23,19 @@ const Layout = dynamic(() => import('antd').then(mod => ({ default: mod.Layout }
   )
 })
 
+
 export default function App({ Component, pageProps }: AppProps) {
-  const [mounted, setMounted] = useState(false)
+  const getLayout = (Component as any).getLayout || ((page: React.ReactNode) => page);
+  const [mounted, setMounted] = useState(false);
 
-  // Set default theme on initial load - individual pages will override with database preferences
   useEffect(() => {
-    setMounted(true)
-    // Set defaults that will be overridden by database preferences
+    setMounted(true);
     if (typeof window !== 'undefined') {
-      document.body.dataset.fontsize = 'regular'
-      document.body.dataset.theme = 'default'
+      document.body.dataset.fontsize = 'regular';
+      document.body.dataset.theme = 'default';
     }
-  }, [])
+  }, []);
 
-  // Show a loading state during initial hydration
   if (!mounted) {
     return (
       <>
@@ -51,21 +50,23 @@ export default function App({ Component, pageProps }: AppProps) {
           <footer>LongevityAI © 2025</footer>
         </div>
       </>
-    )
+    );
   }
 
   return (
     <>
-    <Head>
-      <meta
-        name="viewport"
-        content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
-      />
-    </Head>
-    <Layout>
-      <Component {...pageProps} />
-      <footer>LongevityAI © 2025</footer>
-    </Layout>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+        />
+      </Head>
+      {getLayout(
+        <>
+          <Component {...pageProps} />
+          <footer>LongevityAI © 2025</footer>
+        </>
+      )}
     </>
-  )
+  );
 }

@@ -3,9 +3,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
-import AdminSidebar from './adminSidebar';
+import AdminSidebar from './AdminSidebar';
 
-const { Content } = Layout;
+const { Sider, Content } = Layout;
 
 interface AdminLayoutProps {
   children: React.ReactNode;

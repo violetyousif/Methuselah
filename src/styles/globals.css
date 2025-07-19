@@ -7,6 +7,11 @@
 /* Violet Yousif, 7/5/2025, Fixed hyperlink styles for Terms of Service and Login links to match design and each other.*/
 /* Mohammad Hoque, 7/15/2025, Enhanced dark theme style for send bar */
 
+/* Using the asteriks selector to target all elements unless specified otherwise */
+* {
+  font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
 .timestamp {
   font-size: 12px;
   margin-bottom: 4px;
@@ -1422,3 +1427,21 @@ html, body {
   border-radius: 9999px !important;
 }
 
+
+/* Changed color for pagination on admin side */
+.ant-pagination-item-active {
+  background: #688073 !important;
+  border-color: #181f1b !important;
+}
+
+.ant-pagination-item-active a {
+  color: #F1F1EB !important;
+  opacity: 0.7;
+
+}
+
+/* Non-active page numbers */
+.ant-pagination-item a {
+  color: #203625 !important;
+  opacity: 0.7;
+}
