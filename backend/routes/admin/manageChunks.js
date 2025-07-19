@@ -43,26 +43,37 @@ router.get('/chunks', manageChunksLimiter, auth('admin'), async (req, res) => {
   }
 });
 
-// PATCH/update a specific chunk
 // PATCH (update) a specific chunk
 router.patch('/chunks/:id', manageChunksLimiter, auth('admin'), async (req, res) => {
   try {
     const { id } = req.params;
-    const { content, source, topic, ...otherData } = req.body;
+
+    // Validate the id param (security purposes)
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: 'Invalid chunk id.' });
+    }
     
     // Map frontend fields to database fields
-    const updateData = {
-      ...otherData,
-      text: content || undefined, // Map content -> text
-      source: source || undefined,
-      topic: topic || undefined,
-      updatedAt: new Date()
-    };
+    // const updateData = {
+    //   ...otherData,
+    //   text: content || undefined, // Map content -> text
+    //   source: source || undefined,
+    //   topic: topic || undefined,
+    //   updatedAt: new Date()
+    // };
+
+    const { content, source, topic } = req.body;
+    const updateData = {};
+    if (content !== undefined) updateData.text = content;
+    if (source !== undefined) updateData.source = source;
+    if (topic !== undefined) updateData.topic = topic;
+    updateData.updatedAt = new Date();
+    
     
     // Remove undefined values
-    Object.keys(updateData).forEach(key => 
-      updateData[key] === undefined && delete updateData[key]
-    );
+    // Object.keys(updateData).forEach(key => 
+    //   updateData[key] === undefined && delete updateData[key]
+    // );
     
     const result = await vectorClient.db('Longevity').collection('KnowledgeBase').updateOne(
       { _id: new ObjectId(id) },
