@@ -1,19 +1,20 @@
-# Methuselah
+![Hello, I am Methuselah](image1)
 
-![Methuselah UI](./image.png)
-
-Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress. We welcome contributions and feedback as we shape the future of Methuselah.
+Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress.
 
 ---
 
-## 📑 Table of Contents
+## 📖 Table of Contents
 
 - [Project Overview](#project-overview)
 - [Technologies](#technologies)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+  - [Environment Configuration](#environment-configuration)
   - [Running Locally](#running-locally)
+- [Packages, Libraries, and Tools](#packages-libraries-and-tools)
+- [Usernames and Passwords](#usernames-and-passwords)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
@@ -28,10 +29,13 @@ Methuselah is a platform designed to explore and promote longevity-related solut
 
 ---
 
-## 🛠 Technologies
+## 🛠️ Technologies
 
-- **Framework:** Next.js 13.5.6
-- **Runtime:** Node.js 20
+- **Frontend Framework:** Next.js ^15.1.0
+- **Frontend Languages:** TypeScript, JavaScript, CSS, LESS, Markdown
+- **Backend Framework:** Express ^5.1.0 (Node.js)
+- **Backend Languages:** JavaScript (ES Modules), JSON
+- **Runtime:** Node.js v20+
 - **Package Manager:** npm
 
 ---
@@ -45,22 +49,26 @@ To run Methuselah locally, ensure you have the following installed:
 - [Node.js (v20 or higher)](https://nodejs.org/)
 - npm (included with Node.js)
 - Git for cloning the repository
-- A code editor (e.g., [Visual Studio Code](https://code.visualstudio.com/))
+- A code editor ([Visual Studio Code](https://code.visualstudio.com/) preferred)
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/PPSwap/Methuselah.git
+git clone https://github.com/violetyousif/Methuselah.git
 cd Methuselah
 
-# Install dependencies
+# Install frontend dependencies
+npm install
+
+# Install backend dependencies
+cd backend
 npm install
 ```
 
 ---
 
-### Environment Variables
+### 🛡️ Environment Configuration
 
 1. **Obtain the `.env.example` file**:  
    Contact the project maintainers or refer to the project's Discord server.
@@ -69,20 +77,55 @@ npm install
 
 3. **Rename it** to `.env.local`:
 
-```bash
-mv .env.example .env.local
-```
+    ```bash
+    mv .env.example .env.local
+    ```
 
-4. **Edit `.env.local`** to include any required environment variables (e.g., API keys or endpoints) as specified in the documentation or Discord.
+4. **Edit `.env.local`** to include any required environment variables. Example variables used in the project:
+
+    ```
+    # MongoDB
+    MONGODB_URI=your-mongodb-uri
+
+    # HuggingFace API
+    HF_API_KEY=your-huggingface-api-key
+
+    # JWT Secret
+    JWT_SECRET=your_jwt_secret
+
+    # Email credentials for notifications
+    MAIL_USER=your.email@gmail.com
+    MAIL_PASS=your_email_password
+
+    # Cypress (testing)
+    CYPRESS_PROJECT_ID=your_cypress_project_id
+    ADMIN_EMAIL=admin@example.com
+    ADMIN_PASSWORD=your_admin_password
+    TEST_USER_EMAIL=test@example.com
+    TEST_USER_PASSWORD=your_test_user_password
+    ```
+
+   > **Note:** Never commit `.env.local` or any file containing secrets to version control.
 
 ---
 
-### Running Locally
+### 🏃 Running Locally
 
-Start the development server:
+You will need to run both the frontend and backend servers for full functionality.
+
+**In two separate terminals:**
 
 ```bash
+# Terminal 1: Start the frontend (from project root)
 npm run dev
+```
+
+```bash
+# Terminal 2: Start the backend
+cd backend
+npm run start
+# or, if you want development auto-reloading:
+npm run dev:qa   # or use nodemon server.js directly if set up
 ```
 
 Then open your browser and go to:  
@@ -92,49 +135,82 @@ The application will automatically reload as you make changes to the source code
 
 ---
 
-## Contributing
+## 📦 Packages, Libraries, and Tools
 
-We are excited to build Methuselah with the community! To contribute:
+**Frontend:**
+- [Next.js](https://nextjs.org/) (^15.1.0)
+- [React](https://react.dev/) (^18.2.0)
+- [Ant Design (antd)](https://ant.design/) (^5.26.4)
+- [LESS](http://lesscss.org/)
+- [highlight.js](https://highlightjs.org/)
+- [TypeScript](https://www.typescriptlang.org/) (^5.7.2)
+- [Moment](https://momentjs.com/), [Day.js](https://day.js.org/)
+- [Recharts](https://recharts.org/), [react-markdown](https://github.com/remarkjs/react-markdown)
 
-1. Fork the repository
-2. Create a feature branch:
+**Backend:**
+- [Express.js](https://expressjs.com/) (^5.1.0)
+- [Mongoose](https://mongoosejs.com/) (^8.16.3)
+- [MongoDB Node.js Driver](https://mongodb.github.io/node-mongodb-native/) (^6.15.0)
+- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) (^9.0.2)
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js) (^5.1.1)
+- [dotenv](https://github.com/motdotla/dotenv) (^17.2.0)
+- [cors](https://www.npmjs.com/package/cors) (^2.8.5)
+- [cookie-parser](https://www.npmjs.com/package/cookie-parser) (^1.4.7)
+- [nodemailer](https://nodemailer.com/) (^7.0.5)
+- [express-rate-limit](https://www.npmjs.com/package/express-rate-limit) (^7.5.0)
+- [@huggingface/inference](https://www.npmjs.com/package/@huggingface/inference) (^4.5.1)
+- [pdfjs-dist](https://www.npmjs.com/package/pdfjs-dist) (^3.4.120)
+- [jsdom](https://www.npmjs.com/package/jsdom) (^26.1.0)
+- [tesseract.js](https://github.com/naptha/tesseract.js) (^6.0.1)
+- [exceljs](https://www.npmjs.com/package/exceljs) (^4.4.0)
+- [csv-parser](https://www.npmjs.com/package/csv-parser) (^3.2.0)
+- [multer](https://www.npmjs.com/package/multer), [langchain](https://js.langchain.com/), [ollama](https://www.npmjs.com/package/ollama)
+- [validator](https://www.npmjs.com/package/validator) (^13.15.15)
 
-```bash
-git checkout -b feature/YourFeature
-```
+**Testing:**
+- [Cypress](https://www.cypress.io/)
+- [@testing-library/react](https://testing-library.com/)
 
-3. Commit your changes:
-
-```bash
-git commit -m 'Add YourFeature'
-```
-
-4. Push to the branch:
-
-```bash
-git push origin feature/YourFeature
-```
-
-5. Open a Pull Request
-
-> For questions, join our Discord server or open an issue.
-
----
-
-## License
-
-This project is licensed under the **MIT License**.
-
----
-
-## Contact
-
-For inquiries, feedback, or to access the `.env.example` file, please:
-
-- [Join our Discord server](https://discord.gg/Wdh53pcw)
-- Open an issue on the GitHub repository
-- Email: [hj7083@wayne.edu](mailto:hj7083@wayne.edu)
+**Development Tools:**
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Git](https://git-scm.com/)
+- [nodemon](https://www.npmjs.com/package/nodemon)
 
 ---
 
-**Together, let’s shape the future of longevity with Methuselah.**
+## 👤 Usernames and Passwords
+
+- **No hardcoded usernames or passwords are present in the codebase.**
+- All authentication is managed securely via environment variables and user registration.
+- Example environment variables for testing/admin (set in `.env.local`):
+
+    ```
+    ADMIN_EMAIL=admin@example.com
+    ADMIN_PASSWORD=your_admin_password
+    TEST_USER_EMAIL=test@example.com
+    TEST_USER_PASSWORD=your_test_user_password
+    ```
+
+- **Default credentials are not provided in the repository.** You must set your own admin and test user credentials in your `.env.local` for local development and testing.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
+
+---
+
+## 📬 Contact
+
+For inquiries, feedback, or to access the .env.example file, please:
+
+Join our [Discord server](https://discord.gg/Wdh53pcw/)
+Open an issue on the GitHub repository
+Email: hj7083@wayne.edu
