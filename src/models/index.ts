@@ -260,8 +260,7 @@ export const generateSummary = async (conversationId: string, fetchPath: string)
             role: ChatRole.System,
             content:
               'Provide a summary of the conversation in a few words, focusing on the main topic discussed, you can exclude the first greeting message by the model.'
-          }
-        ]
+          }]
       })
     })
 

@@ -57,35 +57,24 @@
     font-size: 1.8rem;
   }
 }
-
 .name {
   color: #5A7F65;
-  font-family: fantasy;
+  font-family: fantasy, Papyrus, cursive, sans-serif;
   font-size: 3.2rem;
   font-weight: bold;
 }
 
+@media (max-width: 768px) {
+  .name {
+    display: block;
+    font-size: 3rem;
+    margin-top: 2rem;
+  }
+}
 .subtitle {
   font-size: 1.2rem;
-  margin-bottom: 16px;
+  margin-bottom: .8rem;
 }
-
-/* .prompt {
-  font-style: italic;
-  margin-bottom: 32px;
-  color: #dcdcd8;
-} */
-
-/* .input {
-  width: 100%;
-  padding: 16px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  background-color: #fff;
-  color: #203625;
-} */
 
 .navButton {
   display: inline-block;
@@ -94,7 +83,7 @@
   margin-top: 8px;
   width: 120px;
   background-color: #203625;
-  color: #ffffff !important;
+  color: #F1F1EB !important;
   text-decoration: none;
   font-size: 1rem;
   border-radius: 1rem;
@@ -107,17 +96,19 @@
 @media (max-width: 480px) {
   .navButton {
     display: block;
-    margin: 8px auto;
-    width: 100%;
+    margin: 1rem auto;
+    width: 30%;
     max-width: 200px;
-    padding: 12px 16px;
-    min-height: 44px; /* Touch-friendly size */
+    padding: .8rem .8rem;
+    align-content: center;
+    font: 2rem;
+    min-height: 3rem; /* Touch-friendly size */
   }
 }
 
 .navButton:hover {
   background-color: #1a2b1f;
-  color: #ffffff !important;
+  color: #F1F1EB !important;
   text-decoration: none !important;
 }
 

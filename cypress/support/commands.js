@@ -40,7 +40,7 @@ Cypress.Commands.add('login', () => {
     failOnStatusCode: true,
   }).then((resp) => {
     expect(resp.status).to.eq(200);
-    // Set cookie if your backend uses auth cookies
+    // Set cookie if backend uses auth cookies
     // Otherwise, store JWT to localStorage if your app uses that
   });
 

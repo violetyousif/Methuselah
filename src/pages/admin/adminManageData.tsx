@@ -128,7 +128,7 @@ function ManageChunks() {
       <div style={styles.page}>
         <div style={styles.card}>
           <Title level={3} style={styles.header}>
-            Manage Pretraining Chunks
+            Manage Research Data for AI Pretraining
           </Title>
 
             <Table

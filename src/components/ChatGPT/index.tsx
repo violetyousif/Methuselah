@@ -35,8 +35,6 @@ const ChatGPT = ({
     userBubbleColor,
     userAvatar,
     userName,
-    //chatMode: props.chatMode,
-    //walletAddress: props.walletAddress
   })
 
   const messageListRef = React.useRef<HTMLDivElement>(null)

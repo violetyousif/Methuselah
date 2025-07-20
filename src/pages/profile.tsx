@@ -5,7 +5,7 @@
 // Mohammad Hoque, 06/13/2025, Refactored to standalone page layout with back button to /chatBot.
 // Violet Yousif, 6/16/2025, Removed walletAddress prop from ProfileProps interface and component function parameters.
 // Violet Yousif, 6/16/25, Added commented out phone number to end of page if we want to use it. Added gender to list of options.
-// Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, inch) instead of metric (kg, cm).
+// Mohammad Hoque, 06/18/2025, Change from POST to PATCH and changed units of weight and height to imperial (lb, ft/inches) instead of metric (kg, cm).
 // Mohammad Hoque, 06/19/2025, Switched Activity Level to modal selection with dropdown icon and helper text.
 // Violet Yousif, 06/21/2025, Added confirmation message on successful profile update.
 // Mizanur Mizan, 07/03/2025-07/04/2025, Added Health Metrics section with date selection for sleep hours, exercise hours, mood, calories, and meals
@@ -25,15 +25,7 @@ import { Calendar, Modal } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import ActivityLevelModal from '../components/ActivityLevelModal';
 
-/* Old Code
-interface ProfileProps {
-  visible: boolean
-  //// Prev: walletAddress: string | null
-  onClose: () => void
-}*/
-
 const Profile: React.FC = () => {
-//// Prev: const Profile: React.FC<ProfileProps> = ({ visible, walletAddress, onClose }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [activityModalVisible, setActivityModalVisible] = useState(false);
@@ -54,28 +46,6 @@ const Profile: React.FC = () => {
   const [mood, setMood] = useState('');
   const [calendarVisible, setCalendarVisible] = useState(false);
 
-  // Calendar cell click
-  /* const onSelectDate = (date: dayjs.Dayjs) => {
-    setSelectedDate(date.format('YYYY-MM-DD'));
-    setModalVisible(true);
-  }; */
-/* 
-  const onSelectDate = (date: dayjs.Dayjs) => {
-    const formatted = date.format('YYYY-MM-DD');
-    setSelectedDate(formatted);
-    const existing = allMetrics[formatted];
-
-    if (existing) {
-      setSleepHours(existing.sleepHours ?? 0);
-      setExerciseHours(existing.exerciseHours ?? 0);
-      setCalories(existing.calories ?? 0);
-    } else {
-      setSleepHours(0);
-      setExerciseHours(0);
-      setCalories(0);
-    }
-    setModalVisible(true);
-  }; */
 
   const submitHealthMetric = async () => {
     try {
@@ -136,25 +106,9 @@ const Profile: React.FC = () => {
     });
   }, []);
 
-  /* useEffect(() => {
-    const today = dayjs().format('YYYY-MM-DD');
-    setSelectedDate(today); // Ensure it's set
-
-    const existing = allMetrics[today];
-    if (existing) {
-      setSleepHours(existing.sleepHours ?? 0);
-      setExerciseHours(existing.exerciseHours ?? 0);
-      setCalories(existing.calories ?? 0);
-    } else {
-      setSleepHours(0);
-      setExerciseHours(0);
-      setCalories(0);
-    }
-}, [allMetrics]); */
-
   useEffect(() => {
     const today = dayjs().format('YYYY-MM-DD');
-    setSelectedDate(today); // Ensure it's set
+    setSelectedDate(today);
   }, []);
 
   useEffect(() => {
@@ -215,22 +169,11 @@ const Profile: React.FC = () => {
       .then((res) => res.json())
       .then((data: UserData) => {
         form.setFieldsValue(data);
-          if (data.activityLevel) setSelectedActivityLevel(data.activityLevel); //for the Activity Level button text
+          if (data.activityLevel) setSelectedActivityLevel(data.activityLevel); // for the Activity Level button text
       })
       .catch((error) => console.error('Error fetching user data:', error))
   }, [form])
 
-  //// Prev code:
-  // useEffect(() => {
-  //   if (visible && walletAddress) {
-  //     fetch(`/api/user-data?walletAddress=${walletAddress}`)
-  //       .then((res) => res.json())
-  //       .then((data: UserData) => {
-  //         if (data) form.setFieldsValue(data)
-  //       })
-  //       .catch((error) => console.error('Error fetching user data:', error))
-  //   }
-  // }, [visible, walletAddress, form])
 
   const onFinish = async (values: UserData) => {
     setLoading(true)
@@ -258,7 +201,6 @@ const Profile: React.FC = () => {
           duration: 4,
         });
       }
-      //if (!res.ok) throw new Error('Failed to save user data')
     } catch (error) {
       console.error('Error saving user data:', error)
       notification.error({
@@ -284,7 +226,7 @@ const Profile: React.FC = () => {
           Home
         </Button>
       </Link>
-      {/* <h2 style={styles.modalTitle}>User Profile - Health Data</h2> */}
+      {/* User Profile - Health Data */}
       <Tabs
         defaultActiveKey="general" centered className="profile-tabs" items={[
         {
@@ -301,27 +243,6 @@ const Profile: React.FC = () => {
         style={styles.form}
         className="profile-form"
       >
-{/*         <Form.Item label={<span style={styles.label}>First Name</span>} name="firstName" rules={[{ required: true, message: 'Please enter your first name' }]}>
-          <Input style={styles.input} />
-        </Form.Item> */}
-
-{/*         <Form.Item label={<span style={styles.label}>Last Name</span>} name="lastName" rules={[{ required: true, message: 'Please enter your last name' }]}>
-          <Input style={styles.input} />
-        </Form.Item> */}
-
-{/*         <Form.Item label={<span style={styles.label}>Email</span>} name="email" rules={[
-          { required: true, message: 'Please enter your email' },
-          { type: 'email', message: 'Please enter a valid email' }
-        ]}>
-          <Input style={styles.input} />
-        </Form.Item> */}
-
-        {/*<Form.Item label={<span style={styles.label}>Age (years)</span>} name="age" rules={[
-          { required: true, message: 'Please enter your age' },
-          { type: 'number', min: 0, message: 'Age must be positive' }
-        ]}>
-          <InputNumber min={0} style={styles.inputNumber} />
-        </Form.Item> */}
         {/* Date of Birth */}
         <Form.Item
           style={styles.rowSpacing}
@@ -374,14 +295,7 @@ const Profile: React.FC = () => {
           </Select>
         </Form.Item>
 
-        {/*<Form.Item label={<span style={styles.label}>Weight (lb)</span>} name="weight" rules={[
-          { required: true, message: 'Please enter your weight' },
-          { type: 'number', min: 0, message: 'Weight must be positive' }
-        ]}>
-          <InputNumber min={0} step={0.1} style={styles.inputNumber} />
-        </Form.Item> */}
-
-        <Form.Item label={<span style={styles.label}>Height (inch)</span>} name="height" rules={[
+        <Form.Item label={<span style={styles.label}>Height (inches)</span>} name="height" rules={[
           { required: true, message: 'Please enter your height' },
           { type: 'number', min: 0, message: 'Height must be positive' }
         ]}>
@@ -465,24 +379,6 @@ const Profile: React.FC = () => {
             placeholder="E.g. Metformin, Lisinopril"
           />
         </Form.Item>
-
-{/*         <Form.Item
-          label={<span style={styles.label}>Sleep Hours (per night)</span>}
-          name="sleepHours"
-          rules={[
-            { required: true, message: 'Please enter sleep hours' },
-            { type: 'number', min: 0, max: 24, message: 'Sleep must be between 0–24 hours' }
-          ]}
-        >
-          <InputNumber
-            min={0}
-            max={24}
-            step={0.5}
-            style={styles.inputNumber}
-            addonAfter="hours"
-            placeholder="Hours"
-          />
-        </Form.Item> */}
 
         <Form.Item>
           <div className="profile-button-group">
@@ -973,42 +869,3 @@ const getStyles = (theme: 'default' | 'dark') => ({
     color: '#1D1E2C'
   }
 })
-
-// LEAVE THIS! WE NEED IT FOR 2-FACTOR AUTHENTICATION LATER!
-// For phone number input, you can use the following code snippet:
-// (potentially for 2 factor authentication)
-// <Form.Item
-//   style={styles.rowSpacing}
-//   label={<span style={styles.label}>Phone Number</span>}
-//   name="phoneNum"
-//   rules={[
-//     { required: true, message: 'Please enter your phone number' },
-//     {
-//       validator: (_, value) => {
-//         const digits = value ? value.replace(/\D/g, '') : '';
-//         if (digits.length === 10) {
-//           return Promise.resolve();
-//         }
-//         return Promise.reject('Phone number must be exactly 10 digits');
-//       }
-//     }
-//   ]}
-// >
-//   <Input
-//     placeholder="000-000-0000"
-//     style={styles.placeholderStyle}
-//     onBlur={e => {
-//       const formatted = formatPhoneNumber(e.target.value);
-//       form.setFieldsValue({ phoneNum: formatted });
-//     }}
-//     onChange={e => {
-//       // Only allow up to 10 digits
-//       const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-//       let formatted = digits;
-//       if (digits.length === 10) {
-//         formatted = formatPhoneNumber(digits);
-//       }
-//       form.setFieldsValue({ phoneNum: formatted });
-//     }}
-//   />
-// </Form.Item>

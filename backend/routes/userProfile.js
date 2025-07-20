@@ -3,6 +3,7 @@
 // Mohammad Hoque, 6/19/2025, Replaced age with dateOfBirth in profile endpoint
 // Syed Rabbey, 7/1/2025, Created endpoint for user profile updates to save in HealthMetricHistory collection for dashboard insights
 
+// backend/routes/userProfile.js
 import express from 'express';
 import getUser from '../models/User.js';
 import HealthMetric from '../models/HealthMetric.js';
@@ -27,7 +28,7 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Update user profile data
-    // if (firstName !== undefined) user.firstName = firstName;
+    //if (firstName !== undefined) user.firstName = firstName;
     // if (lastName !== undefined) user.lastName = lastName;
     // if (email !== undefined) user.email = email;
     if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
@@ -45,8 +46,6 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
     // Save health metrics as time-series data to act as audit trail for dashboard.
     const healthMetricsUpdate = {};
 
-    // if (weight !== undefined) healthMetricsUpdate.weight = weight;
-    // if (sleepHours !== undefined) healthMetricsUpdate.sleepHours = sleepHours;
     if (activityLevel !== undefined) healthMetricsUpdate.activityLevel = activityLevel;
 
     healthMetricsUpdate.lastUpdated = new Date();
@@ -62,28 +61,6 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
 
     // Save to HealthMetricsHistory (audit trail) for dashboard insights.
     const historyEntries = [];
-
-    /* if (weight !== undefined) {
-      historyEntries.push({
-        userId: user._id,
-        metric: 'weight',
-        value: weight,
-        unit: 'lbs',
-        recordedAt: new Date(),
-        source: 'profile'
-      });
-    } */
-
-/*     if (sleepHours !== undefined) {
-      historyEntries.push({
-        userId: user._id,
-        metric: 'sleepHours',
-        value: sleepHours,
-        unit: 'hours',
-        recordedAt: new Date(),
-        source: 'profile'
-      });
-    } */
 
     if (activityLevel !== undefined) {
       historyEntries.push({
