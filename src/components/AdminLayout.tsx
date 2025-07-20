@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
-import AdminSidebar from './AdminSidebar';
+import AdminSidebar from './adminSidebar';
 
 const { Sider, Content } = Layout;
 
@@ -13,80 +13,65 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [collapsed, setCollapsed] = useState(true); // Default to collapsed
+  const [collapsed, setCollapsed] = useState(false);
   const [isManuallyCollapsed, setIsManuallyCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  const [initialLoad, setInitialLoad] = useState(true);
   const SIDEBAR_BREAKPOINT = 768;
-
-  // Load saved state from localStorage on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedCollapsed = localStorage.getItem('adminSidebarCollapsed');
-      const savedManuallyCollapsed = localStorage.getItem('adminSidebarManuallyCollapsed');
-      
-      if (savedCollapsed !== null) {
-        setCollapsed(JSON.parse(savedCollapsed));
-      }
-      if (savedManuallyCollapsed !== null) {
-        setIsManuallyCollapsed(JSON.parse(savedManuallyCollapsed));
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth;
+      const prevWidth = windowWidth;
       setWindowWidth(newWidth);
       
-      console.log('AdminLayout resize:', { newWidth, collapsed, isManuallyCollapsed, initialLoad });
+      console.log('AdminLayout resize:', { newWidth, prevWidth, collapsed, isManuallyCollapsed });
       
-      // Only auto-collapse on small screens, but respect manual control
-      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed && !isManuallyCollapsed) {
-        console.log('AdminLayout: Auto-collapsing for mobile');
-        setCollapsed(true);
-        localStorage.setItem('adminSidebarCollapsed', 'true');
+      // Only auto-collapse/expand when crossing the breakpoint AND user hasn't manually controlled it recently
+      if (!isManuallyCollapsed) {
+        // Auto-collapse when going from desktop to mobile
+        if (prevWidth >= SIDEBAR_BREAKPOINT && newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
+          console.log('AdminLayout: Auto-collapsing for mobile transition');
+          setCollapsed(true);
+        } 
+        // Auto-expand when going from mobile to desktop  
+        else if (prevWidth < SIDEBAR_BREAKPOINT && newWidth >= SIDEBAR_BREAKPOINT && collapsed) {
+          console.log('AdminLayout: Auto-expanding for desktop transition');
+          setCollapsed(false);
+        }
       }
-      // Don't auto-expand on large screens - let user control it manually
     };
 
+    // Add event listener
     window.addEventListener('resize', handleResize);
     
-    // Only check initial window size on first load, not on manual state changes
-    if (initialLoad) {
-      handleResize();
-      setInitialLoad(false);
-    }
+    // Check initial window size
+    handleResize();
 
+    // Cleanup
     return () => window.removeEventListener('resize', handleResize);
-  }, [collapsed, isManuallyCollapsed, initialLoad]);
+  }, [collapsed, isManuallyCollapsed, windowWidth]);
 
   const handleCollapse = (isCollapsed: boolean) => {
     console.log('AdminLayout: handleCollapse called with:', isCollapsed);
-    console.log('AdminLayout: Setting manual control to TRUE');
     setCollapsed(isCollapsed);
     setIsManuallyCollapsed(true); // Mark as manually controlled
     
-    // Save state to localStorage
-    localStorage.setItem('adminSidebarCollapsed', JSON.stringify(isCollapsed));
-    localStorage.setItem('adminSidebarManuallyCollapsed', 'true');
-    
-    // Reset the manual override after a longer time to allow automatic behavior later
+    // Reset the manual override after some time to allow automatic behavior later
     setTimeout(() => {
       console.log('AdminLayout: Resetting manual control to FALSE');
       setIsManuallyCollapsed(false);
-      localStorage.setItem('adminSidebarManuallyCollapsed', 'false');
-    }, 300000); // Reset after 5 minutes instead of 30 seconds
+    }, 5000); // Reset after 5 seconds like user sidebar
   };
 
   const getLayoutStyle = () => {
     const baseStyle = {
       marginLeft: collapsed ? 48 : 250,
-      transition: 'margin-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      transition: 'margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Match user sidebar timing
       backgroundColor: '#F1F1EB',
+      minHeight: '100vh'
     };
 
-    // Use JS for responsive behavior instead of CSS media queries
+    // Always use collapsed margin on mobile for consistent behavior
     if (windowWidth < SIDEBAR_BREAKPOINT) {
       return {
         ...baseStyle,
@@ -120,6 +105,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       
       <Layout style={getLayoutStyle()}>
         <Content 
+          className="admin-content-area"
           style={{ 
             padding: '2rem', 
             background: '#F1F1EB', 

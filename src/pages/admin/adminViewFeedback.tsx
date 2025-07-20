@@ -1,8 +1,8 @@
 // Mohammad Hoque, 07/18/2025, Created admin page to view user feedback
 
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, message, Spin, Button } from 'antd';
-import { CommentOutlined, UserOutlined, CalendarOutlined, ReloadOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import { Card, Typography, message, Spin, Button, Select } from 'antd';
+import { CommentOutlined, UserOutlined, CalendarOutlined, ReloadOutlined, StarOutlined, StarFilled, FilterOutlined } from '@ant-design/icons';
 import AdminLayout from '../../components/AdminLayout';
 import dayjs from 'dayjs';
 
@@ -26,6 +26,12 @@ interface FeedbackItem {
 const AdminViewFeedback: React.FC = () => {
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
+
+  // Filter feedback based on selected rating
+  const filteredFeedback = selectedRating 
+    ? feedback.filter(item => item.rating === selectedRating)
+    : feedback;
 
   const fetchFeedback = async () => {
     setLoading(true);
@@ -108,6 +114,14 @@ const AdminViewFeedback: React.FC = () => {
     1: feedback.filter(f => f.rating === 1).length,
   };
 
+  const handleRatingFilterChange = (value: number | null) => {
+    setSelectedRating(value);
+  };
+
+  const clearFilter = () => {
+    setSelectedRating(null);
+  };
+
   return (
     <AdminLayout>
       <div style={styles.page}>
@@ -117,14 +131,36 @@ const AdminViewFeedback: React.FC = () => {
               <CommentOutlined style={{ marginRight: 12, color: '#1D1E2C' }} />
               User Feedback Overview
             </Title>
-            <Button 
-              icon={<ReloadOutlined />} 
-              onClick={fetchFeedback}
-              loading={loading}
-              style={styles.refreshButton}
-            >
-              Refresh
-            </Button>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <Select
+                placeholder={
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <FilterOutlined style={{ marginRight: 8 }} />
+                    Filter by Rating
+                  </span>
+                }
+                value={selectedRating}
+                onChange={handleRatingFilterChange}
+                allowClear
+                onClear={clearFilter}
+                style={styles.select}
+                options={[
+                  { value: 5, label: '5 Stars ⭐⭐⭐⭐⭐' },
+                  { value: 4, label: '4 Stars ⭐⭐⭐⭐' },
+                  { value: 3, label: '3 Stars ⭐⭐⭐' },
+                  { value: 2, label: '2 Stars ⭐⭐' },
+                  { value: 1, label: '1 Star ⭐' },
+                ]}
+              />
+              <Button 
+                icon={<ReloadOutlined />} 
+                onClick={fetchFeedback}
+                loading={loading}
+                style={styles.refreshButton}
+              >
+                Refresh
+              </Button>
+            </div>
           </div>
 
           {/* Summary Cards */}
@@ -184,17 +220,32 @@ const AdminViewFeedback: React.FC = () => {
                   <CommentOutlined style={{ fontSize: '48px', marginBottom: '16px' }} />
                   <Paragraph>No feedback submitted yet</Paragraph>
                 </div>
+              ) : filteredFeedback.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                  <FilterOutlined style={{ fontSize: '48px', marginBottom: '16px' }} />
+                  <Paragraph>No feedback found for the selected rating</Paragraph>
+                  <Button onClick={clearFilter} type="link">Clear filter</Button>
+                </div>
               ) : (
                 <div>
-                  {/* Simple pagination info */}
+                  {/* Pagination info with filter status */}
                   <div style={{ marginBottom: '16px', textAlign: 'right' }}>
                     <Text type="secondary">
-                      Showing {feedback.length} feedback entries
+                      {selectedRating ? (
+                        <>
+                          Showing {filteredFeedback.length} of {feedback.length} feedback entries 
+                          <Text style={{ marginLeft: '8px', color: '#1890ff' }}>
+                            (filtered by {selectedRating} star{selectedRating > 1 ? 's' : ''})
+                          </Text>
+                        </>
+                      ) : (
+                        `Showing ${feedback.length} feedback entries`
+                      )}
                     </Text>
                   </div>
                   
                   {/* Feedback items */}
-                  {feedback.map((item: FeedbackItem) => (
+                  {filteredFeedback.map((item: FeedbackItem) => (
                     <div key={item._id} style={{ marginBottom: '16px' }}>
                       <Card 
                         size="small" 
@@ -292,5 +343,13 @@ const styles = {
     borderColor: '#203625',
     color: '#e0e0e0',
     borderRadius: '1rem',
+  },
+  select: {
+    width: 200,
+    backgroundColor: '#ffffff',
+    borderColor: 'rgba(32, 54, 37, 0.3)',
+    color: '#1D1E2C',
+    borderRadius: '6px',
+    borderWidth: '1px'
   },
 } as const;
