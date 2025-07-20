@@ -25,6 +25,7 @@ function ManageChunks() {
   const [editValues, setEditValues] = useState({ content: '', source: '', topic: '' });
   const [loading, setLoading] = useState(false);
   const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchChunks = async () => {
     try {
@@ -83,7 +84,7 @@ function ManageChunks() {
     {
       title: 'Idx',
       // create a counter column
-      render: (_: any, __: any, index: number) => index + 1,
+      render: (_: any, __: any, index: number) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: 'Topic',
@@ -136,7 +137,12 @@ function ManageChunks() {
             columns={columns}
             rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
             pagination={{
-              onShowSizeChange: (current: number, size: number) => setPageSize(size),
+              current: currentPage,
+              onChange: (page: number) => setCurrentPage(page),
+              onShowSizeChange: (current: number, size: number) => {
+                setPageSize(size);
+                setCurrentPage(1); // Reset to first page when page size changes
+              },
               showSizeChanger: true,
               pageSizeOptions: ['10', '20', '50', '100'],
               pageSize: pageSize,
