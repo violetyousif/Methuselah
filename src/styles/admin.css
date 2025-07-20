@@ -47,6 +47,33 @@
     z-index: 1001 !important;
     box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3) !important;
   }
+  
+  /* Ensure content adjusts properly on mobile */
+  .admin-content-area {
+    margin-left: 48px !important;
+    transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  /* Make collapsed buttons more touch-friendly */
+  .admin-collapsed-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    font-size: 18px !important;
+  }
+  
+  /* Ensure sidebar hamburger is touch-friendly */
+  .hamburger-button {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 8px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Smooth transition for larger screens */
+  .admin-content-area {
+    transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
 }
 
 /* Menu item hover effects - Updated for light theme */
