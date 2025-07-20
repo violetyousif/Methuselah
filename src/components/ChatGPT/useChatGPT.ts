@@ -12,11 +12,6 @@ import { useRouter } from 'next/router'
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 import { ChatGPTProps, ChatMessage, ChatRole } from './interface'
-// You cannot directly "call" User.js from the frontend. Instead, you must create secure backend API endpoints that use your User.js model to fetch or update user data.
-// Example (backend, e.g. Express):
-// In your backend (Node.js/Express), import User.js and define an endpoint:
-
-// Never import or use User.js directly in frontend code.
 import {
   getConversation,
   addMessage,
@@ -76,33 +71,6 @@ const requestMessage = async (
 
   return response.json(); // Expects { answer, contextDocs }
 };
-
-// const requestMessage = async (
-//   url: string,
-//   query: string,
-//   //chatMode: 'direct' | 'conversational',
-//   // messages: ChatMessage[],
-//   controller: AbortController | null
-// ) => {
-//   const response = await fetch(url, {
-//     method: 'POST',
-//     body: JSON.stringify({ query }),
-//     credentials: 'include',     // Include cookies for session management request
-//     headers: { 'Content-Type': 'application/json' },
-//     signal: controller?.signal
-//   });
-
-//   if (!response.ok) {
-//     throw new Error(response.statusText);
-//   }
-//   /* const data = response.body
-//   if (!data) {
-//     throw new Error('No data')
-//   }
-//   return data.getReader() */
-//   return response.json(); // ragChat returns JSON { answer, contextDocs }
-//};
-
 
 // Get the average sleep hours over the past 7 days
 function calculateAvgSleepHours(dates: Record<string, any>): number | null {

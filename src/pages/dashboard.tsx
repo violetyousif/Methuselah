@@ -7,7 +7,6 @@
 // Syed Rabbey, 7/6/2025, updated insights layout to be more informative.
 // Syed Rabbey, 7/7/2025, Updated insights logic to fetch from backend and display user-specific tips.
 // Mohammad Hoque, 7/15/2025, Fixed media query issues
-// Mohammad Hoque, 7/15/2025, Fixed media query issues
 
 import React from 'react'
 import { Modal, Tooltip, notification } from 'antd'
@@ -29,19 +28,8 @@ import { Tooltip as RechartsTooltip } from 'recharts';
 
 interface DashboardProps {
   visible: boolean
-  //// Prev: walletAddress: string | null
   onClose: () => void
 }
-
-/* const healthData = [
-  { day: 'Mon', sleep: 6.5, exercise: 1.0 },
-  { day: 'Tue', sleep: 7.0, exercise: 0.5 },
-  { day: 'Wed', sleep: 8.0, exercise: 1.5 },
-  { day: 'Thu', sleep: 6.0, exercise: 0.0 },
-  { day: 'Fri', sleep: 7.5, exercise: 2.0 },
-  { day: 'Sat', sleep: 9.0, exercise: 2.5 },
-  { day: 'Sun', sleep: 8.5, exercise: 1.0 }
-] */
 
 const dietData = [
   { name: 'Protein', value: 25 },
@@ -53,7 +41,6 @@ const dietData = [
 const COLORS = ['#2F4F4F', '#3C6E71', '#5A8F7B', '#7FB285']
 
 const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
-//// Prev: const Dashboard: React.FC<DashboardProps> = ({ visible, walletAddress, onClose }) => {
   const [currentTheme, setCurrentTheme] = React.useState<'default' | 'dark'>(() => {
   if (typeof window !== 'undefined') {
     return (document.body.dataset.theme as 'default' | 'dark') || 'default'
@@ -67,19 +54,26 @@ const [firstName, setFirstName] = React.useState<string>('');
 const [isLoadingUser, setIsLoadingUser] = React.useState(true);
 
 
-React.useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') || 'default';
-    setCurrentTheme(storedTheme as 'default' | 'dark');
-}, [visible]);
+// React.useEffect(() => {
+//     const storedTheme = localStorage.getItem('theme') || 'default';
+//     setCurrentTheme(storedTheme as 'default' | 'dark');
+// }, [visible]);
 
+
+React.useEffect(() => {
+  console.log("USEEFFECT RUNNING");
+}, []);
   //  Fetch userId from  backend
 React.useEffect(() => {
+  if (visible) {
+  console.log('FETCH USER ID EFFECT RUNNING'); // Debug log
   const fetchUserId = async () => {
     try {
       const res = await fetch('http://localhost:8080/api/user-data', {
         credentials: 'include',
       });
       const userData = await res.json();
+      console.log('USER DATA:', userData); // Debug log
       setUserId(userData._id);
       setFirstName(userData.firstName); // <- store name
     } catch (error) {
@@ -90,7 +84,8 @@ React.useEffect(() => {
   };
 
   fetchUserId();
-}, []);
+  }
+}, [visible]);
 
 // Fetch insights when dashboard becomes visible
 React.useEffect(() => {
@@ -108,15 +103,12 @@ React.useEffect(() => {
         });
         return;
       }
-
       const data = await res.json();
-
       console.log("INSIGHTS RECEIVED IN REACT:", data); // Debug log
 
       setTips({
         tip1: data.tip1 || '',
         tip2: data.tip2 || ''
-        //tip3: data.tip3 || '' // Add in future dev if you want more insights
       });
     } catch (error) {
       console.error('Error fetching insights:', error);
@@ -166,7 +158,8 @@ React.useEffect(() => {
     loadPreferences();
   }
 }, [visible])
-  const styles = getStyles(currentTheme)
+
+const styles = getStyles(currentTheme)
 const [metrics, setMetrics] = React.useState<Record<string, any>>({});
 const [last7Data, setLast7Data] = React.useState<
   { date: string; sleep: number; exercise: number; calories: number; weight: number }[]
@@ -230,35 +223,6 @@ const exerciseAvg = exerciseDays.length
       </div>
 
       <div style={styles.chartSection}>
-        {/* <div style={styles.chartContainer}>
-          <h3 style={styles.chartTitle}>Sleep Health</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={healthData}>
-              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke={axisColor} />
-              <YAxis stroke={axisColor} />
-              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-              <Legend wrapperStyle={legendStyle} />
-              <Bar dataKey="sleep" fill={barColorSleep} name="Hours Slept" />
-            </BarChart>
-
-          </ResponsiveContainer>
-        </div>
-
-        <div style={styles.chartContainer}>
-          <h3 style={styles.chartTitle}>Exercise Habits</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={healthData}>
-              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-              <XAxis dataKey="day" stroke={axisColor} />
-              <YAxis stroke={axisColor} />
-              <Tooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-              <Legend wrapperStyle={legendStyle} />
-              <Bar dataKey="exercise" fill={barColorExercise} name="Hours Exercised" />
-            </BarChart>
-
-          </ResponsiveContainer>
-        </div> */}
         {[
           { key: 'sleep', label: 'Last 7 Days: Sleep Hours', fill: barColorSleep },
           { key: 'exercise', label: 'Last 7 Days: Exercise Hours', fill: barColorExercise },
@@ -323,25 +287,6 @@ const exerciseAvg = exerciseDays.length
         </div>
       </div>
 
-      {/* <div style={styles.pieChartSection}>
-        <h3 style={styles.chartTitle}>Diet Breakdown</h3>
-        <ResponsiveContainer width={400} height={300}>
-          <PieChart>
-            <Pie data={dietData} dataKey="value" cx="50%" cy="50%" outerRadius={100} label>
-              {dietData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <RechartsTooltip contentStyle={{
-              background: isDark ? '#232323' : '#fff',
-              color: isDark ? '#5eead4' : '#203625'
-            }} />
-
-          </PieChart> */}
-
-        {/* </ResponsiveContainer>
-      </div> */}
-
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
         <Tooltip title="Methuselah analyzes your sleep trends over time to determine your wellness aspirations and journey.">
           <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
@@ -362,10 +307,6 @@ const exerciseAvg = exerciseDays.length
             </p>
           </div>
         </Tooltip>
-
-        {/* <div style={{ flex: 1, borderRadius: '16px', padding: '20px', background: '#9AB7A9', transition: 'all 0.3s ease-in-out' }}>
-          <p style={{ fontSize: '16px', color: '#FFFFFF', margin: 0 }}>{tips.tip3}</p>
-        </div> */}
       </div>
     </Modal>
   )
