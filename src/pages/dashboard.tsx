@@ -62,8 +62,9 @@ const Dashboard: React.FC<DashboardProps> = ({ visible, onClose }) => {
 })
 
 const [userId, setUserId] = React.useState<string | null>(null);
-const [tips, setTips] = React.useState({ tip1: '', tip2: '' });//tip3: ''
+const [tips, setTips] = React.useState({ tip1: '', tip2: '' }); //tip3: ''
 const [firstName, setFirstName] = React.useState<string>('');
+const [isLoadingUser, setIsLoadingUser] = React.useState(true);
 
 
 React.useEffect(() => {
@@ -80,9 +81,11 @@ React.useEffect(() => {
       });
       const userData = await res.json();
       setUserId(userData._id);
-      setFirstName(userData.firstName || 'Guest'); // <- store name
+      setFirstName(userData.firstName); // <- store name
     } catch (error) {
       console.error('Failed to load user ID:', error);
+    } finally {
+      setIsLoadingUser(false);  // Gives function a chance to finish and get user info to prevent it from being "guest"
     }
   };
 
@@ -113,7 +116,7 @@ React.useEffect(() => {
       setTips({
         tip1: data.tip1 || '',
         tip2: data.tip2 || ''
-        //tip3: data.tip3 || ''
+        //tip3: data.tip3 || '' // Add in future dev if you want more insights
       });
     } catch (error) {
       console.error('Error fetching insights:', error);
@@ -131,7 +134,7 @@ const axisColor = isDark ? '#B8FFF8' : '#000000';       // axes & legend
 const gridColor = isDark ? '#318182' : '#203625';       // grid lines
 const barColorSleep = isDark ? '#4BC2C4' : '#203625';   // sleep bar
 const barColorExercise = isDark ? '#96F2D7' : '#203625';// exercise bar
-const barColorCalories = isDark ? '#FFD369' : '#203625'// calories bar
+const barColorCalories = isDark ? '#FFD369' : '#203625' // calories bar
 const chartTitleColor = isDark ? '#4BC2C4' : '#4BC2C4';
 const tooltipBg = isDark ? "#232323" : "#fff";
 const tooltipText = isDark ? "#e0e0e0" : "#203625";
@@ -193,8 +196,6 @@ React.useEffect(() => {
     }
   }
   setLast7Data(arr);
-
-
 }, [metrics])
 
 const sleepAvg = last7Data.length
@@ -225,7 +226,7 @@ const exerciseAvg = exerciseDays.length
       wrapClassName="custom-dashboard-modal" 
     >
       <div style={styles.greeting}>
-        Welcome back, <strong>{firstName}</strong>! Here's a look at your recent health activity.
+        Welcome back, <strong>{firstName || "Guest"}</strong>! Here's a look at your recent health activity.
       </div>
 
       <div style={styles.chartSection}>
