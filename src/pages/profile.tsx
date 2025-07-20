@@ -295,7 +295,7 @@ const Profile: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item label={<span style={styles.label}>Height (ft)</span>} name="height" rules={[
+        <Form.Item label={<span style={styles.label}>Height (inches)</span>} name="height" rules={[
           { required: true, message: 'Please enter your height' },
           { type: 'number', min: 0, message: 'Height must be positive' }
         ]}>

@@ -41,11 +41,11 @@ router.get('/checkAuth', authRateLimiter, auth(), async (req, res) => {
     }
 
     // Extracts these values and creates "safeUser"
-    const { password, __v, ...safeUser } = userDoc;
+    const { password, __v, ...user } = userDoc;
 
     // Send the user data back to the client
-    console.log('User authenticated successfully:', safeUser); // For debugging purposes
-    res.status(200).json({ user: safeUser });
+    console.log('User authenticated successfully:', user); // For debugging purposes
+    res.status(200).json({ user });
   } catch (error) {
     console.error('Auth check error:', error);
     res.status(401).json({ message: 'Invalid token' });

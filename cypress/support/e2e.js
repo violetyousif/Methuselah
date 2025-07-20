@@ -7,10 +7,6 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   return false;
 });
 
-// Import third-party plugins
-//import 'cypress-axe'; // Accessibility testing
-//import 'cypress-file-upload'; // File upload support
-
 // Add global event listeners
 Cypress.on('window:before:load', (win) => {
   // Example: Mock a global variable

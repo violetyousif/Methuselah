@@ -67,54 +67,51 @@ const SendBar = (props: SendBarProps) => {
     if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSend()
   }
 
-  const handleFileUploadClick = () => {
-    if (fileInputRef.current) fileInputRef.current.click()
-  }
+  // const handleFileUploadClick = () => {
+  //   if (fileInputRef.current) fileInputRef.current.click()
+  // }
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
+//   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+//   const file = event.target.files?.[0];
+//   if (!file) return;
 
-  const acceptedTypes = [
-    'application/pdf',
-    'text/csv',
-    'application/json',
-    'text/plain',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-    'image/png',
-    'image/jpeg'
-  ];
+//   const acceptedTypes = [
+//     'application/pdf',
+//     'text/csv',
+//     'application/json',
+//     'text/plain',
+//     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+//     'image/png',
+//     'image/jpeg'
+//   ];
 
-  if (!acceptedTypes.includes(file.type)) {
-    alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON, XLSX, PNG, or JPG file.');
-    return;
-  }
+//   if (!acceptedTypes.includes(file.type)) {
+//     alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON, XLSX, PNG, or JPG file.');
+//     return;
+//   }
 
-  const formData = new FormData();
-  formData.append('file', file);
+//   const formData = new FormData();
+//   formData.append('file', file);
 
-  try {
-    const response = await fetch('http://localhost:8080/api/uploadFile', {
-      method: 'POST',
-      body: formData,
-      credentials: 'include', // needed for auth cookies!
-    });
+//   try {
+//     const response = await fetch('http://localhost:8080/api/uploadFile', {
+//       method: 'POST',
+//       body: formData,
+//       credentials: 'include', // needed for auth cookies!
+//     });
 
-    const data = await response.json();
-    if (response.ok) {
-      alert(`File uploaded successfully: ${data.fileName}`);
-      // Optionally: save uploaded file info in state for later use!
-    } else {
-      alert('Upload failed: ' + (data.error || 'unknown error'));
-    }
-  } catch (err: any) {
-    alert('Upload failed: ' + err.message);
-  }
-};
+//     const data = await response.json();
+//     if (response.ok) {
+//       alert(`File uploaded successfully: ${data.fileName}`);
+//     } else {
+//       alert('Upload failed: ' + (data.error || 'unknown error'));
+//     }
+//   } catch (err: any) {
+//     alert('Upload failed: ' + err.message);
+//   }
+// };
 
   
-  
-
   return (
     <Show
       fallback={
@@ -127,32 +124,14 @@ const SendBar = (props: SendBarProps) => {
     >
 
       <div className="send-bar">
-        {/* File upload Button */}
-
-      {/* <div
-        className="send-bar"
-        style={{
-          background: '#9AB7A9',
-          borderRadius: 12,
-          padding: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}
-      > */}
-        {/* <button className="button" title="Upload Health Data" disabled={disabled} onClick={handleFileUploadClick}>
-          <FolderOpenOutlined className="chat-icon-black-outline" />
-        </button> */}
-        
-
         {/* Hidden File Input */}
-        <input
+        {/* <input
           type="file"
           ref={fileInputRef}
           style={{ display: 'none' }}
           onChange={handleFileChange}
           accept=".pdf,.csv,.txt,.xlsx"
-        />
+        /> */}
 
         {/* Text Input */}
         <textarea

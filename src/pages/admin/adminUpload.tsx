@@ -11,9 +11,8 @@ import { useRouter } from 'next/router';
 import type { UploadRequestOption } from 'rc-upload/lib/interface';
 import AdminLayout from '../../components/AdminLayout'; 
 
-const { Dragger } = Upload;
+const { Dragger } = Upload;   // Dragger component for file upload
 const { Title, Paragraph } = Typography;
-
 
 function AdminUpload() {
   const [uploading, setUploading] = useState(false);
@@ -21,25 +20,6 @@ function AdminUpload() {
   const [userData, setUserData] = useState<any>(null);
   const [urlInput, setUrlInput] = useState('');
   const router = useRouter();
-
-  // useEffect(() => {
-  // async function checkLogin() {
-  //   try {
-  //     const res = await fetch('http://localhost:8080/api/checkAuth', {
-  //       credentials: 'include',
-  //     });
-  //     if (!res.ok) throw new Error('Not authenticated');
-  //     const data = await res.json();
-  //     setUserData(data.user);
-  //     setIsLoggedIn(true);
-  //   } catch (err) {
-  //     setIsLoggedIn(false);
-  //     router.push('/login'); // or redirect elsewhere
-  //   }
-  // }
-  //   checkLogin();
-  // }, []);
-
 
   useEffect(() => {
   const checkLoginStatus = async () => {
@@ -60,7 +40,6 @@ function AdminUpload() {
       setIsLoggedIn(false);
     }
   };
-
   checkLoginStatus();
 }, []);
 
@@ -88,7 +67,6 @@ function AdminUpload() {
         return;
       }
       if (res.ok) {
-        //message.success(`Upload successful: ${data.chunks} chunks processed.`);
         notification.success({
           message: 'Upload Successful',
           description: `File uploaded successfully. ${data.chunks} chunks processed.`,
