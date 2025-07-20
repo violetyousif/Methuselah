@@ -1,4 +1,5 @@
 // components/AdminLayout.tsx
+// Violet Yousif, 07/12/2025, Created base concept for AdminLayout component with antd responsive sidebar for admin dashboard
 // Mohammad Hoque, 07/18/2025, Enhanced with collapsible sidebar and responsive design
 
 import React, { useState, useEffect } from 'react';
