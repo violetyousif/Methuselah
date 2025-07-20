@@ -22,26 +22,18 @@ const authRateLimiter = rateLimit({
 
 router.get('/checkAuth', authRateLimiter, auth(), async (req, res) => {
   try {
-    //const cookies = cookie.parse(req.headers.cookie || ''); // parse cookies from the request headers
-    //const token = cookies.token;
-
     // Verify the token using jwt.verify that sends to "Users.js"
     // Then mongoose in Users.js will find the user by the userId in the token
-    //const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // const user = await getUser.findById(req.user.id).select('-password'); // Using minus to exclude password from the response
-    // if (!user) return res.status(404).json({ message: 'User not found' });
-
-    // // Send the user data back to the client
-    // console.log('User authenticated successfully:', user); // For debugging purposes
-    // res.status(200).json({ user });
 
     const userDoc = await getUser.findById(req.user.id).lean();
     if (!userDoc) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Extracts these values and creates "safeUser"
+    // Extracts these values and fills in "user" values
     const { password, __v, ...user } = userDoc;
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Send the user data back to the client
     console.log('User authenticated successfully:', user); // For debugging purposes

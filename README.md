@@ -1,4 +1,4 @@
-![Hello, I am Methuselah](image1)
+![Hello, I am Methuselah]
 
 Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress.
 
@@ -124,8 +124,19 @@ npm run dev
 # Terminal 2: Start the backend
 cd backend
 npm run start
-# or, if you want development auto-reloading:
+```
+**Other terminal options:**
+```bash
+## Frontend: 
+# To run Cypress (E2E) testing scripts or to test newly created/edited scripts:
+npx cypress run  # to run in terminal OR
+npx cypress open # to run in cypress external extension
+#
+
+# Backend:
+# If you want to train the pretraining qa AI (not, this AI was created but not incorporated in current results):
 npm run dev:qa   # or use nodemon server.js directly if set up
+#
 ```
 
 Then open your browser and go to:  
@@ -192,6 +203,7 @@ The application will automatically reload as you make changes to the source code
     ```
 
 - **Default credentials are not provided in the repository.** You must set your own admin and test user credentials in your `.env.local` for local development and testing.
+- Admin role is declared in database. If you were given access to the data, there will be a list of some credentials for existing users that you may use.
 
 ---
 
