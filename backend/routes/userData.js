@@ -24,7 +24,7 @@ router.get('/user-data', userDataRateLimiter, auth(), async (req, res) => {
 
     // Return user data in a format compatible with UserData interface
     const userData = {
-      // firstName: user.firstName,
+      firstName: user.firstName,
       // lastName: user.lastName,
       // email: user.email,
       dateOfBirth: user.dateOfBirth || '', // Changed from age to dateOfBirth
