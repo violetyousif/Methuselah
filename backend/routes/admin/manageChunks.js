@@ -101,4 +101,41 @@ router.delete('/chunks', manageChunksLimiter, auth('admin'), async (req, res) =>
   }
 });
 
+// GET unique sources count
+router.get('/sources-count', manageChunksLimiter, auth('admin'), async (req, res) => {
+  try {
+    // Get all unique sources, including empty/null ones
+    const uniqueSources = await getDataChunks.distinct('source');
+    
+    // Filter valid sources (non-empty, non-null, non-whitespace)
+    const validSources = uniqueSources.filter(source => source && source.trim() !== '');
+    
+    // Count chunks without valid sources
+    const chunksWithoutSources = await getDataChunks.countDocuments({
+      $or: [
+        { source: { $exists: false } },
+        { source: null },
+        { source: '' },
+        { source: /^\s*$/ } // only whitespace
+      ]
+    });
+    
+    // Total unique sources = valid sources + (chunks without sources > 0 ? 1 : 0)
+    const totalUniqueCount = validSources.length + (chunksWithoutSources > 0 ? 1 : 0);
+    
+    return res.status(200).json({ 
+      success: true, 
+      count: totalUniqueCount,
+      details: {
+        validSources: validSources.length,
+        chunksWithoutSources: chunksWithoutSources,
+        validSourcesList: validSources
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching unique sources count:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 export default router;

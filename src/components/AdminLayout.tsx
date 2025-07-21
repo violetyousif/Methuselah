@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
-import AdminSidebar from './AdminSidebar';
+import AdminSidebar from './adminSidebar';
 
 const { Sider, Content } = Layout;
 
@@ -28,14 +28,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       
       // Only auto-collapse/expand when crossing the breakpoint AND user hasn't manually controlled it recently
       if (!isManuallyCollapsed) {
-        // Auto-collapse when going from desktop to mobile
-        if (prevWidth >= SIDEBAR_BREAKPOINT && newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
-          console.log('AdminLayout: Auto-collapsing for mobile transition');
+        // Auto-collapse when going below breakpoint (like user sidebar)
+        if (newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
+          console.log('AdminLayout: Auto-collapsing for mobile');
           setCollapsed(true);
         } 
-        // Auto-expand when going from mobile to desktop  
-        else if (prevWidth < SIDEBAR_BREAKPOINT && newWidth >= SIDEBAR_BREAKPOINT && collapsed) {
-          console.log('AdminLayout: Auto-expanding for desktop transition');
+        // Auto-expand when going above breakpoint (like user sidebar)
+        else if (newWidth >= SIDEBAR_BREAKPOINT && collapsed) {
+          console.log('AdminLayout: Auto-expanding for desktop');
           setCollapsed(false);
         }
       }
@@ -49,18 +49,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
     // Cleanup
     return () => window.removeEventListener('resize', handleResize);
-  }, [collapsed, isManuallyCollapsed, windowWidth]);
+  }, [collapsed, isManuallyCollapsed]);
 
   const handleCollapse = (isCollapsed: boolean) => {
     console.log('AdminLayout: handleCollapse called with:', isCollapsed);
     setCollapsed(isCollapsed);
-    setIsManuallyCollapsed(true); // Mark as manually controlled
-    
-    // Reset the manual override after some time to allow automatic behavior later
-    setTimeout(() => {
-      console.log('AdminLayout: Resetting manual control to FALSE');
-      setIsManuallyCollapsed(false);
-    }, 5000); // Reset after 5 seconds like user sidebar
+    setIsManuallyCollapsed(true); // Mark as manually controlled - no reset
   };
 
   const getLayoutStyle = () => {

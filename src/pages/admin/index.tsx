@@ -43,6 +43,11 @@ const AdminDashboard: React.FC = () => {
         credentials: 'include'
       });
 
+      // Fetch unique sources count
+      const sourcesResponse = await fetch('http://localhost:8080/api/admin/sources-count', {
+        credentials: 'include'
+      });
+
       // Fetch system status
       const statusResponse = await fetch('http://localhost:8080/api/admin/statusChecks', {
       credentials: 'include'
@@ -55,6 +60,7 @@ const AdminDashboard: React.FC = () => {
 
       let userCount = 0;
       let feedbackCount = 0;
+      let documentCount = 0;
 
       if (userResponse.ok) {
         const userData = await userResponse.json();
@@ -66,13 +72,18 @@ const AdminDashboard: React.FC = () => {
         feedbackCount = feedbackData.count || feedbackData.data?.length || 0;
       }
 
+      if (sourcesResponse.ok) {
+        const sourcesData = await sourcesResponse.json();
+        documentCount = sourcesData.count || 0;
+      }
+
       setDashboardStats({
         userCount,
-        documentCount: 0, // Will add this when document endpoint is available
+        documentCount,
         feedbackCount
       });
 
-      console.log(`Dashboard stats loaded: ${userCount} users, ${feedbackCount} feedback entries`);
+      console.log(`Dashboard stats loaded: ${userCount} users, ${documentCount} unique sources, ${feedbackCount} feedback entries`);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       message.error('Failed to load dashboard statistics');
@@ -116,7 +127,7 @@ const AdminDashboard: React.FC = () => {
       icon: <UserOutlined style={{ color: '#8AA698' }} />
     },
     {
-      title: 'Total Documents',
+      title: 'Unique Sources',
       value: loading ? '...' : dashboardStats.documentCount,
       icon: <FileTextOutlined style={{ color: '#318182' }} />
     },

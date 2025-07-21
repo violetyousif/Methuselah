@@ -5,7 +5,7 @@
 
 // src/pages/admin/adminManageData.tsx
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Input, Modal, message, Popconfirm, Typography } from 'antd';
+import { Table, Button, Input, Modal, message, notification, Popconfirm, Typography } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import AdminLayout from '../../components/AdminLayout';
 
@@ -54,11 +54,19 @@ function ManageChunks() {
         body: JSON.stringify({ ids: selectedRowKeys }),
       });
       const result = await res.json();
-      message.success(`Deleted ${result.deletedCount} entries`);
+      notification.success({
+        message: 'Success',
+        description: `Deleted ${result.deletedCount} entries`,
+        placement: 'topRight',
+      });
       setSelectedRowKeys([]);
       fetchChunks();
     } catch (err) {
-      message.error('Delete failed.');
+      notification.error({
+        message: 'Error',
+        description: 'Delete failed.',
+        placement: 'topRight',
+      });
     }
   };
 
@@ -72,11 +80,19 @@ function ManageChunks() {
         body: JSON.stringify(editValues),
       });
       const updated = await res.json();
-      message.success('Chunk updated');
+      notification.success({
+        message: 'Success',
+        description: 'Chunk updated successfully',
+        placement: 'topRight',
+      });
       setChunks((prev) => prev.map((c) => (c._id === updated._id ? updated : c)));
       setEditingChunk(null);
     } catch (err) {
-      message.error('Update failed.');
+      notification.error({
+        message: 'Error',
+        description: 'Update failed.',
+        placement: 'topRight',
+      });
     }
   };
 
