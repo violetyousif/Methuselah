@@ -27,6 +27,19 @@ const AdminViewFeedback: React.FC = () => {
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if screen is mobile size
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   // Filter feedback based on selected rating
   const filteredFeedback = selectedRating 
@@ -122,16 +135,108 @@ const AdminViewFeedback: React.FC = () => {
     setSelectedRating(null);
   };
 
+  const styles = {
+    page: {
+      backgroundColor: '#F1F1EB',
+      minHeight: '100vh',
+      padding: isMobile ? '1rem' : '2rem',
+    },
+    card: {
+      maxWidth: 1200,
+      margin: isMobile ? '0 auto' : '1rem auto',
+      padding: isMobile ? '1rem' : '2rem',
+      backgroundColor: '#A0B6AA',
+      borderRadius: isMobile ? '1rem' : '2rem',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
+      paddingBottom: '24px',
+    },
+    headerContainer: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row' as const,
+      justifyContent: isMobile ? 'flex-start' : 'space-between',
+      alignItems: isMobile ? 'flex-start' : 'center',
+      gap: isMobile ? '1rem' : '0',
+      marginBottom: '1.5rem',
+    },
+    controlsContainer: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row' as const,
+      gap: '12px',
+      width: isMobile ? '100%' : 'auto',
+      alignItems: isMobile ? 'stretch' : 'center',
+    },
+    summaryCardsContainer: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row' as const,
+      gap: '16px',
+      marginBottom: '24px',
+      flexWrap: 'wrap' as const,
+    },
+    summaryCard: {
+      backgroundColor: '#8AA698',
+      borderRadius: '1rem',
+      flex: isMobile ? 'none' : 1,
+      minWidth: isMobile ? 'auto' : 200,
+    },
+    summaryCardWide: {
+      backgroundColor: '#8AA698',
+      borderRadius: '1rem',
+      flex: isMobile ? 'none' : 2,
+      minWidth: isMobile ? 'auto' : 300,
+    },
+    feedbackCard: {
+      marginBottom: '8px',
+      borderRadius: '0.5rem',
+    },
+    feedbackItemHeader: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row' as const,
+      justifyContent: isMobile ? 'flex-start' : 'space-between',
+      gap: isMobile ? '12px' : '0',
+      marginBottom: '12px',
+    },
+    userInfo: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    ratingSection: {
+      textAlign: isMobile ? 'left' : 'right' as const,
+    },
+    header: {
+      color: '#1D1E2C',
+      fontWeight: 'bold',
+      margin: 0,
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: isMobile ? '1.2rem' : '1.5rem',
+    },
+    refreshButton: {
+      backgroundColor: '#203625',
+      borderColor: '#203625',
+      color: '#e0e0e0',
+      borderRadius: '1rem',
+      width: isMobile ? '100%' : 'auto',
+    },
+    select: {
+      width: isMobile ? '100%' : 200,
+      backgroundColor: '#ffffff',
+      borderColor: 'rgba(32, 54, 37, 0.3)',
+      color: '#1D1E2C',
+      borderRadius: '6px',
+      borderWidth: '1px',
+    },
+  } as const;
+
   return (
     <AdminLayout>
       <div style={styles.page}>
         <div style={styles.card}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div style={styles.headerContainer}>
             <Title level={3} style={styles.header}>
               <CommentOutlined style={{ marginRight: 12, color: '#1D1E2C' }} />
               User Feedback Overview
             </Title>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div style={styles.controlsContainer}>
                             <Select
                 placeholder={
                   <span style={{ display: 'flex', alignItems: 'center' }}>
@@ -145,11 +250,11 @@ const AdminViewFeedback: React.FC = () => {
                 onClear={clearFilter}
                 style={styles.select}
                 options={[
-                  { value: 5, label: '5 Stars ⭐⭐⭐⭐⭐' },
-                  { value: 4, label: '4 Stars ⭐⭐⭐⭐' },
-                  { value: 3, label: '3 Stars ⭐⭐⭐' },
-                  { value: 2, label: '2 Stars ⭐⭐' },
-                  { value: 1, label: '1 Star ⭐' },
+                  { value: 5, label: isMobile ? '5★' : '5 Stars ⭐⭐⭐⭐⭐' },
+                  { value: 4, label: isMobile ? '4★' : '4 Stars ⭐⭐⭐⭐' },
+                  { value: 3, label: isMobile ? '3★' : '3 Stars ⭐⭐⭐' },
+                  { value: 2, label: isMobile ? '2★' : '2 Stars ⭐⭐' },
+                  { value: 1, label: isMobile ? '1★' : '1 Star ⭐' },
                 ]}
               />
               <Button 
@@ -158,14 +263,14 @@ const AdminViewFeedback: React.FC = () => {
                 loading={loading}
                 style={styles.refreshButton}
               >
-                Refresh
+                {isMobile ? '' : 'Refresh'}
               </Button>
             </div>
           </div>
 
           {/* Summary Cards */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-            <Card style={{ flex: 1, minWidth: 200, backgroundColor: '#8AA698', borderRadius: '1rem' }}>
+          <div style={styles.summaryCardsContainer}>
+            <Card style={styles.summaryCard}>
               <div style={{ textAlign: 'center' }}>
                 <StarOutlined style={{ fontSize: '24px', color: '#1D1E2C', marginBottom: '8px' }} />
                   <Title level={3} style={{ margin: 0, color: getRatingColor(parseFloat(averageRating)) }}>
@@ -179,7 +284,7 @@ const AdminViewFeedback: React.FC = () => {
               </div>
             </Card>
             
-            <Card style={{ flex: 1, minWidth: 200, backgroundColor: '#8AA698', borderRadius: '1rem' }}>
+            <Card style={styles.summaryCard}>
               <div style={{ textAlign: 'center' }}>
                 <CommentOutlined style={{ fontSize: '24px', color: '#1D1E2C', marginBottom: '8px' }} />
                 <Title level={3} style={{ margin: 0, color: '#1D1E2C' }}>
@@ -189,17 +294,17 @@ const AdminViewFeedback: React.FC = () => {
               </div>
             </Card>
 
-            <Card style={{ flex: 2, minWidth: 300, backgroundColor: '#8AA698', borderRadius: '1rem' }}>
-              <Text strong style={{ marginBottom: '12px', display: 'block', color: '#1D1E2C' }}>Rating Distribution</Text>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Card style={styles.summaryCardWide}>
+              <Text strong style={{ marginBottom: '12px', display: 'block', color: '#1D1E2C', fontSize: isMobile ? '14px' : '16px' }}>Rating Distribution</Text>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
                 {Object.entries(ratingDistribution).reverse().map(([rating, count]) => (
                   <span 
                     key={rating} 
                     style={{
                       display: 'inline-block',
-                      padding: '2px 8px',
+                      padding: isMobile ? '4px 6px' : '2px 8px',
                       margin: '2px',
-                      fontSize: '12px',
+                      fontSize: isMobile ? '11px' : '12px',
                       borderRadius: '4px',
                       backgroundColor: getRatingColor(parseInt(rating)),
                       color: 'white'
@@ -249,32 +354,35 @@ const AdminViewFeedback: React.FC = () => {
                     <div key={item._id} style={{ marginBottom: '16px' }}>
                       <Card 
                         size="small" 
-                        style={{ marginBottom: '8px', borderRadius: '0.5rem' }}
+                        style={styles.feedbackCard}
                         hoverable
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={styles.feedbackItemHeader}>
+                          <div style={styles.userInfo}>
                             <UserOutlined style={{ marginRight: 8, color: '#1890ff' }} />
                             <div>
-                              <Text strong>{item.user.firstName} {item.user.lastName}</Text>
+                              <Text strong style={{ fontSize: isMobile ? '14px' : '16px' }}>{item.user.firstName} {item.user.lastName}</Text>
                               <br />
-                              <Text type="secondary" style={{ fontSize: '12px' }}>
+                              <Text type="secondary" style={{ 
+                                fontSize: isMobile ? '11px' : '12px',
+                                wordBreak: 'break-all'
+                              }}>
                                 {item.user.email}
                               </Text>
                             </div>
                           </div>
                           
-                          <div style={{ textAlign: 'right' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                          <div style={styles.ratingSection}>
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px', justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
                               {renderStars(item.rating)}
-                              <Text style={{ marginLeft: 8, fontWeight: 'bold' }}>
+                              <Text style={{ marginLeft: 8, fontWeight: 'bold', fontSize: isMobile ? '14px' : '16px' }}>
                                 {item.rating}/5
                               </Text>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
                               <CalendarOutlined style={{ marginRight: 4, color: '#52c41a' }} />
-                              <Text type="secondary" style={{ fontSize: '12px' }}>
-                                {dayjs(item.createdAt).format('MMM DD, YYYY h:mm A')}
+                              <Text type="secondary" style={{ fontSize: isMobile ? '11px' : '12px' }}>
+                                {dayjs(item.createdAt).format(isMobile ? 'MM/DD/YY' : 'MMM DD, YYYY h:mm A')}
                               </Text>
                             </div>
                           </div>
@@ -284,9 +392,23 @@ const AdminViewFeedback: React.FC = () => {
                         
                         <div>
                           <Text strong>Comments:</Text>
-                          <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#fafafa', borderRadius: '6px', border: '1px solid #d9d9d9' }}>
+                          <div style={{ 
+                            marginTop: '8px', 
+                            padding: '12px', 
+                            backgroundColor: '#fafafa', 
+                            borderRadius: '6px', 
+                            border: '1px solid #d9d9d9',
+                            maxHeight: isMobile ? '150px' : 'none',
+                            overflow: isMobile ? 'auto' : 'visible'
+                          }}>
                             {item.comments ? (
-                              <div style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
+                              <div style={{ 
+                                margin: 0, 
+                                whiteSpace: 'pre-wrap', 
+                                wordBreak: 'break-word',
+                                fontSize: isMobile ? '14px' : '16px',
+                                lineHeight: isMobile ? '1.4' : '1.5'
+                              }}>
                                 {item.comments}
                               </div>
                             ) : (
@@ -296,8 +418,11 @@ const AdminViewFeedback: React.FC = () => {
                           
                           {item.conversationId?.title && (
                             <div style={{ marginTop: '12px' }}>
-                              <Text strong>Related Conversation: </Text>
-                              <Text>{item.conversationId.title}</Text>
+                              <Text strong style={{ fontSize: isMobile ? '14px' : '16px' }}>Related Conversation: </Text>
+                              <Text style={{ 
+                                fontSize: isMobile ? '14px' : '16px',
+                                wordBreak: 'break-word'
+                              }}>{item.conversationId.title}</Text>
                             </div>
                           )}
                         </div>
@@ -315,41 +440,3 @@ const AdminViewFeedback: React.FC = () => {
 };
 
 export default AdminViewFeedback;
-
-const styles = {
-  page: {
-    backgroundColor: '#F1F1EB',
-    minHeight: '100vh',
-    padding: '2rem',
-  },
-  card: {
-    maxWidth: 1200,
-    margin: '1rem auto',
-    padding: '2rem',
-    backgroundColor: '#A0B6AA',
-    borderRadius: '2rem',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
-    paddingBottom: '24px',
-  },
-  header: {
-    color: '#1D1E2C',
-    fontWeight: 'bold',
-    margin: 0,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  refreshButton: {
-    backgroundColor: '#203625',
-    borderColor: '#203625',
-    color: '#e0e0e0',
-    borderRadius: '1rem',
-  },
-  select: {
-    width: 200,
-    backgroundColor: '#ffffff',
-    borderColor: 'rgba(32, 54, 37, 0.3)',
-    color: '#1D1E2C',
-    borderRadius: '6px',
-    borderWidth: '1px'
-  },
-} as const;
