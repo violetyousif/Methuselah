@@ -2,7 +2,7 @@
 // Violet Yousif, 07/07/25, Edited to include URL upload functionality
 // Violet Yousif, 07/10/25, Edited to connect with sidebar navigation and authentication checks
 
-
+// PURPOSE: Admin page for uploading pretraining content
 import React, { useState, useEffect } from 'react';
 import { Upload, Input, Button, message, notification, Typography, Spin, Layout } from 'antd';
 const { Content } = Layout;
@@ -198,11 +198,11 @@ const styles = {
   page: {
     backgroundColor: '#F1F1EB',
     minHeight: '100vh',
-    padding: '2rem',
   },
   card: {
     maxWidth: 500,
-    margin: '1rem auto',
+    width: '100%',
+    minWidth: 200,
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '2rem',
