@@ -1,5 +1,3 @@
-![Hello, I am Methuselah]
-
 Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress.
 
 ---

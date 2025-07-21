@@ -136,7 +136,7 @@ const firstRowCharts = [
 ];
 
 const secondRowCharts = [
-  { key: 'calories', label: 'Last 7 Days: Calories', fill: barColorCalories },
+  { key: 'calories', label: 'Last 7 Days: Caloric Intake', fill: barColorCalories },
   { key: 'weight', label: 'Last 7 Days: Weight (lb)', fill: barColorExercise }
 ];
 

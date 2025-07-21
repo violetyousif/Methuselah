@@ -222,7 +222,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       userPrompt = question;
     } else {
       userPrompt = `The following knowledge may guide your answer:\n${context}\n\n${question}`;
-      //userPrompt = `Based on the following information:\n${context}\n\nAnswer this question:\n${question}`;
     }
 
     const baseChatConfig = {
@@ -250,9 +249,12 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
         chatResp = await chatCompletionWithFallback({ ...baseChatConfig, options: { wait_for_model: true } });
         console.log('Chat completion response (retry):', JSON.stringify(chatResp, null, 2));
       } else if (err.message?.includes('timeout')) {
-        console.error('Chat completion timed out after 30 seconds');
-        throw new Error('Request timed out. Please try again.');
-      } else throw err;
+        console.error('RAG Chat completion timed out after 30 seconds');
+        res.status(500).json({ error: err.message || 'Chat completion timed out. Please try again later.' });
+      } else {
+        // result for all other status errors that aren't 500
+        console.error('Error:', err);        
+      }
     }
 
     const t3 = Date.now();
