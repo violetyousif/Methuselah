@@ -11,8 +11,7 @@
     "lint:fix": "eslint ./src --fix",
     "lint:strict": "eslint --max-warnings=0 ./src",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,json,html,css,less,md}'",
-    "format:check": "prettier --check 'src/**/*.{ts,tsx,js,json,html,css,less,md}'",
-    "test": "jest"
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,js,json,html,css,less,md}'"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
@@ -56,10 +55,7 @@
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
     "@types/katex": "^0.16.7",
     "@types/lodash-es": "^4.17.8",
     "@types/node": "^24.0.14",
@@ -70,12 +66,9 @@
     "eslint": "^9.31.0",
     "eslint-config-next": "^15.1.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^30.0.4",
-    "jest-environment-jsdom": "^30.0.4",
     "prettier": "^3.4.2",
     "react-test-renderer": "^18.3.1",
     "typescript": "^5.7.2",
-    "webpack": "^5.100.1",
-    "whatwg-fetch": "^3.6.20"
+    "webpack": "^5.100.1"
   }
 }

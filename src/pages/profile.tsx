@@ -11,19 +11,18 @@
 // Mizanur Mizan, 07/03/2025-07/04/2025, Added Health Metrics section with date selection for sleep hours, exercise hours, mood, calories, and meals
 
 import React, { useState, useEffect } from 'react'
-import { Form, InputNumber, Select, Button, Input, message, notification } from 'antd'
+import { Form, InputNumber, Select, Button, Input, notification, Calendar, Modal, Tabs } from 'antd'
 import { UserData } from '../models'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { DownOutlined } from '@ant-design/icons'; // For dropdown arrow icon
 import dayjs from 'dayjs';
-import { Tabs } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-dayjs.extend(advancedFormat);
-import { Calendar, Modal } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import ActivityLevelModal from '../components/ActivityLevelModal';
+dayjs.extend(advancedFormat); // Enable date advanced formatting for dayjs
+
 
 const Profile: React.FC = () => {
   const [form] = Form.useForm()

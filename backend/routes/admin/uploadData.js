@@ -8,17 +8,9 @@ import path from 'path';
 import fs from 'fs';
 import auth from '../../middleware/auth.js';
 import rateLimit from 'express-rate-limit';
-import {
-  //loadFromURL,
-  loadPDF,
-  loadTXT,
-  loadCSV,
-  loadJSON,
-  loadXLS,
-  loadImageText,
-  chunkText,
-  embedAndStoreChunks,
-  getClient
+import { 
+  loadPDF, loadTXT, loadCSV, loadJSON, loadXLS, loadImageText,
+  chunkText, embedAndStoreChunks, getClient 
 } from '../../scripts/chunkAndIngest.js';
 
 const router = express.Router();
@@ -47,7 +39,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB max limit
   fileFilter: (req, file, cb) => {
     const allowedTypes = /pdf|txt|json|csv|xls|xlsx|png|jpg|jpeg/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -80,12 +72,14 @@ router.post('/uploadData', uploadDataLimiter, auth('admin'), upload.single('file
 
     // Verify file path is within the upload directory
     if (!filePath.startsWith(uploadDir)) {
-      throw new Error(`Invalid file path: ${filePath}`);
+      return res.status(400).json({ error: 'Invalid file path' });
+      //throw new Error(`Invalid file path: ${filePath}`);
     }
 
     // Verify file exists
     if (!fs.existsSync(filePath)) {
-      throw new Error(`Uploaded file not found: ${filePath}`);
+      return res.status(404).json({ error: 'Uploaded file not found' });
+      //throw new Error(`Uploaded file not found: ${filePath}`);
     }
 
     // Load file content based on type
@@ -119,12 +113,12 @@ router.post('/uploadData', uploadDataLimiter, auth('admin'), upload.single('file
         break;
       default:
         console.error('Unsupported file type:', fileExtension);
-        throw new Error('Unsupported file type');
+        return res.status(400).json({ error: 'Unsupported file type' });
     }
 
     if (!text || text.trim().length === 0) {
-      throw new Error('No content extracted from uploaded file.');
-      //return res.status(400).json({ error: 'No text content found in file' });
+      //throw new Error('No content extracted from uploaded file.');
+      return res.status(400).json({ error: 'No text content found in file' });
     }
 
     // Chunk the text

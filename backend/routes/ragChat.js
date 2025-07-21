@@ -32,18 +32,22 @@ const chatLimiter = rateLimit({
 });
 const router = Router();
 
+
+
 // Re-use a single Mongo connection + HF client for speed
 const vectorClient = new MongoClient(process.env.MONGODB_URI);
 await vectorClient.connect();
 const kb = vectorClient.db('Longevity').collection('KnowledgeBase');
 
+// The embedding model is used to embed the user's question to be sent to the vector search
 const EMBEDDING_MODEL = 'BAAI/bge-small-en-v1.5'; 
 
+// The inference client is used to call the Hugging Face API for chat completions
 const hf = new InferenceClient(process.env.HF_API_KEY);
-// 100 % free chat-tuned model. IF theres a BETTER one, please change it HERE!!!
-const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2'; // Primary model - more reliable
-const FALLBACK_MODEL = 'HuggingFaceH4/zephyr-7b-beta'; // Fallback model
-//const HF_MODEL = 'google/flan-t5-small';
+
+// The primary model is used for chat completions, with a fallback model in case of failure
+const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2';  // Primary model - more reliable
+const FALLBACK_MODEL = 'HuggingFaceH4/zephyr-7b-beta';  // Fallback model
 
 // Timeout wrapper for chat completion 30000
 const chatCompletionWithTimeout = async (config, timeoutMs = Number(process.env.HF_TIMEOUT_MS) || 60000 ) => 
@@ -70,21 +74,38 @@ const chatCompletionWithFallback = async (config) => {
 
 // Helper builds the system instruction for the LLM
 // Each mode has a different prompt to guide the LLM's behavior
-  function buildSystemPrompt(username) {
-    // if (mode === 'conversational') {
-    //   return `You are Methuselah, a friendly longevity wellness coach. 
-    //   You are only allowed to answer as Methuselah, the coach. 
-    //   Never create or simulate responses for the user.
-    //   Never write a conversation, only a single, one-turn reply as Methuselah, directly to the user. 
-    //   Stop speaking as soon as you finish your reply.
-    //   Do not ask for or expect a user reply in your output.`;
-    // } else {
-      // Default = Direct mode
-      return `You are a wise longevity health and wellness advisor named Methuselah speaking to ${username}.
-      ONLY reply as the advisor. Never include any role tags or generate responses as the user.
-      Make answers conversational, actionable, and tailored to ${username}'s health metrics. Never cut yourself off mid-sentence.
-      Wait for the user's reply before continuing.`
-    //}
+function buildSystemPrompt(username, userProfile) {
+  // Calculate user's age from date of birth
+  let age = '';
+  if (userProfile && userProfile.dateOfBirth) {
+    const dob = new Date(userProfile.dateOfBirth);
+    const today = new Date();
+    age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+  }
+
+  let healthProfile = '';
+  if (userProfile) {
+    healthProfile = `
+    User Health Profile:
+    - Health Goal: ${userProfile.healthGoal || 'Not specified'}
+    - Supplements: ${userProfile.supplements || 'None'}
+    - Medicine: ${userProfile.medicine || 'None'}
+    - Activity Level: ${userProfile.activityLevel || 'Not specified'}
+    - Height (inches): ${userProfile.heightInches || 'Not specified'}
+    - Gender: ${userProfile.gender || 'Not specified'}
+    - Age: ${age || 'Not specified'}
+    `;
+  }
+  return `You are Methuselah, a wise and mystical advisor on longevity, health, and wellness, speaking to ${username}.
+    Your words should carry the weight of ancient wisdom and a gentle, mystical presence. Make it sound slightly poetic.
+    ONLY reply as Methuselah. Never include any role tags or generate responses as the user.
+    Make answers conversational, actionable, and tailored to ${username}'s health metrics and personal health profile. Never cut yourself off mid-sentence.
+    Wait for the user's reply before continuing.
+    ${healthProfile}`.trim();
   }
 
 router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
@@ -98,6 +119,8 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     const userId = req.user.id;
 
     // Parallel fetch: user profile and question embedding
+    // Uses the user's ID to fetch their profile and embed the question
+    // and stores the results in qEmb
     const [userProfile, qEmb] = await Promise.all([
       vectorClient.db('Longevity').collection('Users').findOne({ _id: ObjectId.createFromHexString(userId) }),
       hf.featureExtraction({
@@ -129,6 +152,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       },
     ]).toArray();
 
+    // Retrieves user's personal memory summaries from the Conversations collection
     const memDocs = await vectorClient
       .db('Longevity')
       .collection('Conversations')
@@ -168,12 +192,9 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
 
 
   const t2 = Date.now();
-
-
     const combined = [...memDocs, ...docs];
     
     // Build context (~1000-token budget) from personal memories + KB passages
-
     let context = '';
     let tokenBudget = 1000;
     for (const doc of combined) {
@@ -188,24 +209,20 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     console.log('Vector context:\n', context);
     console.log('User Question:', question);
 
-
     const vagueTerms = ['help', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks'];
     const isVague = vagueTerms.includes(question.trim().toLowerCase());
 
-    // const isVague = ['help', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks'].some(e =>
-    //   question.toLowerCase().includes(e)
-    // );
-
-    let systemPrompt = buildSystemPrompt(firstName);
+    let systemPrompt = buildSystemPrompt(firstName, userProfile);   // Build system prompt based on user health profile
     let userPrompt;
 
     if (isVague) {
       systemPrompt = `You are Methuselah, the friendly longevity coach. Only speak as Methuselah. Never reply as the user.`;
-      userPrompt = `Greet ${firstName} and invite them to share a health or wellness goal.`;
+      userPrompt = `Greet ${firstName} and invite them to share a health or longevity wellness goal.`;
     } else if (!context || context.length < 20) {
       userPrompt = question;
     } else {
-      userPrompt = `Based on the following information:\n${context}\n\nAnswer this question:\n${question}`;
+      userPrompt = `The following knowledge may guide your answer:\n${context}\n\n${question}`;
+      //userPrompt = `Based on the following information:\n${context}\n\nAnswer this question:\n${question}`;
     }
 
     const baseChatConfig = {
@@ -288,7 +305,7 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     // Check if response was truncated due to token limits
     const finishReason = chatResp.choices?.[0]?.finish_reason;
     if (finishReason === 'length') {
-      console.warn('⚠️ Response was truncated due to token limit. Consider increasing max_tokens.');
+      console.warn('Response was truncated due to token limit. Consider increasing max_tokens.');
       // Append a note if the response was cut off
       if (!answer.match(/[.!?]$/)) {
         answer += '...';
@@ -312,133 +329,3 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
   }
 });
 export default router;
-
-  
-// POST /api/ragChat
-// router.post('/ragChat', chatLimiter, auth, async (req, res) => {
-//   console.log('ragChat HIT');
-//   try {
-//     //Grab and sanity-check the question
-//     const question = req.body.query?.trim();
-//     //const mode = req.body.mode === 'conversational' ? 'conversational' : 'direct';
-//     if (!question) return res.status(400).json({ error: 'query required' });
-
-//     // Grab user first name from MongoDB
-//     const userId = req.user.id;
-//     const userProfile = await vectorClient.db('Longevity').collection('Users').findOne({ _id: ObjectId.createFromHexString(userId) });
-//     const firstName = userProfile?.firstName || 'traveler';
-
-//     //Turn the question into a vector
-//     const qEmb = await hf.featureExtraction({
-//       //model: 'sentence-transformers/all-MiniLM-L6-v2',
-//       provide: 'default', // use the default model for feature extraction
-//       model: 'BAAI/bge-small-en-v1.5',
-//       inputs: question,
-//     });
-
-//     //Vector search: top-4 matching passages (this is where the pretraining gets used)
-//     const docs = await kb.aggregate([
-//       {
-//         $vectorSearch: {
-//           index: 'vector_index',
-//           path: 'embedding',
-//           queryVector: qEmb,
-//           numCandidates: 50,
-//           limit: 4
-//         }
-//       },
-//       {
-//         $project: {
-//           _id: 0,
-//           text: 1,
-//           //topic: 1,
-//           source: 1
-//         }
-//       }
-//     ]).toArray();
-
-//     const context = docs.map(d => d.text).join('\n---\n');
-
-
-  // const isVague = ['help', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks'].some(e =>
-  //   question.toLowerCase().includes(e)
-  // );
-
-  // let systemPrompt = buildSystemPrompt(firstName);
-  // let userPrompt;
-
-  // if (isVague) {
-  //   // Greet user and invite a wellness question
-  //   systemPrompt = `You are Methuselah, the friendly longevity coach. Only speak as Methuselah. Never reply as the user.`;
-  //   userPrompt = `Greet ${firstName} and invite them to share a health or wellness goal.`;
-  // } else if (!context || context.length < 20) {
-  //   // Fallback when vector search fails
-  //   userPrompt = question; // Just pass the user input
-  // } else {
-  //   // Provide vector-based context
-  //   userPrompt = `Based on the following information:\n${context}\n\nAnswer this question:\n${question}`;
-  // }
-
-  //   // generate answer with Zephyr-7B 
-  //   const chatResp = await hf.chatCompletion({
-  //     model: HF_MODEL,
-  //     messages: [
-  //       { role: 'system', content: systemPrompt },
-  //       { role: 'user', content: userPrompt }
-  //     ],
-  //     max_tokens: 800,
-  //     temperature: 0.2,
-  //     top_p: 0.95,
-  //     options: { wait_for_model: false }   // waits if model is cold
-  //   });
-  //   let answer = chatResp.choices?.[0]?.message?.content ?? '';
-  //   answer = answer
-  //     .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/i, '')
-  //     .trim();
-  //   //const userRoleRegex = /(?:^|\n)[A-Z][a-zA-Z0-9_ ]{0,40}:/;
-  //   //const roleMatch = answer.match(userRoleRegex);
-  //  //if (roleMatch) {
-  //   //answer = answer.slice(0, roleMatch.index).trim();  
-  //   const roleOrDialogue = answer.search(/\n\s*([\/\[]|USER|METHUSALEH|COACH|PATIENT|CLIENT)/i);
-  //   if (roleOrDialogue > 0) {
-  //     answer = answer.slice(0, roleOrDialogue).trim(); 
-  // }
-  
-  //   answer = answer.split('\n\n')[0].trim();
-  //   res.json({ answer, contextDocs: docs }); //Send answer + the passages we used
-  // } catch (err)
-  //   console.error('RAG chat ERROR', err);
-  //   res.status(500).json({ error: err.message || 'RAG chat failed' });
-  // };
-
-
-
-
-
-// // Error handling for vague user input
-    // const vagueInputs = ['help', 'help me', 'what should I do', 'idk', 'unsure', 'no idea', 'hi', 'hello', 'hey', 'thanks', 'thank you'];
-    // const isVague = vagueInputs.some(v => question.toLowerCase().includes(v));
-    //
-    // let userPrompt;
-    // let systemPrompt;
-    // // Forces the direct mode toggle to avoid knowledge base context.
-    // if (isVague) {
-    //   systemPrompt = `You are Methuselah, the friendly longevity coach. ONLY speak as Methuselah. NEVER reply as the user. Greet ${firstName} and invite them to share a health or wellness goal.`;
-    //   userPrompt = "";
-    //   //`Greet the user as Methuselah, a wise and friendly wellness coach, and invite them to share their health goals or concerns. Only write your own reply as Methuselah.`;
-    // } 
-    // else if (!context || context.length < 20) {
-    //   systemPrompt = "You are Methuselah, the friendly longevity coach. ONLY reply as Methuselah. NEVER reply as the user.";
-    //   userPrompt = `If the user's question is not related to health, wellness, or longevity, politely explain you can only answer those topics. Question: ${question}`;
-    //   }
-    // else if (mode === 'direct') {
-    //   systemPrompt = buildSystemPrompt(firstName, mode);
-    //   userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;
-    //   //userPrompt = `Answer the following question as Methuselah, the longevity coach. Only reply as Methuselah. Do not simulate a conversation.\n\n${question}`;  // Send ONLY the user question, no KB context for direct mode
-    // } else {
-    //   systemPrompt = buildSystemPrompt(firstName, mode);
-    //   userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
-    //   //userPrompt = `Here is some relevant context:\n${context}\n\nAnswer ONLY as the coach, in one turn. Do NOT generate a reply from the user. The question: ${question}`;
-    // }
-
-    //const systemPrompt = buildSystemPrompt(firstName, mode);

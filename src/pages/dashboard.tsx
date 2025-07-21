@@ -52,13 +52,11 @@ const [userId, setUserId] = React.useState<string | null>(null);
 const [tips, setTips] = React.useState({ tip1: '', tip2: '' }); //tip3: ''
 const [firstName, setFirstName] = React.useState<string>('');
 const [isLoadingUser, setIsLoadingUser] = React.useState(true);
-
-
-// React.useEffect(() => {
-//     const storedTheme = localStorage.getItem('theme') || 'default';
-//     setCurrentTheme(storedTheme as 'default' | 'dark');
-// }, [visible]);
-
+const styles = getStyles(currentTheme)
+const [metrics, setMetrics] = React.useState<Record<string, any>>({});
+const [last7Data, setLast7Data] = React.useState<
+  { date: string; sleep: number; exercise: number; calories: number; weight: number }[]
+>([]);
 
 React.useEffect(() => {
   console.log("USEEFFECT RUNNING");
@@ -126,12 +124,21 @@ const axisColor = isDark ? '#B8FFF8' : '#000000';       // axes & legend
 const gridColor = isDark ? '#318182' : '#203625';       // grid lines
 const barColorSleep = isDark ? '#4BC2C4' : '#203625';   // sleep bar
 const barColorExercise = isDark ? '#96F2D7' : '#203625';// exercise bar
-const barColorCalories = isDark ? '#FFD369' : '#203625' // calories bar
+const barColorCalories = isDark ? '#387555ff' : '#203625' // calories bar
 const chartTitleColor = isDark ? '#4BC2C4' : '#4BC2C4';
 const tooltipBg = isDark ? "#232323" : "#fff";
 const tooltipText = isDark ? "#e0e0e0" : "#203625";
 const legendStyle = { color: axisColor };
 
+const firstRowCharts = [
+  { key: 'sleep', label: 'Last 7 Days: Sleep Hours', fill: barColorSleep },
+  { key: 'exercise', label: 'Last 7 Days: Exercise Hours', fill: barColorExercise }
+];
+
+const secondRowCharts = [
+  { key: 'calories', label: 'Last 7 Days: Calories', fill: barColorCalories },
+  { key: 'weight', label: 'Last 7 Days: Weight (lb)', fill: barColorExercise }
+];
 
 React.useEffect(() => {
   const loadPreferences = async () => {
@@ -159,11 +166,7 @@ React.useEffect(() => {
   }
 }, [visible])
 
-const styles = getStyles(currentTheme)
-const [metrics, setMetrics] = React.useState<Record<string, any>>({});
-const [last7Data, setLast7Data] = React.useState<
-  { date: string; sleep: number; exercise: number; calories: number; weight: number }[]
->([]);
+
 
 React.useEffect(() => {
   fetch('http://localhost:8080/api/health-metrics', { credentials: 'include' })
@@ -222,7 +225,61 @@ const exerciseAvg = exerciseDays.length
         Welcome back, <strong>{firstName || "Guest"}</strong>! Here's a look at your recent health activity.
       </div>
 
-      <div style={styles.chartSection}>
+
+
+<div style={styles.chartSection}>
+  {firstRowCharts.map(({ key, label, fill }) => (
+    <div style={styles.chartContainer} key={key}>
+      <h3 style={styles.chartTitle}>{label}</h3>
+      {last7Data.length === 0 ? (
+        <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={last7Data}>
+            <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+            <XAxis dataKey="date" stroke={axisColor} />
+            <YAxis stroke={axisColor} />
+            <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+            <Legend wrapperStyle={legendStyle} />
+            <Bar dataKey={key} name={label.split(': ')[1]} fill={fill}>
+              {last7Data.map((_, index) => (
+                <Cell key={`cell-${key}-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  ))}
+</div>
+
+<div style={styles.chartSection}>
+  {secondRowCharts.map(({ key, label, fill }) => (
+    <div style={styles.chartContainer} key={key}>
+      <h3 style={styles.chartTitle}>{label}</h3>
+      {last7Data.length === 0 ? (
+        <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={last7Data}>
+            <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+            <XAxis dataKey="date" stroke={axisColor} />
+            <YAxis stroke={axisColor} />
+            <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+            <Legend wrapperStyle={legendStyle} />
+            <Bar dataKey={key} name={label.split(': ')[1]} fill={fill}>
+              {last7Data.map((_, index) => (
+                <Cell key={`cell-${key}-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  ))}
+</div>
+      {/* <div style={styles.chartSection}>
+        
         {[
           { key: 'sleep', label: 'Last 7 Days: Sleep Hours', fill: barColorSleep },
           { key: 'exercise', label: 'Last 7 Days: Exercise Hours', fill: barColorExercise },
@@ -232,16 +289,16 @@ const exerciseAvg = exerciseDays.length
             <h3 style={styles.chartTitle}>{label}</h3>
           {last7Data.length === 0 ? (
             <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
-          ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={last7Data}>
-              <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-              <XAxis dataKey="date" stroke={axisColor} />
-              <YAxis stroke={axisColor} />
-              <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-              <Legend wrapperStyle={legendStyle} />
-              <Bar dataKey={key} name={label.split(': ')[1]}>
-                {last7Data.map((_, index) => (
+          ) : ( */}
+           {/* <ResponsiveContainer width="100%" height={300}>
+             <BarChart data={last7Data}>
+               <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+               <XAxis dataKey="date" stroke={axisColor} />
+               <YAxis stroke={axisColor} />
+               <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+               <Legend wrapperStyle={legendStyle} />
+               <Bar dataKey={key} name={label.split(': ')[1]}>
+                 {last7Data.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Bar>
@@ -251,7 +308,6 @@ const exerciseAvg = exerciseDays.length
           </div>
         ))}
       </div>
-      {/* Second row: Weight chart */}
       <div style={{ ...styles.chartSection, justifyContent: 'center' }}>
         <div
           style={{
@@ -285,7 +341,7 @@ const exerciseAvg = exerciseDays.length
             </ResponsiveContainer>
           )}
         </div>
-      </div>
+      </div> */}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
         <Tooltip title="Methuselah analyzes your sleep trends over time to determine your wellness aspirations and journey.">

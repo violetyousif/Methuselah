@@ -25,7 +25,5 @@ const HealthMetricSchema = new mongoose.Schema({
     //collection: 'HealthMetrics'
 });
 
-// HealthMetricSchema.index({ userId: 1, date: 1 }, { unique: true });
-
 const HealthMetric = mongoose.models.HealthMetric || mongoose.model('HealthMetric', HealthMetricSchema, 'HealthMetrics');
 export default HealthMetric;

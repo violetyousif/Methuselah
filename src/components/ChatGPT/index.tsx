@@ -117,7 +117,6 @@ const ChatGPT = ({
         onSend={onSend}
         onClear={onClear}
         onStop={onStop}
-        //inputColor={inputBarColor}
       />
     </div>
   )

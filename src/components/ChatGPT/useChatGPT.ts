@@ -99,7 +99,7 @@ function buildPersonalizedContext(healthData: UserData | null, metricDates: Reco
   const { dateOfBirth, weight, height, gender, activityLevel } = healthData;
   const age = new Date().getFullYear() - new Date(dateOfBirth).getFullYear();
 
-  let context = `This user is a ${age}-year-old ${gender}, weighing ${weight} kg and standing ${height} cm tall. `;
+  let context = `This user is a ${age}-year-old ${gender}, weighing ${weight} kg and standing ${height} inches tall. `;
   if (activityLevel) context += `They have a(n) ${activityLevel} activity level. `;
 
   const avgSleep = calculateAvgSleepHours(metricDates);

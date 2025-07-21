@@ -1,5 +1,6 @@
 // Viktor Gjorgjevski, 07/14/2025 Created new helper to assist in using old chat history info in new chats
-// utils/summariseAndEmbed.js  (NEW helper)
+
+// PURPOSE: Summarise and embed the last 20 messages of a conversation
 // utils/summariseAndEmbed.js
 import { InferenceClient } from '@huggingface/inference';
 

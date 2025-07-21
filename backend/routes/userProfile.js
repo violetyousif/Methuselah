@@ -28,15 +28,10 @@ router.patch('/profile', profileRateLimiter, auth(), async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Update user profile data
-    //if (firstName !== undefined) user.firstName = firstName;
-    // if (lastName !== undefined) user.lastName = lastName;
-    // if (email !== undefined) user.email = email;
     if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
     if (gender !== undefined) user.gender = gender;
-    // if (weight !== undefined) user.weight = weight;
     if (height !== undefined) user.height = height;
     if (activityLevel !== undefined) user.activityLevel = activityLevel;
-    // if (sleepHours !== undefined) user.sleepHours = sleepHours;
     if (healthGoal !== undefined) user.healthGoal = healthGoal;
     if (supplements !== undefined) user.supplements = supplements;
     if (medicine !== undefined) user.medicine = medicine;

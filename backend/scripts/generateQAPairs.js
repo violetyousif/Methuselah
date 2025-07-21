@@ -70,8 +70,6 @@ await connectDB();
   await csvWriter.writeRecords(allPairs);
 })();
 
-
-
 async function generateQAPairs(topic, n = 5) {
   const userPrompt = `Generate ${n} realistic Q&A pairs about: "${topic}". Follow the format exactly.`;
 

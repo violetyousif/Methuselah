@@ -9,36 +9,33 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import rateLimit from 'express-rate-limit';
+import express from 'express';
+import User from '../models/User.js'; 
+import nodemailer from 'nodemailer';
+import resetCodes from '../utils/resetCodes.js';
+import bcrypt from 'bcrypt'; 
+import jwt from 'jsonwebtoken';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
-import rateLimit from 'express-rate-limit';
-import express from 'express';
 const router = express.Router();
-import User from '../models/User.js'; 
-import nodemailer from 'nodemailer';
-import resetCodes from '../utils/resetCodes.js';
 
 
-import bcrypt from 'bcrypt'; 
-import jwt from 'jsonwebtoken';
-//import cookie from 'cookie'; // Don't need anymore, using res.cookie() directly from server.js and middleware
 
-// prevent brute-force or credential-stuffing attacks by limiting the number of registration attempts
-//import rateLimit from 'express-rate-limit';
-
-// NEW FIX
+// Description: Create a transporter for sending emails
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.MAIL_USER,
+    user: process.env.MAIL_USER, 
     pass: process.env.MAIL_PASS,
   },
 });
 
+// Description: Limiter to prevent brute-force attacks on login
 const resetCodeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit to 5 requests per window per IP
@@ -55,19 +52,12 @@ router.post('/send-reset-code', resetCodeLimiter, async (req, res) => {
   const { email, mode } = req.body;
 
   // Optional safety check
-  if (!email || !mode) {
-    return res.status(400).json({ message: 'Email and mode are required.' });
-  }
+  if (!email || !mode) { return res.status(400).json({ message: 'Email and mode are required.' }); }
 
   const user = await User.findOne({ email: { $eq: email } });
 
-  if (mode === 'reset' && !user) {
-    return res.status(404).json({ message: 'Email not found.' });
-  }
-
-  if (mode === 'register' && user) {
-    return res.status(409).json({ message: 'Email already registered.' });
-  }
+  if (mode === 'reset' && !user) { return res.status(404).json({ message: 'Email not found.' });}
+  if (mode === 'register' && user) { return res.status(409).json({ message: 'Email already registered.' }); }
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   resetCodes.set(email, code);
@@ -87,8 +77,6 @@ router.post('/send-reset-code', resetCodeLimiter, async (req, res) => {
   }
 });
 
-
-
 // 2. Verify code
 router.post('/verify-reset-code', (req, res) => {
   const { email, code } = req.body;
@@ -100,6 +88,7 @@ router.post('/verify-reset-code', (req, res) => {
   }
 });
 
+// Description: Limiter for password reset attempts
 const updatePasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // Limit to 10 requests per IP per windowMs
@@ -124,8 +113,7 @@ router.post('/update-password', updatePasswordLimiter, async (req, res) => {
   res.status(200).json({ message: 'Password updated successfully' });
 });
 
-
-
+// Description: Limiter for login attempts
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 15,   // Limit to 15 login attempts per IP per windowMs
@@ -136,17 +124,9 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-
-console.log("MAIL_USER:", process.env.MAIL_USER);
-console.log("MAIL_PASS exists?", !!process.env.MAIL_PASS);
-
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: process.env.MAIL_USER,
-//     pass: process.env.MAIL_PASS,
-//   },
-// });
+// Uncomment for debugging purposes only
+//console.log("MAIL_USER:", process.env.MAIL_USER);
+//console.log("MAIL_PASS exists?", !!process.env.MAIL_PASS);
 
 
 // Description: handles user login by checking the provided email and password against the db.
@@ -160,8 +140,6 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    // TODO: Check why this was changed from getUser to User -- it removes the security of the getUser function
-    //    const user = await getUser.findOne({ email: { $eq: email.trim().toLowerCase() } });
     const user = await User.findOne({ email: { $eq: email.trim().toLowerCase() } });
     if (!user) {
       console.log('User not found');

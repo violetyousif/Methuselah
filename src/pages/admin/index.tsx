@@ -1,6 +1,6 @@
-// Admin Dashboard - Main overview page
 // Mohammad Hoque, 07/18/2025, Updated to use new AdminLayout pattern
 
+// Admin Dashboard - Main overview page
 import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Statistic, Typography, Space, Button, message } from 'antd';
 import { 
@@ -24,6 +24,12 @@ const AdminDashboard: React.FC = () => {
     feedbackCount: 0
   });
   const [loading, setLoading] = useState(true);
+  const [systemStatus, setSystemStatus] = useState({
+    systemStatus: 'Unknown',
+    databaseStatus: 'Unknown',
+    lastUpdated: '',
+  });
+
 
   const fetchDashboardStats = async () => {
     try {
@@ -36,6 +42,16 @@ const AdminDashboard: React.FC = () => {
       const feedbackResponse = await fetch('http://localhost:8080/api/admin/feedback', {
         credentials: 'include'
       });
+
+      // Fetch system status
+      const statusResponse = await fetch('http://localhost:8080/api/admin/statusChecks', {
+      credentials: 'include'
+      });
+      let statusData = { systemStatus: 'Unknown', databaseStatus: 'Unknown', lastUpdated: '' };
+      if (statusResponse.ok) {
+        statusData = await statusResponse.json();
+        setSystemStatus(statusData);
+      }
 
       let userCount = 0;
       let feedbackCount = 0;
@@ -203,22 +219,22 @@ const AdminDashboard: React.FC = () => {
               <Col span={8}>
                 <Statistic 
                   title="System Status" 
-                  value="Online" 
+                  value={systemStatus.systemStatus} 
                   valueStyle={{ color: '#318182' }}
                 />
               </Col>
               <Col span={8}>
                 <Statistic 
                   title="Database Status" 
-                  value="Connected" 
+                  value={systemStatus.databaseStatus} 
                   valueStyle={{ color: '#318182' }}
                 />
               </Col>
               <Col span={8}>
                 <Statistic 
                   title="Last Updated" 
-                  value="Now" 
-                  valueStyle={{ color: '#8AA698' }}
+                  value={systemStatus.lastUpdated ? new Date(systemStatus.lastUpdated).toLocaleString() : '...'}  
+                  valueStyle={{ color: '#318182' }}
                 />
               </Col>
             </Row>

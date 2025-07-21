@@ -41,14 +41,6 @@ const SendBar = (props: SendBarProps) => {
     }
   }
 
-  // const handleClear = () => {
-  //   if (inputRef.current) {
-  //     inputRef.current.value = ''
-  //     inputRef.current.style.height = 'auto'
-  //     onClear()
-  //   }
-  // }
-
   const handleSend = () => {
     const content = inputRef.current?.value
     if (content) {
@@ -67,51 +59,7 @@ const SendBar = (props: SendBarProps) => {
     if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSend()
   }
 
-  // const handleFileUploadClick = () => {
-  //   if (fileInputRef.current) fileInputRef.current.click()
-  // }
 
-//   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-//   const file = event.target.files?.[0];
-//   if (!file) return;
-
-//   const acceptedTypes = [
-//     'application/pdf',
-//     'text/csv',
-//     'application/json',
-//     'text/plain',
-//     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-//     'image/png',
-//     'image/jpeg'
-//   ];
-
-//   if (!acceptedTypes.includes(file.type)) {
-//     alert('Unsupported file type. Please upload a PDF, CSV, TXT, JSON, XLSX, PNG, or JPG file.');
-//     return;
-//   }
-
-//   const formData = new FormData();
-//   formData.append('file', file);
-
-//   try {
-//     const response = await fetch('http://localhost:8080/api/uploadFile', {
-//       method: 'POST',
-//       body: formData,
-//       credentials: 'include', // needed for auth cookies!
-//     });
-
-//     const data = await response.json();
-//     if (response.ok) {
-//       alert(`File uploaded successfully: ${data.fileName}`);
-//     } else {
-//       alert('Upload failed: ' + (data.error || 'unknown error'));
-//     }
-//   } catch (err: any) {
-//     alert('Upload failed: ' + err.message);
-//   }
-// };
-
-  
   return (
     <Show
       fallback={
@@ -124,14 +72,6 @@ const SendBar = (props: SendBarProps) => {
     >
 
       <div className="send-bar">
-        {/* Hidden File Input */}
-        {/* <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-          accept=".pdf,.csv,.txt,.xlsx"
-        /> */}
 
         {/* Text Input */}
         <textarea
@@ -149,9 +89,6 @@ const SendBar = (props: SendBarProps) => {
           <SendOutlined className="chat-icon-black-outline" />
         </button>
 
-        {/* <button className="button" title="Clear" disabled={disabled} onClick={handleClear}>
-          <ClearOutlined className="chat-icon-black-outline" />
-        </button>*/}
       </div>
     </Show>
   )

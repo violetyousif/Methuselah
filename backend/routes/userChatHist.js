@@ -1,6 +1,7 @@
 // Mohammad Hoque, 7/3/2025, Created conversation management routes on conversation collection
 // Viktor Gjorgjevski, 7/14/2025 Added flow to be able to reuse past chat info in future chats
 
+// PURPOSE: Manage user conversations, including creating, updating, deleting, and fetching conversations
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import auth from '../middleware/auth.js';
