@@ -2,20 +2,20 @@
 // // Import custom commands
 // import './commands';
 
-// // Handle uncaught exceptions
-// Cypress.on('uncaught:exception', (err, runnable) => {
-//   // Prevent Cypress from failing the test on uncaught exceptions
-//   return false;
-// });
+// Handle uncaught exceptions
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // Prevent Cypress from failing the test on uncaught exceptions
+  return false;
+});
 
 // // Add a custom log for every test
-// Cypress.on('test:before:run', (attributes, test) => {
-//   console.log(`Running test: ${test.title}`);
-// });
+Cypress.on('test:before:run', (attributes, test) => {
+   console.log(`Running test: ${test.title}`);
+ });
 
 // // Import third-party plugins
-// import 'cypress-axe'; // Accessibility testing
-// import 'cypress-file-upload'; // File upload support
+import 'cypress-axe'; // Accessibility testing
+import 'cypress-file-upload'; // File upload support
 
 // Custom command to log in
 Cypress.Commands.add('login', () => {
@@ -47,9 +47,3 @@ Cypress.Commands.add('login', () => {
   // Now load the app with session active
   cy.visit('/profile');
 });
-
-
-// Custom command to reset the database
-// Cypress.Commands.add('resetDatabase', () => {
-//   cy.request('POST', '/api/reset-database');
-// });

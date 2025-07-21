@@ -49,13 +49,6 @@ function attemptToFixAndParse(raw) {
             .replace(/\n/g, ' ')
             .replace(/\s+/g, ' ');
 
-        // Bad key logic: this regex captures the "query" and any missing "answer" key, replacing it
-        // jsonLike = jsonLike.replace(
-        //     /"query":\s*"([^"]+)",\s*"([^"]+)"\s*:\s*"([^"]+)"/g,
-        //     (_, query, missingKey, answerText) => {
-        //         return `"query": "${query}", "answer": "${missingKey}: ${answerText}"`;
-        //     }
-        // );
 
         // Parsing implementation: fix missing quotes around keys
         let parsed;

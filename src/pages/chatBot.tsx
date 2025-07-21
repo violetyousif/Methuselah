@@ -27,7 +27,6 @@ import { ethers } from 'ethers'
 import { getConversations, addConversation, updateConversationTitle, deleteConversation, Conversation, UserData } from '../models'
 import { useRouter } from 'next/router'
 import '@/styles/globals.css'
-//import ChatModeToggle from './ChatModeToggle';
 import DeleteModal from '@/components/DeleteModal';
 
 
@@ -153,7 +152,6 @@ const Chatbot = () => {
         if (res.ok) {
           const settings = await res.json();
           const theme = settings.preferences?.theme || 'default';
-          // const fontSize = settings.preferences?.fontSize || 'regular';
           
           document.body.dataset.theme = theme;
           document.body.dataset.fontsize = 'regular'; // Always use regular font size
@@ -209,31 +207,7 @@ const Chatbot = () => {
     loadChatHistory()
   }, [isLoggedIn, userData?.email])
 
-  //// Prev code:
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     if (walletAddress) {
-  //       const response = await fetch(`/api/user-data?walletAddress=${walletAddress}`)
-  //       const data = await response.json()
-  //       setUserData(data || { name: 'John Doe', email: 'johndoe@gmail.com' })
-  //     }
-  //   }
-  //   fetchUserData()
-  //   
-  //   const wallet = walletAddress || 'default-wallet'
-  //   const convs = getConversations(wallet)
-  //   if (convs.length === 0) {
-  //     const newId = addConversation(wallet, 'Chat 1')
-  //     setChatHistory(getConversations(wallet))
-  //     setSelectedChatId(newId)
-  //     setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
-  //   } else {
-  //     setChatHistory(convs)
-  //     setSelectedChatId(convs[0].conversationId)
-  //   }
-  // }, [walletAddress])
-
-
+  
   // Message transfer from landing page
   useEffect(() => {
     const savedMessage = localStorage.getItem('initialMessage')
@@ -247,22 +221,6 @@ const Chatbot = () => {
       }
     }
   }, [selectedChatId])
-
-  //// Prev code: (grad students)
-  /* const connectWallet = async () => {
-    if (!window.ethereum) {
-      message.error('MetaMask is not installed!')
-      return
-    }
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum)
-      const accounts = await provider.send('eth_requestAccounts', [])
-      setWalletAddress(accounts[0])
-      message.success('Wallet connected successfully!')
-    } catch (error) {
-      console.error('Error connecting wallet:', error)
-      message.error('Failed to connect wallet')
-  }} */
 
   const handleNewChat = async () => {
     const userId = userData?.email || 'default-user' // Use email as user identifier, fallback to 'default-user'
@@ -360,16 +318,6 @@ const Chatbot = () => {
     setIsDeleteModalVisible(false)
     setChatToDelete(null)
   }
-
-  //// Prev code:
-  // const handleNewChat = () => {
-  //   const wallet = walletAddress || 'default-wallet'
-  //   const newChatTitle = `Chat ${chatHistory.length + 1}`
-  //   const newId = addConversation(wallet, newChatTitle)
-  //   setChatHistory(getConversations(wallet))
-  //   setSelectedChatId(newId)
-  //   setFadeTriggers((prev) => ({ ...prev, [newId]: (prev[newId] || 0) + 1 }))
-  // }
 
   // Styles moved to bottom, see `styles` below
   const buttonStyle = styles.buttonStyle(currentTheme)
@@ -666,7 +614,6 @@ const Chatbot = () => {
        <Layout style={styles.contentArea(collapsed, currentTheme)} className="content-area-responsive">
         <Content style={styles.content}>
           {selectedChatId && (
-            //<div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <ChatGPT
                 fetchPath="http://localhost:8080/api/ragChat"  // Updated to use full URL for RAG chat endpoint
                 conversationId={selectedChatId}
@@ -764,9 +711,7 @@ const Chatbot = () => {
           </Button>
         </div>
       )}
-      {/* //// Prev: <Profile visible={profileVisible} walletAddress={walletAddress} onClose={() => setProfileVisible(false)} />
-          //// Prev: <Dashboard visible={dashboardVisible} walletAddress={walletAddress} onClose={() => setDashboardVisible(false)} /> */}
-    </Layout>
+     </Layout>
   )
 }
 
@@ -793,7 +738,7 @@ const styles = {
     transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smooth eased transition
     boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
     '@media (max-width: 768px)': {
-      zIndex: 1001, // Higher z-index on mobile to appear above content
+      zIndex: 1001,   // Higher z-index on mobile to appear above content
       boxShadow: '2px 0 20px rgba(0, 0, 0, 0.3)' // Stronger shadow on mobile
     }
   }),

@@ -11,27 +11,20 @@
 // Mizanur Mizan, 7/14/2025-7/16/2025, Added verification for email change and a change password button/modal
 
 import React, { useState, useEffect } from 'react'
-import { Button, Select, Input, DatePicker, message, notification } from 'antd'
+import { Button, Select, Input, notification, Modal, Form, Upload, Avatar } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import Link from 'next/link'
-import moment from 'moment'
 import { profilePicPresets } from '../components/profilePicker'
-import { Upload, Avatar } from 'antd'
 import { UploadOutlined, LockOutlined } from '@ant-design/icons'
 import ImgCrop from 'antd-img-crop'
-import { Modal } from 'antd'
-import { Form } from 'antd';
-
 
 const { Option } = Select
 
 export default function Settings() {
-  // const [fontSize, setFontSize] = useState('regular')
   const [theme, setTheme] = useState<'default' | 'dark'>('default')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  //// Prev: const [dateOfBirth, setDateOfBirth] = useState<moment.Moment | null>(null)
   const [profilePic, setProfilePic] = useState('')
   const [pendingEmail, setPendingEmail] = useState('');
   const [emailVerified, setEmailVerified] = useState(true);
@@ -63,25 +56,19 @@ export default function Settings() {
           setEmail(settings.email || '');
           setPendingEmail(settings.email || '');
           setProfilePic(settings.profilePic || '');
-          // setFontSize(settings.preferences?.fontSize || 'regular');
           setTheme((settings.preferences?.theme as 'default' | 'dark') || 'default');
           
           // Apply theme and fontSize to UI immediately
           document.body.dataset.theme = settings.preferences?.theme || 'default';
-          // document.body.dataset.fontsize = settings.preferences?.fontSize || 'regular';
         } else {
           console.warn('Failed to load settings from backend, using defaults');
-          // setFontSize('regular');
           setTheme('default');
           document.body.dataset.theme = 'default';
-          // document.body.dataset.fontsize = 'regular';
         }
       } catch (error) {
         console.error('Error loading settings:', error);
-        // setFontSize('regular');
         setTheme('default');
         document.body.dataset.theme = 'default';
-        // document.body.dataset.fontsize = 'regular';
       }
     };
 
@@ -238,20 +225,14 @@ export default function Settings() {
     setChangingPassword(false);
   };
 
-  // useEffect(() => {
-  //   document.body.dataset.fontsize = fontSize
-  // }, [fontSize])
-
   const handleSave = async () => {
   const settings = {
     firstName,
     lastName,
     email,
-    //// Prev: dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
     profilePic,
     preferences: {
-      theme,
-      // fontSize,
+    theme,
   }
   };
 
@@ -274,7 +255,6 @@ export default function Settings() {
       });
       // Apply updated preferences immediately to UI
       document.body.dataset.theme = theme;
-      // document.body.dataset.fontsize = fontSize;
     } else {
       notification.error({
         message: 'Save Failed',
@@ -331,7 +311,6 @@ export default function Settings() {
               className="settingsInput"
               type="email"
               autoComplete="email"
-              // placeholder="your@email.com"
             />
             {!emailVerified && isValidEmail(pendingEmail) && pendingEmail !== email && (
               <div style={{ marginTop: 8 }}>
@@ -363,7 +342,6 @@ export default function Settings() {
                         type="primary"
                         onClick={handleVerifyCode}
                         loading={verifying}
-                        // disabled={!verificationCode}
                         disabled={!/^\d{6}$/.test(verificationCode)}
                       >
                         Verify
@@ -373,13 +351,7 @@ export default function Settings() {
                 )}
           </div>
         )}
-          {/* Change Password Button goes here */}
-{/*           <Button
-            style={{ marginTop: 12, marginBottom: 8 }}
-            onClick={() => setPasswordModalVisible(true)}
-          >
-            Change Password
-          </Button> */}
+
           <Button
             type="primary"
             danger
@@ -399,18 +371,6 @@ export default function Settings() {
           </Button>
         </div>
 
-          {/* Date of Birth Field - Moved to Profile page */}
-          {/* //// Prev:
-          <div>
-            <div className="settingsLabel">Date of Birth:</div>
-            <DatePicker
-              value={dateOfBirth}
-              onChange={(date) => setDateOfBirth(date)}
-              className="settingsInput"
-            />
-          </div> */}
-
-
           {/* Profile Pic selection */}
           <div>
             <div style={styles.label} className="settingsLabel">Profile Picture:</div>
@@ -427,7 +387,7 @@ export default function Settings() {
                   beforeUpload={(file) => {
                     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
                     if (!isJpgOrPng) {
-                      message.error('Only JPG and PNG images are allowed!')
+                      notification.error({ message: 'Only JPG and PNG images are allowed!' })
                       return Upload.LIST_IGNORE
                     }
                     handleImageChange(file)
@@ -466,16 +426,6 @@ export default function Settings() {
               <Option value="dark">Dark</Option>
             </Select>
           </div>
-
-          {/*Font Size Field */}
-          {/* <div>
-            <div style={styles.label} className="settingsLabel">Font Size:</div>
-            <Select value={fontSize} onChange={(val) => setFontSize(val)} style={styles.select} className="settingsInput">
-              <Option value="regular">Regular</Option>
-              <Option value="large">Large</Option>
-              <Option value="extra-large">Extra Large</Option>
-            </Select>
-          </div> */}
 
           <Button
             type="primary"

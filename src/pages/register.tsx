@@ -9,7 +9,7 @@
 // Violet Yousif, 7/12/2025, Added user error handlers for verification code, duplicate email use, and registration, and added more specific error messages.
 
 import React, { useState, useEffect } from 'react'
-import { Form, Input, Button, Checkbox, Select, notification, message } from 'antd'
+import { Form, Input, Button, Checkbox, notification } from 'antd'
 import Link from 'next/link'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import ModalTerms from '../components/TermsModal'

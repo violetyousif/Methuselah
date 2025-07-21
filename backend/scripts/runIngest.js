@@ -46,10 +46,10 @@ async function runIngest(inputPathOrUrl) {
                     fullText = await loadPDF(inputPathOrUrl);
                     break;
                 case '.txt':
-                    fullText = await loadTXT(inputPathOrUrl);
+                    fullText = loadTXT(inputPathOrUrl);
                     break;
                 case '.json':
-                    fullText = await loadJSON(inputPathOrUrl);
+                    fullText = loadJSON(inputPathOrUrl);
                     break;
                 case '.csv':
                     fullText = await loadCSV(inputPathOrUrl);
@@ -64,7 +64,7 @@ async function runIngest(inputPathOrUrl) {
                     fullText = await loadImageText(inputPathOrUrl);
                     break;
                 default:
-                    throw new Error(`Unsupported file type: ${ext}`);
+                    return console.error(`Unsupported file type: ${ext}`);
             }
         }
 

@@ -8,9 +8,7 @@
 // Violet Yousif, 7/6/2025, Added admin route directory
 
 import dotenv from 'dotenv';
-
 import path from 'path';
-//import lusca from 'lusca';
 import express from 'express';
 import mongoose from 'mongoose';  // for database connection and operations
 import cors from 'cors';          // for cross origin requests
@@ -32,11 +30,10 @@ import feedbackRoutes from './routes/feedback.js';
 import ragSearch from './routes/ragSearch.js';
 import ragChat from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
-import authCodes from './routes/authCodes.js';  // Importing auth codes for user authentication
+//import authCodes from './routes/authCodes.js';  // Importing auth codes for user authentication
 import userChatHist from './routes/userChatHist.js';
 import adminServer from './routes/adminServer.js';
 import healthMetricsInsightsRoute from './routes/healthMetricsInsights.js';
-import userFileRouter from './routes/userFile.js';
 
 // Importing cookie-parser to handle auth cookies
 import cookieParser from 'cookie-parser';
@@ -63,13 +60,9 @@ app.use(cors({
   credentials: true 
 }));
 // Add these lines BEFORE your route definitions
-app.use(express.json({ limit: '10mb' })); // Increase from default 100kb to 10mb
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: '20mb' })); // Increase from default 100kb to 20mb
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(express.json());
-
-
-//app.use(lusca.csrf()); // Add CSRF protection middleware
-//app.use('/api/auth', userLoginRoutes);
 app.use(logger);  // Logs all incoming requests
 
 // Description: MongoDB Connection
@@ -98,13 +91,11 @@ app.use('/api', ragSearch);
 app.use('/api', ragChat);
 app.use('/api', healthMetricsInsightsRoute);
 app.use('/api', healthMetrics);
-app.use('/api/auth', authCodes);
+//app.use('/api/auth', authCodes);
 app.use('/api', userChatHist);
-app.use('/api', userFileRouter);
 
-// Admin Routes
+// Admin Routes --> Navigate to backend/routes/adminServer.js to view admin routes
 app.use('/api', adminServer); 
-
 
 // Description: Start Server
 const PORT = process.env.PORT || 8080;

@@ -1,3 +1,6 @@
+// Violet Yousif, 6/28/2025 - Updated the personalized Q&A generation script to use Hugging Face API for
+//                            personalized health advice, added MongoDB integration for user profiles.
+
 // scripts/personalizedQAGen.js
 import { InferenceClient } from '@huggingface/inference';
 import { MongoClient } from 'mongodb';

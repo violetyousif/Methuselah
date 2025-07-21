@@ -64,3 +64,6 @@ __pycache__/
 .history/
 src/pages/ChatModeToggle.tsx
 .env.local
+extract_my_lines_by_file.sh
+my_contributions_20250720_132338.txt
+remaining_contributions_report.sh
