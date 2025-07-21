@@ -196,11 +196,11 @@ const styles = {
   page: {
     backgroundColor: '#F1F1EB',
     minHeight: '100vh',
+    padding: '2rem',
   },
   card: {
-    maxWidth: 500,
-    width: '100%',
-    minWidth: 200,
+    maxWidth: 600,
+    margin: '1rem auto',
     padding: '2rem',
     backgroundColor: '#A0B6AA',
     borderRadius: '2rem',
