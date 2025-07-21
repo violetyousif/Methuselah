@@ -56,16 +56,25 @@
   
   /* Make collapsed buttons more touch-friendly */
   .admin-collapsed-btn {
-    min-width: 44px !important;
-    min-height: 44px !important;
-    font-size: 18px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    font-size: 20px !important;
+    padding: 12px !important;
   }
   
   /* Ensure sidebar hamburger is touch-friendly */
   .hamburger-button {
-    min-width: 44px !important;
-    min-height: 44px !important;
-    padding: 8px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    padding: 12px !important;
+    font-size: 18px !important;
+  }
+  
+  /* Ensure menu button in collapsed state is touch-friendly */
+  .admin-sidebar button[title="Open Menu"] {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    font-size: 20px !important;
   }
 }
 

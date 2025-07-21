@@ -114,7 +114,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
           <Button 
             icon={<MenuOutlined />} 
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
+              console.log('Menu button clicked, current collapsed:', collapsed);
               handleCollapse(false);
             }}
             style={{
@@ -127,6 +129,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
               height: '40px',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
+              zIndex: 1001, // Ensure it's clickable
             }}
             title="Open Menu"
             type="text"
@@ -219,7 +222,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
                   type="text"
                   icon={<MenuOutlined />}
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
+                    console.log('Hamburger button clicked, current collapsed:', collapsed);
                     handleCollapse(true);
                   }}
                   style={{
@@ -230,6 +235,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
                     border: 'none',
                     color: '#000000', // Match user sidebar exactly
                     boxShadow: 'none',
+                    zIndex: 1001, // Ensure it's clickable
                   }}
                   className="hamburger-button"
                 />

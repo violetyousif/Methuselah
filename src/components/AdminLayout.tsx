@@ -47,12 +47,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       setWindowWidth(newWidth);
       
       // Auto-collapse when going below breakpoint (responsive behavior)
-      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed) {
+      // But don't auto-collapse if we're already on mobile and user just opened it
+      if (newWidth < SIDEBAR_BREAKPOINT && !collapsed && prevWidth >= SIDEBAR_BREAKPOINT) {
+        // Only auto-collapse when transitioning FROM desktop TO mobile
         setCollapsed(true);
-        // Don't set isManuallyCollapsed to true for responsive changes
+        setIsManuallyCollapsed(false); // Reset manual state for mobile
         // Save auto-collapse state
         if (typeof window !== 'undefined') {
           localStorage.setItem('adminSidebarCollapsed', JSON.stringify(true));
+          localStorage.setItem('adminSidebarManual', JSON.stringify(false));
         }
       } 
       // Only auto-expand when going above breakpoint if user hasn't manually collapsed it
@@ -61,6 +64,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         // Save auto-expand state
         if (typeof window !== 'undefined') {
           localStorage.setItem('adminSidebarCollapsed', JSON.stringify(false));
+          localStorage.setItem('adminSidebarManual', JSON.stringify(false));
         }
       }
     };
@@ -68,21 +72,32 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     // Add event listener
     window.addEventListener('resize', handleResize);
     
-    // Check initial window size
-    handleResize();
+    // Check initial window size (but don't force changes on initial load)
+    const currentWidth = window.innerWidth;
+    setWindowWidth(currentWidth);
 
     // Cleanup
     return () => window.removeEventListener('resize', handleResize);
-  }, [collapsed, isManuallyCollapsed, isInitialized]);
+  }, [collapsed, isManuallyCollapsed, isInitialized, windowWidth]);
 
   const handleCollapse = (isCollapsed: boolean) => {
     setCollapsed(isCollapsed);
-    setIsManuallyCollapsed(true); // Mark as manually controlled - stays persistent
+    
+    // On mobile, don't mark as manually collapsed when opening the sidebar
+    // This allows the overlay click to work properly and doesn't interfere with responsive behavior
+    const isMobile = windowWidth < SIDEBAR_BREAKPOINT;
+    if (isMobile && !isCollapsed) {
+      // Opening sidebar on mobile - don't mark as manually controlled
+      setIsManuallyCollapsed(false);
+    } else {
+      // Desktop behavior or closing on mobile
+      setIsManuallyCollapsed(true);
+    }
     
     // Save state to localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('adminSidebarCollapsed', JSON.stringify(isCollapsed));
-      localStorage.setItem('adminSidebarManual', JSON.stringify(true));
+      localStorage.setItem('adminSidebarManual', JSON.stringify(!isMobile || isCollapsed));
     }
   };
 
@@ -125,8 +140,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
             zIndex: 999,
             display: 'block',
+            cursor: 'pointer',
           }}
-          onClick={() => handleCollapse(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCollapse(true);
+          }}
         />
       )}
       
