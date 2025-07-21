@@ -1,4 +1,4 @@
-Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress.
+Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with primarily **Next.js + React and Express.js**, this project is in active development, but this current version is the completed version for the Summer semester 2025 Longevity team.
 
 ---
 
