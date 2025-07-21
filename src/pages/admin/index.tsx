@@ -24,11 +24,24 @@ const AdminDashboard: React.FC = () => {
     feedbackCount: 0
   });
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [systemStatus, setSystemStatus] = useState({
     systemStatus: 'Unknown',
     databaseStatus: 'Unknown',
     lastUpdated: '',
   });
+
+  // Check if screen is mobile size
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
 
   const fetchDashboardStats = async () => {
@@ -138,6 +151,85 @@ const AdminDashboard: React.FC = () => {
     }
   ];
 
+  const styles = {
+    page: {
+      backgroundColor: '#F1F1EB',
+      minHeight: '100vh',
+      padding: isMobile ? '1rem' : '2rem',
+    },
+    card: {
+      maxWidth: 1200,
+      margin: isMobile ? '0 auto' : '1rem auto',
+      padding: isMobile ? '1rem' : '2rem',
+      backgroundColor: '#A0B6AA',
+      borderRadius: isMobile ? '1rem' : '2rem',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
+      paddingBottom: '24px',
+    },
+    header: {
+      color: '#1D1E2C',
+      textAlign: 'center' as const,
+      fontWeight: 'bold',
+      marginBottom: '1rem',
+      fontSize: isMobile ? '1.5rem' : '2rem',
+    },
+    subtitle: {
+      fontSize: isMobile ? '14px' : '16px',
+      display: 'block',
+      color: '#1D1E2C',
+      textAlign: 'center' as const,
+      marginBottom: '2rem',
+    },
+    sectionHeader: {
+      color: '#1D1E2C',
+      marginBottom: '16px',
+      fontWeight: 'bold',
+      fontSize: isMobile ? '1.1rem' : '1.2rem',
+    },
+    statCard: {
+      backgroundColor: '#8AA698',
+      borderRadius: '1rem',
+      border: 'none',
+    },
+    actionCard: {
+      height: isMobile ? 'auto' : '200px',
+      minHeight: isMobile ? '160px' : '200px',
+      borderWidth: '2px',
+      cursor: 'pointer',
+      backgroundColor: '#F1F1EB',
+      borderRadius: '1rem',
+    },
+    actionCardBody: {
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column' as const,
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center' as const,
+      padding: isMobile ? '1rem' : 'auto',
+    },
+    iconContainer: {
+      padding: isMobile ? '12px' : '16px',
+      borderRadius: '50%',
+    },
+    cardDescription: {
+      fontSize: isMobile ? '12px' : '14px',
+      color: '#666',
+    },
+    statusCard: {
+      marginTop: '32px',
+      backgroundColor: '#8AA698',
+      borderRadius: '1rem',
+    },
+    refreshButton: {
+      backgroundColor: '#203625',
+      borderColor: '#203625',
+      color: '#e0e0e0',
+      borderRadius: '1rem',
+      width: isMobile ? '100%' : 'auto',
+    },
+  } as const;
+
   return (
     <AdminLayout>
       <div style={styles.page}>
@@ -163,7 +255,7 @@ const AdminDashboard: React.FC = () => {
                       title={stat.title}
                       value={stat.value}
                       prefix={stat.icon}
-                      valueStyle={{ fontSize: '24px', color: '#1D1E2C' }}
+                      valueStyle={{ fontSize: isMobile ? '20px' : '24px', color: '#1D1E2C' }}
                     />
                   </Card>
                 </Col>
@@ -214,38 +306,39 @@ const AdminDashboard: React.FC = () => {
 
           {/* System Status */}
           <Card 
-            title={<span style={{ color: '#1D1E2C' }}>System Status</span>}
+            title={<span style={{ color: '#1D1E2C', fontSize: isMobile ? '16px' : '18px' }}>System Status</span>}
             style={styles.statusCard}
             extra={
               <Button 
                 onClick={fetchDashboardStats}
                 loading={loading}
                 style={styles.refreshButton}
+                size={isMobile ? 'small' : 'middle'}
               >
-                Refresh Status
+                {isMobile ? 'Refresh' : 'Refresh Status'}
               </Button>
             }
           >
             <Row gutter={[16, 16]}>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Statistic 
                   title="System Status" 
                   value={systemStatus.systemStatus} 
-                  valueStyle={{ color: '#318182' }}
+                  valueStyle={{ color: '#318182', fontSize: isMobile ? '18px' : '20px' }}
                 />
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Statistic 
                   title="Database Status" 
                   value={systemStatus.databaseStatus} 
-                  valueStyle={{ color: '#318182' }}
+                  valueStyle={{ color: '#318182', fontSize: isMobile ? '18px' : '20px' }}
                 />
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Statistic 
                   title="Last Updated" 
                   value={systemStatus.lastUpdated ? new Date(systemStatus.lastUpdated).toLocaleString() : '...'}  
-                  valueStyle={{ color: '#318182' }}
+                  valueStyle={{ color: '#318182', fontSize: isMobile ? '14px' : '18px' }}
                 />
               </Col>
             </Row>
@@ -257,77 +350,3 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
-
-const styles = {
-  page: {
-    backgroundColor: '#F1F1EB',
-    minHeight: '100vh',
-    padding: '2rem',
-  },
-  card: {
-    maxWidth: 1200,
-    margin: '1rem auto',
-    padding: '2rem',
-    backgroundColor: '#A0B6AA',
-    borderRadius: '2rem',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 4px 16px rgba(32,54,37,0.1)',
-    paddingBottom: '24px',
-  },
-  header: {
-    color: '#1D1E2C',
-    textAlign: 'center' as const,
-    fontWeight: 'bold',
-    marginBottom: '1rem',
-  },
-  subtitle: {
-    fontSize: '16px',
-    display: 'block',
-    color: '#1D1E2C',
-    textAlign: 'center' as const,
-    marginBottom: '2rem',
-  },
-  sectionHeader: {
-    color: '#1D1E2C',
-    marginBottom: '16px',
-    fontWeight: 'bold',
-  },
-  statCard: {
-    backgroundColor: '#8AA698',
-    borderRadius: '1rem',
-    border: 'none',
-  },
-  actionCard: {
-    height: '200px',
-    borderWidth: '2px',
-    cursor: 'pointer',
-    backgroundColor: '#F1F1EB',
-    borderRadius: '1rem',
-  },
-  actionCardBody: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center' as const,
-  },
-  iconContainer: {
-    padding: '16px',
-    borderRadius: '50%',
-  },
-  cardDescription: {
-    fontSize: '14px',
-    color: '#666',
-  },
-  statusCard: {
-    marginTop: '32px',
-    backgroundColor: '#8AA698',
-    borderRadius: '1rem',
-  },
-  refreshButton: {
-    backgroundColor: '#203625',
-    borderColor: '#203625',
-    color: '#e0e0e0',
-    borderRadius: '1rem',
-  },
-} as const;

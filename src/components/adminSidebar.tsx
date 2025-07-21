@@ -20,13 +20,13 @@ const { Text } = Typography;
 interface AdminSidebarProps {
   collapsed?: boolean;
   onCollapse?: (collapsed: boolean) => void;
+  isInitialized?: boolean;
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollapse }) => {
+const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollapse, isInitialized = false }) => {
   const router = useRouter();
 
   const handleCollapse = (newCollapsed: boolean) => {
-    console.log('AdminSidebar: handleCollapse called with:', newCollapsed);
     onCollapse?.(newCollapsed);
   };
 
@@ -95,7 +95,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
         top: 0,
         bottom: 0,
         zIndex: 1000,
-        transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Match user sidebar timing
+        transition: isInitialized ? 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none', // No transition on initial load
         boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
       }}
     >
@@ -114,7 +114,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
           <Button 
             icon={<MenuOutlined />} 
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
+              console.log('Menu button clicked, current collapsed:', collapsed);
               handleCollapse(false);
             }}
             style={{
@@ -127,6 +129,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
               height: '40px',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
+              zIndex: 1001, // Ensure it's clickable
             }}
             title="Open Menu"
             type="text"
@@ -137,7 +140,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
             alignItems: 'center',
             gap: '12px',
             marginTop: '16px',
-            animation: 'fadeInFromLeft 0.4s ease-out',
           }}>
             <Button
               icon={<DashboardOutlined />}
@@ -206,7 +208,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
           </div>
         </div>
       ) : (
-        <div className="sidebar-content" style={{ animation: 'slideInFromLeft 0.4s ease-out' }}>
+        <div className="sidebar-content">
           <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               {/* Avatar Container - matching user sidebar exactly */}
@@ -220,7 +222,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
                   type="text"
                   icon={<MenuOutlined />}
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
+                    console.log('Hamburger button clicked, current collapsed:', collapsed);
                     handleCollapse(true);
                   }}
                   style={{
@@ -231,6 +235,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ collapsed = false, onCollap
                     border: 'none',
                     color: '#000000', // Match user sidebar exactly
                     boxShadow: 'none',
+                    zIndex: 1001, // Ensure it's clickable
                   }}
                   className="hamburger-button"
                 />
