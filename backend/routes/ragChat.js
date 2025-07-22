@@ -9,7 +9,7 @@
 // What happens inside:
 // 1. Embed the user’s question.
 // 2. Pull the 3 most relevant KB passages + 3 personal-memory summaries.
-// 3. Feed those passages + the question to the Mistral-7B model.
+// 3. Feed those passages + the question to the LLM model.
 // 4. Return the answer and the passages used.
 import { Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
@@ -222,7 +222,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     }))
   );
 
-
   const t2 = Date.now();
     const combined = [...memDocs, ...docs];
     
@@ -255,7 +254,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     } else {
       userPrompt = `The following knowledge may guide your answer:\n${context}\n\n${question}`;
     }
-
 
 
   let answer;
@@ -294,74 +292,8 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
 
   res.json({ answer, contextDocs: combined });
 
+  const t3 = Date.now();
 
-    // const baseChatConfig = {
-    //   model: HF_MODEL,
-    //   messages: [
-    //     { role: 'system', content: systemPrompt },
-    //     { role: 'user', content: userPrompt },
-    //   ],
-    //   temperature: 0.2,
-    //   top_p: 0.95,
-    //   min_tokens: 10,
-    //   max_tokens: 1200,  // Increased to allow for complete responses
-    //   options: { wait_for_model: true }
-    // };
-
-    // let chatResp;
-    // try {
-    //   console.log('Attempting chat completion with config:', JSON.stringify(baseChatConfig, null, 2));
-    //   chatResp = await chatCompletionWithFallback({ 
-    //     ...baseChatConfig, options: { wait_for_model: false } });
-    //   console.log('Chat completion response:', JSON.stringify(chatResp, null, 2));
-    // } catch (err) {
-    //   if (err.message?.includes('Model loading')) {
-    //     console.warn('Model cold-start: retrying with wait_for_model: true');
-    //     chatResp = await chatCompletionWithFallback({ ...baseChatConfig, options: { wait_for_model: true } });
-    //     console.log('Chat completion response (retry):', JSON.stringify(chatResp, null, 2));
-    //   } else if (err.message?.includes('timeout')) {
-    //     console.error('RAG Chat completion timed out after 30 seconds');
-    //     res.status(500).json({ error: err.message || 'Chat completion timed out. Please try again later.' });
-    //   } else {
-    //     // result for all other status errors that aren't 500
-    //     console.error('Error:', err);        
-    //   }
-    // }
-
-     const t3 = Date.now();
-
-    // // Better error handling for empty responses
-    // if (!chatResp || !chatResp.choices || !chatResp.choices[0]) {
-    //   console.error('No response received from chat completion:', chatResp);
-    //   // Send a fallback response instead of throwing an error
-    //   res.json({ 
-    //     answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
-    //     contextDocs: combined
-    //   });
-    //   return;
-    // }
-
-    // let answer = chatResp.choices?.[0]?.message?.content ?? '';
-    // console.log('Raw AI response:', answer);
-    // console.log('Response length:', answer.length);
-    // console.log('Finish reason:', chatResp.choices?.[0]?.finish_reason);
-    
-    // // Check if answer is empty
-    // if (!answer || answer.trim() === '') {
-    //   console.error('Empty answer received from chat completion');
-    //   // Send a fallback response instead of throwing an error
-    //   res.json({ 
-    //     answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
-    //     contextDocs: combined
-    //   });
-    //   return;
-    // }
-    
-    // // Clean up the response by removing unwanted role tags, but preserve the full content
-    // answer = answer
-    //   .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\]|\[INST\]|\[\/INST\])\s*/i, '')
-    //   .replace(/\n\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/gi, '\n')
-    //   .trim();
     
     // Only truncate if there's clear dialogue or user simulation (more restrictive)
     const strongDialoguePattern = /\n\s*(USER:|PATIENT:|CLIENT:|Human:|\[USER\])/i;
@@ -375,16 +307,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     console.log('Final processed response:', answer);
     console.log('Final response length:', answer.length);
     
-    // Check if response was truncated due to token limits
-    // const finishReason = chatResp.choices?.[0]?.finish_reason;
-    // if (finishReason === 'length') {
-    //   console.warn('Response was truncated due to token limit. Consider increasing max_tokens.');
-    //   // Append a note if the response was cut off
-    //   if (!answer.match(/[.!?]$/)) {
-    //     answer += '...';
-    //   }
-    // }
-
     // Send to client
     res.json({ answer, contextDocs: combined });
 
