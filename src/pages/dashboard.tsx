@@ -203,6 +203,16 @@ const exerciseAvg = exerciseDays.length
   ? (exerciseDays.reduce((acc, cur) => acc + cur.exercise, 0) / exerciseDays.length).toFixed(1)
   : null;
 
+// weight domain calculations
+const weights = last7Data.map(d => d.weight).filter(w => typeof w === 'number' && !isNaN(w));
+const minWeight = weights.length ? Math.min(...weights) : 0;
+const maxWeight = weights.length ? Math.max(...weights) : 10;
+const weightDomain = [
+  Math.floor(minWeight - 2),
+  Math.ceil(maxWeight + 2)
+];
+
+
   return (
     <Modal
       title={<span style={styles.modalTitle}>Your Health Dashboard</span>}
@@ -225,123 +235,56 @@ const exerciseAvg = exerciseDays.length
         Welcome back, <strong>{firstName || "Guest"}</strong>! Here's a look at your recent health activity.
       </div>
 
-
-
-<div style={styles.chartSection}>
-  {firstRowCharts.map(({ key, label, fill }) => (
-    <div style={styles.chartContainer} key={key}>
-      <h3 style={styles.chartTitle}>{label}</h3>
-      {last7Data.length === 0 ? (
-        <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
-      ) : (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={last7Data}>
-            <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-            <XAxis dataKey="date" stroke={axisColor} />
-            <YAxis stroke={axisColor} />
-            <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-            <Legend wrapperStyle={legendStyle} />
-            <Bar dataKey={key} name={label.split(': ')[1]} fill={fill}>
-              {last7Data.map((_, index) => (
-                <Cell key={`cell-${key}-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-    </div>
-  ))}
-</div>
-
-<div style={styles.chartSection}>
-  {secondRowCharts.map(({ key, label, fill }) => (
-    <div style={styles.chartContainer} key={key}>
-      <h3 style={styles.chartTitle}>{label}</h3>
-      {last7Data.length === 0 ? (
-        <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
-      ) : (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={last7Data}>
-            <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-            <XAxis dataKey="date" stroke={axisColor} />
-            <YAxis stroke={axisColor} />
-            <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-            <Legend wrapperStyle={legendStyle} />
-            <Bar dataKey={key} name={label.split(': ')[1]} fill={fill}>
-              {last7Data.map((_, index) => (
-                <Cell key={`cell-${key}-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-    </div>
-  ))}
-</div>
-      {/* <div style={styles.chartSection}>
-        
-        {[
-          { key: 'sleep', label: 'Last 7 Days: Sleep Hours', fill: barColorSleep },
-          { key: 'exercise', label: 'Last 7 Days: Exercise Hours', fill: barColorExercise },
-          { key: 'calories', label: 'Last 7 Days: Calories', fill: barColorCalories }
-        ].map(({ key, label, fill }) => (
+      <div style={styles.chartSection}>
+        {firstRowCharts.map(({ key, label, fill }) => (
           <div style={styles.chartContainer} key={key}>
             <h3 style={styles.chartTitle}>{label}</h3>
-          {last7Data.length === 0 ? (
-            <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
-          ) : ( */}
-           {/* <ResponsiveContainer width="100%" height={300}>
-             <BarChart data={last7Data}>
-               <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-               <XAxis dataKey="date" stroke={axisColor} />
-               <YAxis stroke={axisColor} />
-               <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-               <Legend wrapperStyle={legendStyle} />
-               <Bar dataKey={key} name={label.split(': ')[1]}>
-                 {last7Data.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          )}
+            {last7Data.length === 0 ? (
+              <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={last7Data}>
+                  <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+                  <XAxis dataKey="date" stroke={axisColor} />
+                  <YAxis stroke={axisColor} />
+                  <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+                  <Legend wrapperStyle={legendStyle} />
+                  <Bar dataKey={key} name={label.split(': ')[1]} fill={fill}>
+                    {last7Data.map((_, index) => (
+                      <Cell key={`cell-${key}-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         ))}
       </div>
-      <div style={{ ...styles.chartSection, justifyContent: 'center' }}>
-        <div
-          style={{
-            ...styles.chartContainer,
-            flex: '0 1 33%',
-            maxWidth: '400px',
-            minWidth: '280px',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}
-        >
-          <h3 style={styles.chartTitle}>Last 7 Days: Weight (lb)</h3>
-          {last7Data.length === 0 ? (
-            <div style={styles.noDataMessage}>No weight data reported for the last 7 days.</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={last7Data}>
-                <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
-                <XAxis dataKey="date" stroke={axisColor} />
-                <YAxis stroke={axisColor} />
-                <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
-                <Legend wrapperStyle={legendStyle} />
-                <Bar dataKey="weight" fill="#7FB285" name="Weight (lb)">
-                  {last7Data.map((_, index) => (
-                    <Cell key={`cell-weight-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </div> */}
+      
+      <div style={styles.chartSection}>
+        {secondRowCharts.map(({ key, label, fill }) => (
+          <div style={styles.chartContainer} key={key}>
+            <h3 style={styles.chartTitle}>{label}</h3>
+            {last7Data.length === 0 ? (
+              <div style={styles.noDataMessage}>No data reported for the last 7 days.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={last7Data}>
+                  <CartesianGrid stroke={gridColor} strokeDasharray="3 3" />
+                  <XAxis dataKey="date" stroke={axisColor} />
+                  <YAxis stroke={axisColor} domain={key === 'weight' ? weightDomain : undefined} />                  <RechartsTooltip contentStyle={{ background: tooltipBg, color: tooltipText }} />
+                  <Legend wrapperStyle={legendStyle} />
+                  <Bar dataKey={key} name={label.split(': ')[1]} fill={fill}>
+                    {last7Data.map((_, index) => (
+                      <Cell key={`cell-${key}-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        ))}
+      </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '20px' }}>
         <Tooltip title="Methuselah analyzes your sleep trends over time to determine your wellness aspirations and journey.">

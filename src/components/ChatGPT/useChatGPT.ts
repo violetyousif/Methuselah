@@ -66,6 +66,10 @@ const requestMessage = async (
     } catch {
       // If response body is not JSON, use the original error message
     }
+    response.status === 429
+      ? (errorMessage += ' - Too many requests, please try again later.')
+      : (errorMessage += ' - An error occurred while processing your request.');
+    console.error('Request failed:', errorMessage);
     throw new Error(errorMessage);
   }
 
