@@ -127,12 +127,14 @@ npm run start
 ```bash
 ## Frontend: 
 # To run Cypress (E2E) testing scripts or to test newly created/edited scripts:
+# (Note: Some scripts were experimental and may be broken)
 npx cypress run  # to run in terminal OR
 npx cypress open # to run in cypress external extension
 #
 
 # Backend:
-# If you want to train the pretraining qa AI (not, this AI was created but not incorporated in current results):
+# If you want to train the pretraining qa AI
+# (Note: this AI was created but not incorporated in current results):
 npm run dev:qa   # or use nodemon server.js directly if set up
 #
 ```
