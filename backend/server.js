@@ -30,7 +30,6 @@ import feedbackRoutes from './routes/feedback.js';
 import ragSearch from './routes/ragSearch.js';
 import ragChat from './routes/ragChat.js';
 import healthMetrics from './routes/healthMetrics.js';
-//import authCodes from './routes/authCodes.js';  // Importing auth codes for user authentication
 import userChatHist from './routes/userChatHist.js';
 import adminServer from './routes/adminServer.js';
 import healthMetricsInsightsRoute from './routes/healthMetricsInsights.js';
@@ -91,7 +90,6 @@ app.use('/api', ragSearch);
 app.use('/api', ragChat);
 app.use('/api', healthMetricsInsightsRoute);
 app.use('/api', healthMetrics);
-//app.use('/api/auth', authCodes);
 app.use('/api', userChatHist);
 
 // Admin Routes --> Navigate to backend/routes/adminServer.js to view admin routes

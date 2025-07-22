@@ -9,7 +9,7 @@
 // What happens inside:
 // 1. Embed the user’s question.
 // 2. Pull the 3 most relevant KB passages + 3 personal-memory summaries.
-// 3. Feed those passages + the question to the Mistral-7B model.
+// 3. Feed those passages + the question to the LLM model.
 // 4. Return the answer and the passages used.
 import { Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
@@ -45,9 +45,40 @@ const EMBEDDING_MODEL = 'BAAI/bge-small-en-v1.5';
 // The inference client is used to call the Hugging Face API for chat completions
 const hf = new InferenceClient(process.env.HF_API_KEY);
 
+// Declae Gemini API key for chat completions
+const GEMINI_MODEL = process.env.GEMINI_API_KEY;
+if (!GEMINI_MODEL || typeof GEMINI_MODEL !== 'string') {
+    throw new Error('GEMINI_API_KEY is missing or invalid in .env file.');
+}
+
 // The primary model is used for chat completions, with a fallback model in case of failure
 const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2';  // Primary model - more reliable
 const FALLBACK_MODEL = 'HuggingFaceH4/zephyr-7b-beta';  // Fallback model
+
+
+
+// Add this helper at the top of your file
+async function geminiChatCompletion(systemPrompt, userPrompt) {
+  const prompt = `${systemPrompt}\n\n${userPrompt}`;
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_MODEL}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          { role: "user", parts: [{ text: prompt }] }
+        ]
+      })
+    }
+  );
+  if (!response.ok) throw new Error(`Gemini API error! status: ${response.status}`);
+  const json = await response.json();
+  const answer = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+  if (!answer) throw new Error('No content returned from Gemini API');
+  return answer;
+}
+
 
 // Timeout wrapper for chat completion 30000
 const chatCompletionWithTimeout = async (config, timeoutMs = Number(process.env.HF_TIMEOUT_MS) || 60000 ) => 
@@ -101,12 +132,13 @@ function buildSystemPrompt(username, userProfile) {
     `;
   }
   return `You are Methuselah, a wise and mystical advisor on longevity, health, and wellness, speaking to ${username}.
-    Your words should carry the weight of ancient wisdom and a gentle, mystical presence. Make it sound slightly poetic.
+    Your words should carry the weight of ancient wisdom and a gentle, mystical presence. Make it sound very slightly poetic. Don't use too many metaphors or similes.
     ONLY reply as Methuselah. Never include any role tags or generate responses as the user.
     Make answers conversational, actionable, and tailored to ${username}'s health metrics and personal health profile. Never cut yourself off mid-sentence.
     Wait for the user's reply before continuing.
     ${healthProfile}`.trim();
   }
+
 
 router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
   console.log('ragChat HIT');
@@ -190,7 +222,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     }))
   );
 
-
   const t2 = Date.now();
     const combined = [...memDocs, ...docs];
     
@@ -224,73 +255,45 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
       userPrompt = `The following knowledge may guide your answer:\n${context}\n\n${question}`;
     }
 
-    const baseChatConfig = {
-      model: HF_MODEL,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature: 0.2,
-      top_p: 0.95,
-      min_tokens: 10,
-      max_tokens: 1200,  // Increased to allow for complete responses
-      options: { wait_for_model: true }
-    };
 
-    let chatResp;
-    try {
-      console.log('Attempting chat completion with config:', JSON.stringify(baseChatConfig, null, 2));
-      chatResp = await chatCompletionWithFallback({ 
-        ...baseChatConfig, options: { wait_for_model: false } });
-      console.log('Chat completion response:', JSON.stringify(chatResp, null, 2));
-    } catch (err) {
-      if (err.message?.includes('Model loading')) {
-        console.warn('Model cold-start: retrying with wait_for_model: true');
-        chatResp = await chatCompletionWithFallback({ ...baseChatConfig, options: { wait_for_model: true } });
-        console.log('Chat completion response (retry):', JSON.stringify(chatResp, null, 2));
-      } else if (err.message?.includes('timeout')) {
-        console.error('RAG Chat completion timed out after 30 seconds');
-        res.status(500).json({ error: err.message || 'Chat completion timed out. Please try again later.' });
-      } else {
-        // result for all other status errors that aren't 500
-        console.error('Error:', err);        
-      }
-    }
-
-    const t3 = Date.now();
-
-    // Better error handling for empty responses
-    if (!chatResp || !chatResp.choices || !chatResp.choices[0]) {
-      console.error('No response received from chat completion:', chatResp);
-      // Send a fallback response instead of throwing an error
-      res.json({ 
-        answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
-        contextDocs: combined
-      });
+  let answer;
+  try {
+    console.log('Attempting Gemini chat completion...');
+    console.log('systemPrompt:', systemPrompt);
+    console.log('userPrompt:', userPrompt);
+    answer = await geminiChatCompletion(systemPrompt, userPrompt);
+    console.log('Gemini chat completion response:', answer);
+  } catch (err) {
+    if (err.message?.includes('timeout')) {
+      console.error('Gemini Chat completion timed out');
+      res.status(500).json({ error: err.message || 'Chat completion timed out. Please try again.' });
+      return;
+    } else {
+      console.error('Error:', err);
+      res.status(500).json({ error: err.message || 'Gemini chat failed' });
       return;
     }
+  }
 
-    let answer = chatResp.choices?.[0]?.message?.content ?? '';
-    console.log('Raw AI response:', answer);
-    console.log('Response length:', answer.length);
-    console.log('Finish reason:', chatResp.choices?.[0]?.finish_reason);
-    
-    // Check if answer is empty
-    if (!answer || answer.trim() === '') {
-      console.error('Empty answer received from chat completion');
-      // Send a fallback response instead of throwing an error
-      res.json({ 
-        answer: "I apologize, but I'm having trouble generating a response right now. Please try asking your question again.", 
-        contextDocs: combined
-      });
-      return;
-    }
-    
-    // Clean up the response by removing unwanted role tags, but preserve the full content
-    answer = answer
-      .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\]|\[INST\]|\[\/INST\])\s*/i, '')
-      .replace(/\n\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/gi, '\n')
-      .trim();
+  // Now answer is a string, so you can keep your cleanup and response logic:
+  if (!answer || answer.trim() === '') {
+    res.json({ 
+      answer: "I truly apologize, it appears I'm having trouble generating a response right now. Please try asking your question again.", 
+      contextDocs: combined
+    });
+    return;
+  }
+
+  // ...cleanup and send as before...
+  answer = answer
+    .replace(/^\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\]|\[INST\]|\[\/INST\])\s*/i, '')
+    .replace(/\n\s*(Assistant:|Coach:|\[ASS\]|\[Assistant\])\s*/gi, '\n')
+    .trim();
+
+  res.json({ answer, contextDocs: combined });
+
+  const t3 = Date.now();
+
     
     // Only truncate if there's clear dialogue or user simulation (more restrictive)
     const strongDialoguePattern = /\n\s*(USER:|PATIENT:|CLIENT:|Human:|\[USER\])/i;
@@ -304,16 +307,6 @@ router.post('/ragChat', chatLimiter, auth(), async (req, res) => {
     console.log('Final processed response:', answer);
     console.log('Final response length:', answer.length);
     
-    // Check if response was truncated due to token limits
-    const finishReason = chatResp.choices?.[0]?.finish_reason;
-    if (finishReason === 'length') {
-      console.warn('Response was truncated due to token limit. Consider increasing max_tokens.');
-      // Append a note if the response was cut off
-      if (!answer.match(/[.!?]$/)) {
-        answer += '...';
-      }
-    }
-
     // Send to client
     res.json({ answer, contextDocs: combined });
 
