@@ -1,4 +1,4 @@
-Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with **Next.js**, this project is in active development, and the current version represents a work in progress.
+Methuselah is an early-stage web application aimed at advancing research and innovation in longevity and healthspan. Built with primarily **Next.js + React and Express.js**, this project is in active development, but this current version is the completed version for the Summer semester 2025 Longevity team.
 
 ---
 
@@ -127,12 +127,14 @@ npm run start
 ```bash
 ## Frontend: 
 # To run Cypress (E2E) testing scripts or to test newly created/edited scripts:
+# (Note: Some scripts were experimental and may be broken)
 npx cypress run  # to run in terminal OR
 npx cypress open # to run in cypress external extension
 #
 
 # Backend:
-# If you want to train the pretraining qa AI (not, this AI was created but not incorporated in current results):
+# If you want to train the pretraining qa AI
+# (Note: this AI was created but not incorporated in current results):
 npm run dev:qa   # or use nodemon server.js directly if set up
 #
 ```
