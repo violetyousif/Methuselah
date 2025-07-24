@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
-import AdminSidebar from './AdminSidebar';
+import AdminSidebar from './adminSidebar';
 
 const { Sider, Content } = Layout;
 
