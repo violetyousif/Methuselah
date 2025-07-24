@@ -52,7 +52,7 @@ if (!GEMINI_MODEL || typeof GEMINI_MODEL !== 'string') {
 }
 
 // The primary model is used for chat completions, with a fallback model in case of failure
-const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2';  // Primary model - more reliable
+// const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2';  // Primary model - more reliable
 const FALLBACK_MODEL = 'HuggingFaceH4/zephyr-7b-beta';  // Fallback model
 
 
