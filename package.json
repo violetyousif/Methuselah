@@ -69,6 +69,6 @@
     "prettier": "^3.4.2",
     "react-test-renderer": "^18.3.1",
     "typescript": "^5.7.2",
-    "webpack": "^5.100.1"
+    "webpack": "^5.105.0"
   }
 }
